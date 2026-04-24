@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facilitador de Deploy - Dito SaaS</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; color: #333; padding: 40px; line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 20px; shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        h1 { color: #000; font-weight: 800; text-align: center; }
+        .step { margin-bottom: 40px; padding: 20px; border-left: 5px solid #000; background: #fafafa; border-radius: 0 10px 10px 0; }
+        .step h2 { margin-top: 0; display: flex; align-items: center; gap: 10px; }
+        .btn { display: inline-block; background: #000; color: white; padding: 12px 24px; border-radius: 30px; text-decoration: none; font-weight: bold; margin-top: 10px; cursor: pointer; transition: 0.3s; border: none; }
+        .btn:hover { background: #333; transform: translateY(-2px); }
+        .btn-secondary { background: #eee; color: #333; margin-left: 10px; }
+        .code-block { background: #272822; color: #f8f8f2; padding: 15px; border-radius: 8px; font-family: monospace; position: relative; margin-top: 15px; }
+        .copy-btn { position: absolute; right: 10px; top: 10px; font-size: 12px; background: rgba(255,255,255,0.1); border: none; color: white; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
+        .badge { background: #e7f3ff; color: #007bff; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Deploy do Dito SaaS em 3 Cliques</h1>
+        <p style="text-align: center; color: #666;">Eu preparei tudo. Siga os passos abaixo na ordem.</p>
+
+        <div class="step">
+            <h2><span class="badge">Passo 1</span> Criar o Repositório</h2>
+            <p>Primeiro, precisamos de um lugar para guardar seu código na nuvem (GitHub).</p>
+            <a href="https://github.com/new" target="_blank" class="btn">Abrir GitHub para Criar Novo Projeto</a>
+            <p><small>* Nomeie como <b>dito-saas</b> e clique no botão verde lá no final da página.</small></p>
+        </div>
+
+        <div class="step">
+            <h2><span class="badge">Passo 2</span> Enviar os Arquivos</h2>
+            <p>Copie a URL que o GitHub gerou (ex: <code>https://github.com/usuario/dito-saas.git</code>) e rode o script abaixo:</p>
+            <div class="code-block">
+                <span id="cmd-text">Dê dois cliques no arquivo DEPLOYAQUI.bat dentro da pasta</span>
+                <button class="copy-btn" onclick="copyToClipboard('DEPLOYAQUI.bat')">OK</button>
+            </div>
+            <p>Ele vai te pedir a URL. É só colar e apertar Enter!</p>
+        </div>
+
+        <div class="step">
+            <h2><span class="badge">Passo 3</span> Publicar na Vercel (O Site Vivo!)</h2>
+            <p>Agora que o código está no GitHub, a Vercel vai transformar ele em um site real.</p>
+            <a href="https://vercel.com/new" target="_blank" class="btn">Abrir Vercel e Importar Projeto</a>
+            <p><small>* Selecione o repositório "dito-saas" que você acabou de criar.</small></p>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; font-size: 14px; color: #999;">
+            Desenvolvido pelo seu assistente para facilitar sua vida. ✨
+        </div>
+    </div>
+
+    <script>
+        function copyToClipboard(text) {
+            alert('Apenas procure o arquivo "' + text + '" na sua pasta e execute-o! É o jeito mais fácil.');
+        }
+    </script>
+</body>
+</html>

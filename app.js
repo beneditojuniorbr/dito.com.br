@@ -104,6 +104,33 @@
         },
 
         // Resolve imagens para renderização com Placeholders Premium (Ultra-Minimalista)
+        // Helper para comprimir imagens (Limita a ~300kb)
+        compressImage(base64, maxWidth = 800, quality = 0.7) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.src = base64;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > maxWidth) {
+                        height = (maxWidth / width) * height;
+                        width = maxWidth;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Retorna como JPEG comprimido
+                    resolve(canvas.toDataURL('image/jpeg', quality));
+                };
+                img.onerror = () => resolve(base64);
+            });
+        },
+
         rGetPImage(img, name = "D", type = "Curso") {
             if (!img || img === 'stripped_for_cache' || img === 'null' || img === '' || img === 'default_product.png') {
                 let iconPath = "";
@@ -201,8 +228,8 @@
             delete thinUser.password;
             
             // Otimização Crítica: Se o avatar for um monstro Base64 (não otimizado), limpa para economizar espaço
-            if (thinUser.avatar && thinUser.avatar.startsWith('data:') && thinUser.avatar.length > 100000) {
-                console.warn("🛡️ [Otimização] Foto muito pesada para o cache. Reduzindo...");
+            if (thinUser.avatar && thinUser.avatar.startsWith('data:') && thinUser.avatar.length > 400000) {
+                console.warn("🛡️ [Otimização] Foto muito pesada para o cache local (>300KB).");
                 thinUser.avatar = ""; 
             }
 
@@ -2817,6 +2844,7 @@
                 if (meRes && meRes.data && this.currentUser) {
                     const netUser = meRes.data;
                     this.currentUser.sales = parseFloat(netUser.sales || 0);
+                    this.currentUser.avatar = netUser.avatar || this.currentUser.avatar;
                     localStorage.setItem('dito_balance', netUser.balance || '0');
                     
                     // RESTAURAÇÃO DE SEGURANÇA (Caso cache tenha sido limpo ou compra manual por ADM)
@@ -5815,8 +5843,11 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = async (event) => {
+                    // Comprime a foto do post para não sobrecarregar a rede
+                    const compressedUrl = await this.compressImage(event.target.result, 800, 0.7);
+                    
                     const posts = JSON.parse(localStorage.getItem('dito_profile_posts') || '[]');
-                    const newPost = { id: Date.now(), url: event.target.result };
+                    const newPost = { id: Date.now(), url: compressedUrl };
                     posts.unshift(newPost);
                     
                     // Salva localmente
@@ -5887,7 +5918,8 @@
                     
                     if (this.currentUser) {
                         this.currentUser.avatar = avatarData;
-                        this.saveSession(); // Usa o método centralizado
+                        this.saveSession(this.currentUser); // Usa o método centralizado e passa o user
+                        await this.syncUserToNetwork(this.currentUser); // Garante envio pra rede
                         
                         // Atualiza no Banco de Dados Local proativamente
                         this.syncUserToNetwork(this.currentUser);

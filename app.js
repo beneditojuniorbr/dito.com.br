@@ -304,7 +304,9 @@
                 }
                 
                 // Fallback para Slugs puro no path (ex: www.ditoapp.com.br/meu-produto)
-                if (!currentCheckoutId && pathParts.length === 1 && !pathParts[0].includes('.')) {
+                // Ignora paths que são claramente da raiz do app ou parâmetros UTM
+                const ignoredPaths = ['', 'index.html', 'app', 'home', 'dashboard', 'login', 'cadastro'];
+                if (!currentCheckoutId && pathParts.length === 1 && !pathParts[0].includes('.') && !ignoredPaths.includes(pathParts[0].toLowerCase())) {
                     currentCheckoutId = pathParts[0];
                 }
                 
@@ -658,7 +660,7 @@
 
             const lastAlive = localStorage.getItem('dito_session_heartbeat');
             const now = Date.now();
-            if (lastAlive && (now - parseInt(lastAlive)) > 300000) { // Aumentado para 5 minutos
+            if (lastAlive && (now - parseInt(lastAlive)) > 1800000) { // 30 minutos (era 5min, links sociais precisam de mais tempo)
                 console.log("🔐 [Security] Sessão expirada por inatividade.");
                 this.logout();
             }

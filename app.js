@@ -2790,11 +2790,13 @@
             this.isFetchingUsers = true;
             try {
                 // Habilita Realtime para Usuários (caso ainda não esteja)
-                if (!this.usersChannel) {
+                if (!this.usersChannel && supabase) {
                     this.usersChannel = supabase
                         .channel('radar-users')
                         .on('postgres_changes', { event: '*', schema: 'public', table: 'dito_users' }, payload => {
-                            console.log('🔄 [Realtime] Rede de membros atualizada:', payload.eventType);
+                            // Debounce para evitar loops infinitos de sincronia (last_seen, etc)
+                            if (this.lastRealtimeUpdate && (Date.now() - this.lastRealtimeUpdate < 5000)) return;
+                            this.lastRealtimeUpdate = Date.now();
                             this.fetchNetworkUsers();
                         })
                         .subscribe();

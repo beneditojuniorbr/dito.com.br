@@ -8151,6 +8151,18 @@
 
         popup.style.display = 'flex';
         if (window.lucide) lucide.createIcons();
+
+        // Fecha ao clicar fora da caixa (com um pequeno delay para não fechar imediatamente)
+        setTimeout(() => {
+            const closeOnOutside = (e) => {
+                const container = document.getElementById('global-fixed-actions-right');
+                if (container && !container.contains(e.target)) {
+                    popup.style.display = 'none';
+                    document.removeEventListener('click', closeOnOutside);
+                }
+            };
+            document.addEventListener('click', closeOnOutside);
+        }, 50);
     };
 
     app.toggleLiveSignal = async function(courseId, status) {

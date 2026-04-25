@@ -4406,9 +4406,15 @@
                 // Controle do Botão de Gerenciar Transmissão (Lado Direito)
                 const liveAction = document.getElementById('global-fixed-actions-right');
                 if (liveAction) {
-                    // Só aparece se estiver em uma mentoria onde EU sou o dono
-                    const isMentorshipOwner = (view === 'curso-player' && this.currentCourse && this.currentCourse.type === 'Mentoria' && this.currentCourse.owner === this.currentUser?.username);
-                    liveAction.style.display = isMentorshipOwner ? 'flex' : 'none';
+                    const isGlobalAdmin = (this.currentUser?.username === 'Ditão' || this.currentUser?.username === 'benedito_pro' || this.currentUser?.username === 'admin');
+                    const isMentorshipOwner = (this.currentCourse && this.currentCourse.type === 'Mentoria' && this.currentCourse.owner === this.currentUser?.username);
+                    
+                    if (isMentorshipOwner || (view === 'dashboard' && isGlobalAdmin)) {
+                        liveAction.style.display = 'flex';
+                        if (window.lucide) lucide.createIcons();
+                    } else {
+                        liveAction.style.display = 'none';
+                    }
                 }
 
                 // Salva o estado para restaurar no F5

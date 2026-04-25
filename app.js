@@ -135,12 +135,12 @@
             if (!img || img === 'stripped_for_cache' || img === 'null' || img === '' || img === 'default_product.png') {
                 let iconPath = "";
                 
-                // Escolhe o ícone baseado no tipo (Inspirado na estética limpa pedida pelo user)
+                // Escolhe o ícone baseado no tipo (Agora muito menores e minimalistas)
                 if (type === 'Ebook') {
-                    // Ícone de Livro Aberto
-                    iconPath = `<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>`;
+                    // Ícone de Livro Aberto (Igual tela de criação)
+                    iconPath = `<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>`;
                 } else if (type === 'Mentoria') {
-                    // Ícone de Usuários (Grupo)
+                    // Ícone de Usuários
                     iconPath = `<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>`;
                 } else { // Curso
                     // Ícone de Play Circle
@@ -156,7 +156,7 @@
                             </linearGradient>
                         </defs>
                         <rect x="0" y="0" width="24" height="24" fill="#ffffff" />
-                        <g stroke="url(#grad-${type})">
+                        <g stroke="url(#grad-${type})" transform="translate(7.2, 7.2) scale(0.4)">
                             ${iconPath}
                         </g>
                     </svg>

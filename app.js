@@ -3057,12 +3057,12 @@
                 const stars = '★'.repeat(Math.round(p.rating || 5)) + '☆'.repeat(5 - Math.round(p.rating || 5));
                 detailContent.innerHTML = `
                     <div style="margin-bottom: 24px;">
+                        <span style="font-size: 10px; font-weight: 900; color: #ff005c; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px;">${p.category || 'Geral'}</span>
                         <h2 style="font-size: 28px; font-weight: 950; line-height: 1.1; letter-spacing: -1.5px; color: #000; margin-bottom: 12px;">${p.name}</h2>
                         <div style="display: flex; align-items: center; gap: 8px;">
-                            <div style="display: flex; align-items: center; gap: 4px; background: #fff8e1; padding: 4px 10px; border-radius: 50px;">
-                                <i data-lucide="star" style="width: 14px; color: #facc15; fill: #facc15;"></i>
-                                <span style="font-size: 13px; font-weight: 950; color: #000;">4.9</span>
-                            </div>
+                            <div style="color: #ff9d00; font-size: 16px; letter-spacing: -2px;">${stars}</div>
+                            <span style="font-size: 13px; font-weight: 900; color: #000;">${p.rating || '5.0'}</span>
+                            <span style="font-size: 12px; color: #999; font-weight: 700;">• ${p.sales || '0'}+ vendas</span>
                         </div>
                     </div>
 
@@ -3175,11 +3175,8 @@
             document.getElementById('product-detail-content').innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
                     <div>
-                        <h1 style="font-size: 28px; font-weight: 950; line-height: 1.1; letter-spacing: -1.5px; color: #000; margin-bottom: 8px;">${p.name}</h1>
-                        <div style="display: flex; align-items: center; gap: 4px; background: #fff8e1; padding: 4px 10px; border-radius: 50px; width: fit-content;">
-                            <i data-lucide="star" style="width: 14px; color: #facc15; fill: #facc15;"></i>
-                            <span style="font-size: 13px; font-weight: 950; color: #000;">4.9</span>
-                        </div>
+                        <span style="font-size: 10px; font-weight: 900; color: #ff005c; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px;">${p.category || 'Geral'}</span>
+                        <h1 style="font-size: 28px; font-weight: 950; line-height: 1.1; letter-spacing: -1.5px; color: #000; margin-bottom: 4px;">${p.name}</h1>
                     </div>
                     <div style="text-align: right;">
                         <span style="display: block; font-size: 24px; font-weight: 950; color: #000;">R$ ${p.price.toFixed(2)}</span>
@@ -7823,12 +7820,16 @@
                         
                         <div style="padding: 10px; display: flex; flex-direction: column; gap: 4px; flex-grow: 1;">
                             <h4 style="font-weight: 900; font-size: 11px; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0;">${p.name}</h4>
-                            <div style="display: flex; align-items: center; gap: 3px;">
-                                <i data-lucide="star" style="width: 8px; color: #facc15; fill: #facc15;"></i>
-                                <span style="font-size: 9px; font-weight: 900; color: #000;">4.9</span>
+                            <div style="display: flex; gap: 2px;">
+                                <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
+                                <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
+                                <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
+                                <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
+                                <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
                             </div>
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
                                 <span style="font-weight: 900; font-size: 14px; color: #ff005c;">R$ ${parseFloat(p.price || 0).toFixed(2)}</span>
+                                <span style="font-size: 8px; font-weight: 800; color: #ccc;">${isMentoria ? 'Transmitindo' : `${p.sales || 0} v.`}</span>
                             </div>
                         </div>
                     </div>
@@ -7870,12 +7871,16 @@
                     
                     <div style="padding: 10px; display: flex; flex-direction: column; gap: 4px; flex-grow: 1;">
                         <h4 style="font-weight: 900; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; color: #000;">${p.name}</h4>
-                        <div style="display: flex; align-items: center; gap: 3px;">
-                            <i data-lucide="star" style="width: 8px; color: #facc15; fill: #facc15;"></i>
-                            <span style="font-size: 9px; font-weight: 900; color: #000;">4.9</span>
+                        <div style="display: flex; gap: 2px;">
+                            <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
+                            <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
+                            <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
+                            <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
+                            <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
                             <span style="font-weight: 900; font-size: 14px; color: #000;">R$ ${parseFloat(p.price || 0).toFixed(2)}</span>
+                            <span style="font-size: 8px; font-weight: 800; color: #ccc;">${isMentoria ? 'Transmitindo' : `${p.sales || 0} v.`}</span>
                         </div>
                     </div>
                 </div>

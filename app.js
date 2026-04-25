@@ -3058,62 +3058,65 @@
             // Customizar Informações (Nome, Preço, Descrição, Avaliações)
             const detailContent = document.getElementById('product-detail-content');
             if (detailContent && p) {
-                const stars = '★'.repeat(Math.round(p.rating || 5)) + '☆'.repeat(5 - Math.round(p.rating || 5));
                 detailContent.innerHTML = `
-                    <div style="margin-bottom: 24px;">
-                        <span style="font-size: 10px; font-weight: 900; color: #ff005c; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px;">${p.category || 'Geral'}</span>
-                        <h2 style="font-size: 28px; font-weight: 950; line-height: 1.1; letter-spacing: -1.5px; color: #000; margin-bottom: 12px;">${p.name}</h2>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <div style="color: #ff9d00; font-size: 16px; letter-spacing: -2px;">${stars}</div>
-                            <span style="font-size: 13px; font-weight: 900; color: #000;">${p.rating || '5.0'}</span>
-                            <span style="font-size: 12px; color: #999; font-weight: 700;">• ${p.sales || '0'}+ vendas</span>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+                        <div>
+                            <span style="font-size: 10px; font-weight: 900; color: #ff005c; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px;">${p.category || 'Geral'}</span>
+                            <h1 style="font-size: 28px; font-weight: 950; line-height: 1.1; letter-spacing: -1.5px; color: #000; margin-bottom: 4px;">${p.name}</h1>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="display: block; font-size: 24px; font-weight: 950; color: #000;">R$ ${p.price.toFixed(2)}</span>
+                            ${p.oldPrice ? `<span style="font-size: 12px; font-weight: 700; color: #ccc; text-decoration: line-through;">R$ ${p.oldPrice.toFixed(2)}</span>` : ''}
                         </div>
                     </div>
 
-                    <div style="margin-bottom: 32px;">
-                        <h3 style="font-size: 32px; font-weight: 950; color: #000; letter-spacing: -1px;">R$ ${p.price.toFixed(2)}</h3>
-                        <p style="font-size: 11px; font-weight: 800; color: #22c55e;">Parcelamento disponível em até 12x</p>
-                        
-                        ${p.hasLimit ? `
-                            <div style="margin-top: 16px; background: #fff5f5; padding: 16px; border-radius: 12px; border: 1px solid #fee2e2;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                    <span style="font-size: 11px; font-weight: 900; color: #ff005c;">DISPONIBILIDADE</span>
-                                    <span style="font-size: 11px; font-weight: 900; color: #000;">${(p.stockLimit - (p.sales || 0))} / ${p.stockLimit}</span>
-                                </div>
-                                <div style="width: 100%; height: 6px; background: #fee2e2; border-radius: 3px; overflow: hidden;">
-                                    <div style="width: ${((p.stockLimit - (p.sales || 0)) / p.stockLimit * 100)}%; height: 100%; background: #ff005c; border-radius: 3px;"></div>
-                                </div>
-                                <p style="font-size: 10px; font-weight: 800; color: #b91c1c; margin-top: 8px;">
-                                    <i data-lucide="alert-circle" style="width: 10px; display: inline-block; vertical-align: middle;"></i>
-                                    Atenção: Apenas ${(p.stockLimit - (p.sales || 0))} ${p.type === 'Curso' ? 'vagas disponíveis' : 'unidades restantes'}.
-                                </p>
+                    ${p.hasLimit ? `
+                        <div style="margin-bottom: 32px; background: #fff5f5; padding: 16px; border-radius: 20px; border: 1px solid #fee2e2;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="font-size: 11px; font-weight: 900; color: #ff005c;">DISPONIBILIDADE</span>
+                                <span style="font-size: 11px; font-weight: 900; color: #000;">${Math.max(0, p.stockLimit - (p.sales || 0))} / ${p.stockLimit}</span>
                             </div>
-                        ` : ''}
+                            <div style="width: 100%; height: 6px; background: #fee2e2; border-radius: 3px; overflow: hidden;">
+                                <div style="width: ${Math.min(100, Math.max(0, (p.stockLimit - (p.sales || 0)) / p.stockLimit * 100))}%; height: 100%; background: #ff005c; border-radius: 3px;"></div>
+                            </div>
+                            <p style="font-size: 10px; font-weight: 800; color: #b91c1c; margin-top: 8px; display: flex; align-items: center; gap: 4px;">
+                                <i data-lucide="alert-circle" style="width: 12px;"></i>
+                                ${(p.stockLimit - (p.sales || 0)) <= 0 ? 'Inscrições encerradas.' : `Atenção: Apenas ${p.stockLimit - (p.sales || 0)} ${p.type === 'Curso' ? 'vagas disponíveis' : (p.type === 'Mentoria' ? 'ingressos' : 'unidades')} restantes.`}
+                            </p>
+                        </div>
+                    ` : ''}
+
+                    <div id="product-rating-container" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px;">
+                         <div style="display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="star" style="width: 14px; color: #facc15; fill: #facc15;"></i>
+                            <span id="product-avg-rating" style="font-size: 12px; font-weight: 800; color: #bbb;">Carregando nota...</span>
+                         </div>
+                         <div id="product-interactive-stars" style="display: flex; gap: 4px;">
+                            <i data-pstar="1" onclick="app.rateProduct('${p.id}', 1)" data-lucide="star" style="width: 20px; color: #eee; cursor: pointer;"></i>
+                            <i data-pstar="2" onclick="app.rateProduct('${p.id}', 2)" data-lucide="star" style="width: 20px; color: #eee; cursor: pointer;"></i>
+                            <i data-pstar="3" onclick="app.rateProduct('${p.id}', 3)" data-lucide="star" style="width: 20px; color: #eee; cursor: pointer;"></i>
+                            <i data-pstar="4" onclick="app.rateProduct('${p.id}', 4)" data-lucide="star" style="width: 20px; color: #eee; cursor: pointer;"></i>
+                            <i data-pstar="5" onclick="app.rateProduct('${p.id}', 5)" data-lucide="star" style="width: 20px; color: #eee; cursor: pointer;"></i>
+                         </div>
                     </div>
 
-                    <div style="margin-bottom: 32px;">
-                        <h4 style="font-size: 13px; font-weight: 950; color: #000; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Sobre este produto</h4>
-                        <p style="font-size: 14px; color: #444; line-height: 1.7; font-weight: 500; margin-bottom: 24px;">${p.description || "Este produto premium oferece acesso exclusivo a conteúdos transformadores. Garanta sua vaga hoje mesmo."}</p>
-                        
-                        <!-- SEÇÃO DO PRODUTOR (NOVO) -->
-                        <div style="background: #f9f9f9; padding: 20px; border-radius: 20px; display: flex; align-items: center; gap: 16px;">
-                            <div style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 2px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-                                ${(() => {
-                                    const allUsers = JSON.parse(localStorage.getItem('dito_users_db') || '[]');
-                                    const seller = allUsers.find(u => u.username === p.seller);
-                                    return seller && seller.avatar ? `<img src="${seller.avatar}" style="width: 100%; height: 100%; object-fit: cover;">` : `<div style="width: 100%; height: 100%; background: #000; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 20px;">${(p.seller || "P")[0].toUpperCase()}</div>`;
-                                })()}
+                    <p style="font-size: 14px; color: #666; font-weight: 500; line-height: 1.6; margin-bottom: 32px;">${p.description || 'Sem descrição detalhada disponível para este produto no momento.'}</p>
+                    
+                    <div style="background: transparent; padding: 10px 0; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 44px; height: 44px; background: #000; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; overflow: hidden;">
+                                ${p.seller_avatar ? `<img src="${p.seller_avatar}" style="width:100%; height:100%; object-fit:cover;">` : (p.seller ? p.seller[0] : 'U')}
                             </div>
                             <div>
-                                <span style="font-size: 10px; font-weight: 950; color: #999; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 4px;">Publicado por</span>
-                                <h4 style="font-size: 16px; font-weight: 950; color: #000; display: flex; align-items: center; gap: 6px;">
-                                    ${p.seller || "Produtor Dito"} 
-                                    <i data-lucide="check-circle" style="width: 14px; color: #0487ff; fill: #0487ff20;"></i>
-                                </h4>
+                                <p style="font-size: 12px; font-weight: 900;">${p.seller || 'Membro'}</p>
+                                <p style="font-size: 10px; color: #ccc; font-weight: 700;">Loja Oficial</p>
                             </div>
                         </div>
+                        <button onclick="app.navigate('perfil')" style="font-size: 10px; font-weight: 900; text-transform: uppercase; background: transparent; border: 1px solid #eee; padding: 10px 16px; border-radius: 30px; cursor: pointer; color: #ccc;">Ver perfil</button>
                     </div>
                 `;
+            }
+
             // Customizar Botões de Ação
             const actionsContainer = document.getElementById('product-actions');
             if (actionsContainer) {
@@ -3158,7 +3161,6 @@
                             </button>
                         `;
                     } else {
-                        // Stack vertical conforme solicitado pelo usuário
                         actionsContainer.style.flexDirection = 'column';
                         actionsContainer.style.gap = '10px';
                         
@@ -3173,64 +3175,6 @@
                     }
                 }
             }
-
-            document.getElementById('product-detail-content').innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
-                    <div>
-                        <span style="font-size: 10px; font-weight: 900; color: #ff005c; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px;">${p.category || 'Geral'}</span>
-                        <h1 style="font-size: 28px; font-weight: 950; line-height: 1.1; letter-spacing: -1.5px; color: #000; margin-bottom: 4px;">${p.name}</h1>
-                    </div>
-                    <div style="text-align: right;">
-                        <span style="display: block; font-size: 24px; font-weight: 950; color: #000;">R$ ${p.price.toFixed(2)}</span>
-                        ${p.oldPrice ? `<span style="font-size: 12px; font-weight: 700; color: #ccc; text-decoration: line-through;">R$ ${p.oldPrice.toFixed(2)}</span>` : ''}
-                    </div>
-                </div>
-
-                ${p.hasLimit ? `
-                    <div style="margin-bottom: 32px; background: #fff5f5; padding: 16px; border-radius: 20px; border: 1px solid #fee2e2;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <span style="font-size: 11px; font-weight: 900; color: #ff005c;">DISPONIBILIDADE</span>
-                            <span style="font-size: 11px; font-weight: 900; color: #000;">${Math.max(0, p.stockLimit - (p.sales || 0))} / ${p.stockLimit}</span>
-                        </div>
-                        <div style="width: 100%; height: 6px; background: #fee2e2; border-radius: 3px; overflow: hidden;">
-                            <div style="width: ${Math.min(100, Math.max(0, (p.stockLimit - (p.sales || 0)) / p.stockLimit * 100))}%; height: 100%; background: #ff005c; border-radius: 3px;"></div>
-                        </div>
-                        <p style="font-size: 10px; font-weight: 800; color: #b91c1c; margin-top: 8px; display: flex; align-items: center; gap: 4px;">
-                            <i data-lucide="alert-circle" style="width: 12px;"></i>
-                            ${(p.stockLimit - (p.sales || 0)) <= 0 ? 'Inscrições encerradas.' : `Atenção: Apenas ${p.stockLimit - (p.sales || 0)} ${p.type === 'Curso' ? 'vagas disponíveis' : (p.type === 'Mentoria' ? 'ingressos' : 'unidades')} restantes.`}
-                        </p>
-                    </div>
-                ` : ''}
-
-                <div id="product-rating-container" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px;">
-                     <div style="display: flex; align-items: center; gap: 6px;">
-                        <i data-lucide="star" style="width: 14px; color: #facc15; fill: #facc15;"></i>
-                        <span id="product-avg-rating" style="font-size: 12px; font-weight: 800; color: #bbb;">Carregando nota...</span>
-                     </div>
-                     <div id="product-interactive-stars" style="display: flex; gap: 4px;">
-                        <i data-pstar="1" onclick="app.rateProduct('${p.id}', 1)" data-lucide="star" style="width: 20px; color: #eee; cursor: pointer;"></i>
-                        <i data-pstar="2" onclick="app.rateProduct('${p.id}', 2)" data-lucide="star" style="width: 20px; color: #eee; cursor: pointer;"></i>
-                        <i data-pstar="3" onclick="app.rateProduct('${p.id}', 3)" data-lucide="star" style="width: 20px; color: #eee; cursor: pointer;"></i>
-                        <i data-pstar="4" onclick="app.rateProduct('${p.id}', 4)" data-lucide="star" style="width: 20px; color: #eee; cursor: pointer;"></i>
-                        <i data-pstar="5" onclick="app.rateProduct('${p.id}', 5)" data-lucide="star" style="width: 20px; color: #eee; cursor: pointer;"></i>
-                     </div>
-                </div>
-
-                <p style="font-size: 14px; color: #666; font-weight: 500; line-height: 1.6; margin-bottom: 32px;">${p.description || 'Sem descrição detalhada disponível para este produto no momento.'}</p>
-                
-                <div style="background: transparent; padding: 10px 0; display: flex; justify-content: space-between; align-items: center;">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div style="width: 44px; height: 44px; background: #000; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; overflow: hidden;">
-                            ${p.seller_avatar ? `<img src="${p.seller_avatar}" style="width:100%; height:100%; object-fit:cover;">` : (p.seller ? p.seller[0] : 'U')}
-                        </div>
-                        <div>
-                            <p style="font-size: 12px; font-weight: 900;">${p.seller || 'Membro'}</p>
-                            <p style="font-size: 10px; color: #ccc; font-weight: 700;">Loja Oficial</p>
-                        </div>
-                    </div>
-                    <button onclick="app.navigate('perfil')" style="font-size: 10px; font-weight: 900; text-transform: uppercase; background: transparent; border: 1px solid #eee; padding: 10px 16px; border-radius: 30px; cursor: pointer; color: #ccc;">Ver perfil</button>
-                </div>
-            `;
 
             if (window.lucide) lucide.createIcons();
             this.fetchAndRenderProductRating(p.id); 

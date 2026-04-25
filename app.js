@@ -8165,6 +8165,9 @@
             <button onclick="app.accessLiveDirectly('${target.id}')" style="width: 100%; padding: 12px; background: #000; border: none; text-align: center; font-size: 11px; font-weight: 900; color: #fff; cursor: pointer; border-radius: 12px; margin-top: 5px;">
                 ENTRAR NA SALA
             </button>
+            <button onclick="app.endLiveAndMarket('${target.id}')" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ff005c; text-align: center; font-size: 11px; font-weight: 900; color: #ff005c; cursor: pointer; border-radius: 12px; margin-top: 5px;">
+                ENCERRAR TRANSMISSÃO
+            </button>
         `;
 
         popup.style.display = 'flex';
@@ -8210,6 +8213,55 @@
         } catch (e) {
             console.error(e);
             this.showNotification("Erro ao atualizar sinal.", "error");
+        } finally {
+            this.showLoading(false);
+        }
+    };
+
+    app.endLiveAndMarket = async function(courseId) {
+        if (!confirm("Deseja encerrar esta transmissão agora?")) return;
+
+        this.showLoading(true, "Encerrando live...");
+        try {
+            // 1. Encerra o sinal da live (sales_link = '')
+            const { error: liveError } = await supabase
+                .from('dito_market_products')
+                .update({ sales_link: '' })
+                .eq('id', courseId);
+            
+            if (liveError) throw liveError;
+
+            // 2. Pergunta se deseja excluir do mercado
+            const deleteFromMarket = confirm("Deseja excluir este produto do mercado definitivamente?");
+            
+            if (deleteFromMarket) {
+                const { error: delError } = await supabase
+                    .from('dito_market_products')
+                    .delete()
+                    .eq('id', courseId);
+                
+                if (delError) throw delError;
+
+                // Remove localmente
+                this.products = this.products.filter(p => String(p.id) !== String(courseId));
+                this.showNotification("Live encerrada e produto removido do mercado! 🗑️", "success");
+            } else {
+                // Só limpa o sinal localmente
+                const prod = this.products.find(p => String(p.id) === String(courseId));
+                if (prod) prod.sales_link = '';
+                this.showNotification("Live encerrada! Produto continua no mercado. ✅", "success");
+            }
+
+            // Fecha popup
+            const popup = document.getElementById('live-management-popup');
+            if (popup) popup.style.display = 'none';
+
+            // Navega para dashboard se estiver na sala
+            if (this.currentView === 'live-room') this.navigate('dashboard');
+            
+        } catch (e) {
+            console.error(e);
+            this.showNotification("Erro ao encerrar transmissão.", "error");
         } finally {
             this.showLoading(false);
         }

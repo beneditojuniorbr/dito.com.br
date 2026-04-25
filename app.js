@@ -1678,21 +1678,10 @@
                 
                 this.liveStream = stream;
                 
-                // UI do Mentor
+                // UI do Mentor (limpa, sem overlays)
                 playerContainer.innerHTML = `
                     <div style="position: relative; width: 100%; height: 100%; background: #000; border-radius: 0; overflow: hidden;">
                         <video id="live-mentor-video" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover;"></video>
-                        <div style="position: absolute; top: 20px; left: 20px; background: #ff005c; color: #fff; font-size: 10px; font-weight: 900; padding: 6px 12px; border-radius: 50px; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(255,0,92,0.3); animation: pulse 2s infinite;">
-                            <div style="width: 8px; height: 8px; background: #fff; border-radius: 50%;"></div> TRANSMITINDO AO VIVO (NATIVO DITO)
-                        </div>
-                        <div style="position: absolute; bottom: 20px; left: 20px; display: flex; gap: 8px;">
-                            <div id="live-viewer-count" style="background: rgba(0,0,0,0.6); color: #fff; font-size: 10px; font-weight: 800; padding: 8px 12px; border-radius: 12px; backdrop-filter: blur(10px);">
-                                👤 0 Online
-                            </div>
-                        </div>
-                        <button onclick="app.stopLiveCamera()" style="position: absolute; bottom: 20px; right: 20px; background: rgba(255,255,255,0.2); color: #fff; border: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; backdrop-filter: blur(10px);">
-                             <i data-lucide="square" style="width: 20px;"></i>
-                        </button>
                     </div>
                 `;
 
@@ -7543,25 +7532,14 @@
                 playerContainer.innerHTML = `
                     <div style="width: 100%; height: 100%; background: #000; position: relative; overflow: hidden;">
                         <video id="live-native-video" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover; background: #000;"></video>
-                        
-                        <!-- Log de Diagnóstico (Visível durante conexão) -->
-                        <div id="live-diag-log" style="position: absolute; bottom: 80px; left: 20px; color: rgba(255,255,255,0.5); font-family: monospace; font-size: 8px; pointer-events: none; z-index: 100;">
-                            Status: Iniciando...
-                        </div>
 
-                        <!-- Overlay de Conexão -->
+                        <!-- Overlay de Conexão (some após conectar) -->
                         <div id="live-native-overlay" style="position: absolute; inset: 0; background: rgba(0,0,0,0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; backdrop-filter: blur(5px);">
                             <div class="live-pulse" style="width: 16px; height: 16px; background: #ff005c; border-radius: 50%; margin-bottom: 12px;"></div>
                             <p id="live-native-status" style="color: #fff; font-size: 11px; font-weight: 950; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Sincronizando com o Mentor...</p>
                             <button id="btn-unmute-live" onclick="app.unmuteNativeLive()" style="display: none; margin-top: 16px; background: #ff005c; color: #fff; border: none; padding: 12px 24px; border-radius: 50px; font-weight: 950; font-size: 11px; cursor: pointer; box-shadow: 0 10px 20px rgba(255,0,92,0.3); animation: bounce 2s infinite;">
                                 <i data-lucide="volume-2" style="width: 16px; vertical-align: middle; margin-right: 6px;"></i> OUVIR MENTOR
                             </button>
-                        </div>
-                        
-                        <div style="position: absolute; top: 20px; left: 20px; z-index: 5;">
-                           <div style="background: #ff005c; color: #fff; font-size: 10px; font-weight: 950; padding: 6px 12px; border-radius: 50px; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(255,0,92,0.3);">
-                               <div style="width: 6px; height: 6px; background: #fff; border-radius: 50%; animation: pulse 1s infinite;"></div> DITO NATIVE LIVE
-                           </div>
                         </div>
                     </div>
                 `;

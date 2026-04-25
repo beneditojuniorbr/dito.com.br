@@ -477,6 +477,11 @@
                 this.initRealtimeNotifications();
                 this.initAutoLogout();
                 this.initSystemBackButton();
+                
+                // Sincronia de Segurança: Se logado, garante que está na nuvem
+                if (this.currentUser && !this.currentUser.isGuest) {
+                    this.syncUserToNetwork(this.currentUser);
+                }
                 this.fetchNotifications();
                 
                 // Processa prêmios acumulados (Indicações que rolaram enquanto eu estava offline)
@@ -2784,6 +2789,17 @@
             if (!supabase || this.isFetchingUsers) return;
             this.isFetchingUsers = true;
             try {
+                // Habilita Realtime para Usuários (caso ainda não esteja)
+                if (!this.usersChannel) {
+                    this.usersChannel = supabase
+                        .channel('radar-users')
+                        .on('postgres_changes', { event: '*', schema: 'public', table: 'dito_users' }, payload => {
+                            console.log('🔄 [Realtime] Rede de membros atualizada:', payload.eventType);
+                            this.fetchNetworkUsers();
+                        })
+                        .subscribe();
+                }
+
                 const [hallRes, meRes] = await Promise.all([
                     supabase.from('dito_users').select('username, name, bio, fans, sales, avatar, last_seen, gender, purchases').order('sales', { ascending: false }).limit(80), 
                     this.currentUser ? supabase.from('dito_users').select('*').eq('username', this.currentUser.username).maybeSingle() : Promise.resolve({ data: null })
@@ -6899,6 +6915,7 @@
             localStorage.setItem('dito_usuarios', JSON.stringify(perfis));
 
             this.syncUserToNetwork(newUser);
+            await this.syncUserToNetwork(newUser);
 
             // 2. Processa Recompensa de Indicação (Blindada por E-mail)
             const refCode = localStorage.getItem('dito_pending_ref'); 

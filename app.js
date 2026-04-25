@@ -2642,7 +2642,8 @@
             if(!text || !this.currentUser) return;
             let content = text;
             // Se estiver em uma sala (Live ou Sociedade), usa ela como receptor, senão GLOBAL
-            let receiver = this.activeWorldRoom || 'GLOBAL';
+            // Sanitiza o ID para garantir compatibilidade com Supabase (sem hifens ou pontos)
+            let receiver = (this.activeWorldRoom || 'GLOBAL').replace(/[^a-zA-Z0-9_]/g, '_');
             
             // Lógica de Comandos (DDTank Style)
             if (text.startsWith('/s ')) {
@@ -2799,8 +2800,10 @@
             if (!supabase) return;
 
             try {
-                // 2. BUSCA NO SUPABASE PARA ATUALIZAR O HISTÓRICO REAL
-                const currentRoom = this.activeWorldRoom || 'GLOBAL';
+                // 2. BUSCA NO SUPABASE - Sanitiza o roomId para evitar erro 400
+                const rawRoom = this.activeWorldRoom || 'GLOBAL';
+                // Remove caracteres incompatíveis com colunas Supabase (hifens, pontos, etc.)
+                const currentRoom = rawRoom.replace(/[^a-zA-Z0-9_]/g, '_');
                 
                 const { data, error } = await supabase.from('dito_messages')
                     .select('*')
@@ -2812,15 +2815,12 @@
                     // Re-renderiza com dados novos para garantir sincronia
                     container.innerHTML = '';
                     const reversed = data.reverse();
-                    reversed.forEach(msg => {
-                        if (msg.receiver !== 'GLOBAL' && msg.receiver !== 'SOC_GLOBAL' && msg.receiver !== this.currentUser.username && msg.sender !== this.currentUser.username) {
-                            return;
-                        }
-                        this.appendWorldMessageToChat(msg);
-                    });
+                    reversed.forEach(msg => this.appendWorldMessageToChat(msg));
                     
                     // Atualiza o cache local com os dados mais recentes do servidor
                     localStorage.setItem(localKey, JSON.stringify(reversed));
+                } else if (error) {
+                    console.warn('[Chat] Erro ao buscar mensagens:', error.message);
                 }
             } catch(e) {
                 console.warn("Erro ao buscar world chat:", e);

@@ -527,8 +527,8 @@
                         console.log("Restaurando:", lastView);
                         this.navigate(lastView);
                     } else {
-                        console.log("Indo para Login (Sem Link Ativo)");
-                        this.navigate('login');
+                        console.log("Indo para Welcome (Sem Link Ativo)");
+                        this.navigate('welcome');
                     }
                 } else {
                     // Cria sessao de convidado imediatamente para nao ser bloqueado
@@ -4340,7 +4340,7 @@
                 // Controle dos Botões Flutuantes (Missões e Chat)
                 const fixedActions = document.getElementById('global-fixed-actions');
                 if (fixedActions) {
-                    const hideViews = ['login', 'cadastro', 'checkout-direto'];
+                    const hideViews = ['welcome', 'login', 'cadastro', 'checkout-direto'];
                     if (hideViews.includes(view) || (view === 'mercado' && this.marketView === 'checkout')) {
                         fixedActions.style.display = 'none';
                     } else {
@@ -4366,8 +4366,8 @@
                 }
 
                 // Checkout direto NUNCA exige login
-                if (!isLoggedIn && (view !== 'login' && view !== 'cadastro' && view !== 'mercado' && view !== 'checkout-direto')) {
-                    view = 'login';
+                if (!isLoggedIn && (view !== 'welcome' && view !== 'login' && view !== 'cadastro' && view !== 'mercado' && view !== 'checkout-direto')) {
+                    view = 'welcome';
                 }
 
                 // FORÇA VOLTA PARA A HOME DO MERCADO SE CLICAR NO MENU (Evita o "vício" do checkout)
@@ -4379,7 +4379,7 @@
                 this.checkLiveAdminStatus();
 
                 // Salva o estado para restaurar no F5
-                if (view !== 'login' && view !== 'cadastro') {
+                if (view !== 'welcome' && view !== 'login' && view !== 'cadastro') {
                     localStorage.setItem('dito_last_view', view);
                 }
 
@@ -4467,7 +4467,7 @@
                 const header = document.getElementById('global-header');
                 const downloadLink = document.getElementById('download-app-link');
                 const floatingActions = document.getElementById('global-fixed-actions');
-                const isAuthPage = view === 'login' || view === 'cadastro';
+                const isAuthPage = view === 'welcome' || view === 'login' || view === 'cadastro';
                 const isCheckoutPage = view === 'checkout-direto';
                 
                 if (floatingActions) {
@@ -7199,7 +7199,7 @@
             setTimeout(() => {
                 localStorage.removeItem('is_logged_in_vanilla');
                 localStorage.removeItem('is_guest_vanilla');
-                this.navigate('login'); 
+                this.navigate('welcome'); 
                 this.showLoading(false);
             }, 1000);
         },

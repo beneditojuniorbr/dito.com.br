@@ -2785,7 +2785,7 @@
             this.isFetchingUsers = true;
             try {
                 const [hallRes, meRes] = await Promise.all([
-                    supabase.from('dito_users').select('username, name, bio, fans, sales, avatar, last_seen, gender').order('sales', { ascending: false }).limit(80), 
+                    supabase.from('dito_users').select('username, name, bio, fans, sales, avatar, last_seen, gender, purchases').order('sales', { ascending: false }).limit(80), 
                     this.currentUser ? supabase.from('dito_users').select('*').eq('username', this.currentUser.username).maybeSingle() : Promise.resolve({ data: null })
                 ]);
 
@@ -4095,8 +4095,24 @@
             
             if (!listTop) return;
 
-            // Prioriza Memória (Sincronia RAM)
-            const users = this.networkUsers && this.networkUsers.length > 0 ? this.networkUsers : JSON.parse(localStorage.getItem('dito_usuarios') || '[]');
+            // Mescla usuários da rede (Supabase) com usuários registrados localmente (Simulation/Mock)
+            const networkUsers = this.networkUsers || [];
+            const localUsers = JSON.parse(localStorage.getItem('dito_users_db') || '[]');
+            const usuariosVanilla = JSON.parse(localStorage.getItem('dito_usuarios_vanilla') || '[]');
+            
+            // Combina e remove duplicatas (priorizando dados da rede se disponíveis)
+            const combined = [...networkUsers, ...localUsers, ...usuariosVanilla];
+            const usersMap = new Map();
+            combined.forEach(u => {
+                if (!u || !u.username) return;
+                const existing = usersMap.get(u.username);
+                // Se já existe e o novo tem 'sales_history', ou se o existente é muito básico, sobrescreve
+                if (!existing || (u.sales_history && !existing.sales_history) || (u.sales > existing.sales)) {
+                    usersMap.set(u.username, u);
+                }
+            });
+            
+            const users = Array.from(usersMap.values());
             
             if (users.length === 0) {
                 if (firstName) firstName.innerText = "Conectando...";
@@ -4108,29 +4124,31 @@
             // Busca usuários e calcula vendas baseadas no CICLO 30 DIAS
             const now = Date.now();
             const sortedRank = users.map(u => {
-                let salesHistory = [];
-                const userKey = u.username || u.id; // Chave para identificar o dono do histórico
+                let transHistory = [];
                 
                 try {
                     // Se for o usuário atual, usa o histórico local com o sufixo correto
                     if (this.currentUser && u.username === this.currentUser.username) {
                         const storageKey = `dito_real_sales_history_${this.getUserKey()}`;
-                        salesHistory = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                        transHistory = JSON.parse(localStorage.getItem(storageKey) || '[]');
                     } else {
-                        // Para outros, tenta pegar o que veio do banco (vendas globais)
-                        salesHistory = u.sales_history ? (typeof u.sales_history === 'string' ? JSON.parse(u.sales_history) : u.sales_history) : [];
+                        // Para outros, usa o campo 'purchases' que no Dito armazena todo o histórico de transações (vendas e compras)
+                        const rawHistory = u.purchases || u.sales_history;
+                        transHistory = rawHistory ? (typeof rawHistory === 'string' ? JSON.parse(rawHistory) : rawHistory) : [];
                     }
                 } catch(e) {}
 
-                // Cálculo robusto: Vendas dos últimos 30 dias (ms)
-                const cycleSum = Array.isArray(salesHistory) ? salesHistory.reduce((acc, s) => {
+                // Cálculo: Vendas (tipo 'sale') dos últimos 30 dias
+                const cycleSum = Array.isArray(transHistory) ? transHistory.reduce((acc, s) => {
+                    // Filtra apenas vendas (não compras do próprio usuário) e dentro do prazo
+                    const isSale = s.type === 'sale';
                     const diffDays = (now - new Date(s.timestamp || now).getTime()) / (1000 * 60 * 60 * 24);
-                    if (diffDays <= 30) return acc + (Number(s.value) || 0);
+                    if (isSale && diffDays <= 30) return acc + (Number(s.value) || 0);
                     return acc;
                 }, 0) : Number(u.sales || 0);
 
-                // Se o usuário ainda resultar em 0 mas tiver saldo no banco, usa o campo fixo de segurança
-                const finalSales = (cycleSum === 0 && u.sales > 0) ? u.sales : cycleSum;
+                // Se o ciclo resultar em 0 mas o usuário tem vendas totais, usa uma pequena fração para não ficar zerado se for um membro antigo sem histórico detalhado
+                const finalSales = (cycleSum === 0 && u.sales > 0) ? Number(u.sales) : cycleSum;
 
                 return {
                     ...u,

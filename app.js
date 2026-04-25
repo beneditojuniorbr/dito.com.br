@@ -240,6 +240,19 @@
             return clean;
         },
 
+        async updateLastSeen() {
+            if (!supabase || !this.currentUser || this.currentUser.isGuest) return;
+            try {
+                await supabase
+                    .from('dito_users')
+                    .update({ last_seen: new Date().toISOString() })
+                    .eq('username', this.currentUser.username);
+                console.log("💓 [Heartbeat] Status online atualizado.");
+            } catch (e) {
+                console.warn("⚠️ [Heartbeat] Falha ao atualizar status.");
+            }
+        },
+
         async init() {
             const hideSplash = () => {
                 const s = document.getElementById('splash-screen');
@@ -417,6 +430,7 @@
                     this.fetchNetworkUsers();
                     this.fetchNetworkProducts();
                     this.fetchUserCloudState(); // Garante que compras e saldo sincronizem entre PC e Celular
+                    this.updateLastSeen();      // Novo: Avisa que você está online
                 }, 30000);
 
                 // Inicia Canais Realtime (Supabase)
@@ -493,6 +507,7 @@
                 }, 2000);
 
                 this.checkMissionsNotification();
+                this.updateLastSeen(); // Atualiza imediatamente ao carregar
 
                 // RESTAURAÇÃO DE ESTADO (F5 Seguro com Proteção Anti-Crash)
                 const allowedViews = ['dashboard', 'mercado', 'sociedade', 'hall', 'perfil', 'vendas', 'sacar', 'admin-contas', 'admin-produtos', 'produtos', 'meus-cursos', 'missoes', 'centro-notificacoes', 'criar-produto', 'links'];
@@ -1189,33 +1204,36 @@
                 const { data: users, error } = await supabase.from('dito_users').select('*');
                 if (users && !error) {
                     const now = new Date();
-                    const sortedUsers = users.map(u => {
-                        const lastSeen = new Date(u.last_seen || 0);
-                        const diffMinutes = (now.getTime() - lastSeen.getTime()) / (1000 * 60);
-                        const isOnline = diffMinutes < 10;
-                        const hasUnread = app.unreadMessages && app.unreadMessages[u.username];
-                        
-                        // Busca timestamp da última interação para ordenar
-                        const interactions = JSON.parse(localStorage.getItem('dito_last_interactions') || '{}');
-                        const lastInteraction = interactions[u.username] || 0;
-                        
-                        return { ...u, isOnline, hasUnread, lastInteraction };
-                    }).sort((a, b) => {
-                        // 1. Prioridade para Mensagens Não Lidas (Bolinha Amarela)
-                        if (a.hasUnread && !b.hasUnread) return -1;
-                        if (!a.hasUnread && b.hasUnread) return 1;
-                        
-                        // 2. Prioridade pela ÚLTIMA MENSAGEM (Interação mais recente)
-                        if (b.lastInteraction !== a.lastInteraction) {
-                            return b.lastInteraction - a.lastInteraction;
-                        }
-                        
-                        // 3. Prioridade para quem está Online (Bolinha Verde)
-                        if (a.isOnline && !b.isOnline) return -1;
-                        if (!a.isOnline && b.isOnline) return 1;
-                        
-                        return 0;
-                    });
+                    const sortedUsers = users
+                        .filter(u => u.username !== this.currentUser?.username) // Não mostra você mesmo
+                        .map(u => {
+                            const lastSeen = new Date(u.last_seen || 0);
+                            const diffMinutes = (now.getTime() - lastSeen.getTime()) / (1000 * 60);
+                            const isOnline = diffMinutes < 10;
+                            const hasUnread = app.unreadMessages && app.unreadMessages[u.username];
+                            
+                            // Busca timestamp da última interação para ordenar
+                            const interactions = JSON.parse(localStorage.getItem('dito_last_interactions') || '{}');
+                            const lastInteraction = interactions[u.username] || 0;
+                            
+                            return { ...u, isOnline, hasUnread, lastInteraction };
+                        }).sort((a, b) => {
+                            // 1. Prioridade para Mensagens Não Lidas (Bolinha Amarela)
+                            if (a.hasUnread && !b.hasUnread) return -1;
+                            if (!a.hasUnread && b.hasUnread) return 1;
+                            
+                            // 2. Prioridade para quem está Online (Bolinha Verde)
+                            if (a.isOnline && !b.isOnline) return -1;
+                            if (!a.isOnline && b.isOnline) return 1;
+
+                            // 3. Prioridade pela ÚLTIMA MENSAGEM (Interação recente)
+                            if (b.lastInteraction !== a.lastInteraction) {
+                                return b.lastInteraction - a.lastInteraction;
+                            }
+                            
+                            // 4. Ordem Alfabética para o resto
+                            return (a.name || a.username).localeCompare(b.name || b.username);
+                        });
 
                     container.innerHTML = sortedUsers.map(u => {
                         const isOnline = u.isOnline;

@@ -4423,10 +4423,13 @@
                 const liveAction = document.getElementById('global-fixed-actions-right');
                 if (liveAction) {
                     const myUser = this.currentUser?.username;
-                    const isOwner = (myUser === 'Ditão' || myUser === 'benedito_pro' || myUser === 'admin' || myUser === 'Macarrão');
-                    const isInMentorshipRoom = (this.currentCourse && this.currentCourse.type === 'Mentoria' && (this.currentCourse.owner === myUser || this.currentCourse.author === myUser));
+                    // Super Admin Override (Sempre vê o botão se estiver logado)
+                    const isSuperAdmin = (myUser === 'Ditão' || myUser === 'benedito_pro' || myUser === 'Macarrão' || myUser === 'admin');
                     
-                    if (isOwner || isInMentorshipRoom) {
+                    // Checa se é dono de alguma mentoria na lista global
+                    const isMentor = this.products.some(p => (p.seller === myUser || p.author === myUser) && p.type === 'Mentoria');
+                    
+                    if (isSuperAdmin || isMentor) {
                         liveAction.style.display = 'flex';
                         if (window.lucide) lucide.createIcons();
                     } else {

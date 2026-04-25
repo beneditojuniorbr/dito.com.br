@@ -8115,6 +8115,13 @@
         const popup = document.getElementById('live-management-popup');
         if (!popup) return;
 
+        // Limpa qualquer listener anterior para evitar acúmulo
+        if (app._livePopupOutsideListener) {
+            document.removeEventListener('click', app._livePopupOutsideListener);
+            app._livePopupOutsideListener = null;
+        }
+
+        // Toggle: se aberto, fecha
         if (popup.style.display === 'flex') {
             popup.style.display = 'none';
             return;
@@ -8152,16 +8159,17 @@
         popup.style.display = 'flex';
         if (window.lucide) lucide.createIcons();
 
-        // Fecha ao clicar fora da caixa (com um pequeno delay para não fechar imediatamente)
+        // Registra listener único para fechar ao clicar fora
         setTimeout(() => {
-            const closeOnOutside = (e) => {
+            app._livePopupOutsideListener = (e) => {
                 const container = document.getElementById('global-fixed-actions-right');
                 if (container && !container.contains(e.target)) {
                     popup.style.display = 'none';
-                    document.removeEventListener('click', closeOnOutside);
+                    document.removeEventListener('click', app._livePopupOutsideListener);
+                    app._livePopupOutsideListener = null;
                 }
             };
-            document.addEventListener('click', closeOnOutside);
+            document.addEventListener('click', app._livePopupOutsideListener);
         }, 50);
     };
 

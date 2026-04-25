@@ -4403,6 +4403,14 @@
                 this.currentView = view;
                 this.checkLiveAdminStatus();
 
+                // Controle do Botão de Gerenciar Transmissão (Lado Direito)
+                const liveAction = document.getElementById('global-fixed-actions-right');
+                if (liveAction) {
+                    // Só aparece se estiver em uma mentoria onde EU sou o dono
+                    const isMentorshipOwner = (view === 'curso-player' && this.currentCourse && this.currentCourse.type === 'Mentoria' && this.currentCourse.owner === this.currentUser?.username);
+                    liveAction.style.display = isMentorshipOwner ? 'flex' : 'none';
+                }
+
                 // Salva o estado para restaurar no F5
                 if (view !== 'welcome' && view !== 'login' && view !== 'cadastro') {
                     localStorage.setItem('dito_last_view', view);
@@ -8106,6 +8114,21 @@
                 if (window.lucide) lucide.createIcons();
             }
         }, 150);
+    };
+
+    app.openLiveConsole = function() {
+        if (!this.currentCourse) return;
+        // Abre o painel de controle da live (que já existe na lógica do mentor)
+        this.showNotification("Abrindo painel de transmissão...", "info");
+        const consoleEl = document.getElementById('live-mentor-console');
+        if (consoleEl) {
+            consoleEl.scrollIntoView({ behavior: 'smooth' });
+            // Adiciona um efeito de destaque
+            consoleEl.style.boxShadow = '0 0 50px rgba(255, 0, 92, 0.4)';
+            setTimeout(() => consoleEl.style.boxShadow = '', 2000);
+        } else {
+            this.showNotification("Painel de controle não encontrado nesta tela.", "error");
+        }
     };
 
     app.getUserReferralCode = function() {

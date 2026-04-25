@@ -158,14 +158,28 @@ input::placeholder, textarea::placeholder {
     }
 }
 
+#global-fixed-actions-right {
+    position: fixed;
+    right: 40px;
+    bottom: 32px;
+    z-index: 9999;
+    display: none;
+    gap: 20px;
+    align-items: center;
+}
+
 @media (max-width: 1023px) {
     #global-fixed-actions {
-        bottom: 95px; /* Altura ideal para mobile, acima da nav */
+        bottom: 95px;
         left: 20px;
-        transform: none;
         flex-direction: row; 
         gap: 12px;
-        align-items: center;
+    }
+    #global-fixed-actions-right {
+        bottom: 95px;
+        right: 20px;
+        flex-direction: row; 
+        gap: 12px;
     }
 }
 

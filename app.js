@@ -3144,7 +3144,7 @@
                                 <i data-lucide="shopping-bag" style="width: 20px;"></i> ADICIONAR À SACOLA
                             </button>
                             <button onclick="app.buyNowFromDetail()" style="width: 100%; height: 60px; background: #000; color: #fff; border: none; border-radius: 100px; font-size: 13px; font-weight: 900; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
-                                <i data-lucide="zap" style="width: 20px;"></i> COMPRAR INGRESSO AGORA
+                                COMPRAR AGORA
                             </button>
                         `;
                     }
@@ -3165,7 +3165,7 @@
                                 <i data-lucide="shopping-bag" style="width: 20px;"></i> ADICIONAR À SACOLA
                             </button>
                             <button onclick="app.buyNowFromDetail()" style="width: 100%; height: 60px; background: #000; color: #fff; border: none; border-radius: 100px; font-size: 13px; font-weight: 900; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
-                                <i data-lucide="zap" style="width: 20px;"></i> COMPRAR AGORA
+                                COMPRAR AGORA
                             </button>
                         `;
                     }
@@ -5398,8 +5398,11 @@
             const list = document.getElementById('admin-users-list');
             if (!list) return;
 
-            // Usa a lista em memória (muito mais rápido e sem bug de Quota)
-            const usuarios = this.networkUsers && this.networkUsers.length > 0 ? this.networkUsers : JSON.parse(localStorage.getItem('dito_usuarios') || '[]');
+            // Prioriza a lista em memória sincronizada com o Supabase (networkUsers)
+            // Fallback para dito_network_users (cache da rede) e por último dito_usuarios
+            const usuarios = (this.networkUsers && this.networkUsers.length > 0) 
+                ? this.networkUsers 
+                : JSON.parse(localStorage.getItem('dito_network_users') || localStorage.getItem('dito_usuarios') || '[]');
             
             if (usuarios.length === 0 && !skipFetch) {
                 list.innerHTML = `<p style="text-align: center; color: #999; font-weight: 800; padding: 40px;">Buscando usuários na rede...</p>`;

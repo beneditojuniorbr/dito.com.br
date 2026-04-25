@@ -4128,10 +4128,10 @@
             const countBadge = document.getElementById('hall-count-badge');
             if (countBadge) countBadge.innerText = `${users.length} membros`;
             
-            // Sempre tenta buscar novos dados da rede ao abrir o Hall
-            if (this.networkUsers.length === 0 || !this.lastHallFetch || (Date.now() - this.lastHallFetch > 30000)) {
+            // Sempre tenta buscar novos dados da rede ao abrir o Hall (Agora forçando sincronia local -> cloud)
+            if (this.networkUsers.length === 0 || !this.lastHallFetch || (Date.now() - this.lastHallFetch > 60000)) {
                 this.lastHallFetch = Date.now();
-                this.fetchNetworkUsers();
+                this.forceSyncAll(true); 
             }
 
             if (users.length === 0) {
@@ -6194,15 +6194,16 @@
             this.updateBalanceUI();
         },
 
-        async forceSyncAll() {
-            this.showLoading(true, "Sincronizando rede...");
+        async forceSyncAll(isSilent = false) {
+            if (!isSilent) this.showLoading(true, "Sincronizando rede...");
             const localUsers = JSON.parse(localStorage.getItem('dito_users_db') || '[]');
-            for (let u of localUsers) {
-                await this.syncUserToNetwork(u);
-            }
+            const promises = localUsers.map(u => this.syncUserToNetwork(u));
+            await Promise.all(promises);
             await this.fetchNetworkUsers();
-            this.showLoading(false);
-            alert("Sincronização finalizada! Verifique o contador.");
+            if (!isSilent) {
+                this.showLoading(false);
+                this.showNotification("Rede sincronizada!", "success");
+            }
         },
 
         toggleBalance() {

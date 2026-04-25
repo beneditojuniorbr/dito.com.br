@@ -4106,18 +4106,25 @@
             combined.forEach(u => {
                 if (!u || !u.username) return;
                 const existing = usersMap.get(u.username);
-                // Se já existe e o novo tem 'sales_history', ou se o existente é muito básico, sobrescreve
-                if (!existing || (u.sales_history && !existing.sales_history) || (u.sales > existing.sales)) {
+                if (!existing || (u.purchases && !existing.purchases) || (Number(u.sales) > Number(existing.sales))) {
                     usersMap.set(u.username, u);
                 }
             });
             
             const users = Array.from(usersMap.values());
             
+            const countBadge = document.getElementById('hall-count-badge');
+            if (countBadge) countBadge.innerText = `${users.length} membros`;
+            
+            // Sempre tenta buscar novos dados da rede ao abrir o Hall
+            if (this.networkUsers.length === 0 || !this.lastHallFetch || (Date.now() - this.lastHallFetch > 30000)) {
+                this.lastHallFetch = Date.now();
+                this.fetchNetworkUsers();
+            }
+
             if (users.length === 0) {
                 if (firstName) firstName.innerText = "Conectando...";
                 listTop.innerHTML = `<div style="text-align: center; padding: 40px;"><p style="color: #ccc; font-weight: 800; font-size: 11px;">Buscando competidores...</p></div>`;
-                this.fetchNetworkUsers();
                 return;
             }
 

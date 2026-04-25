@@ -8214,6 +8214,39 @@
         return fullCode.slice(-6); // Pega apenas os últimos 6 caracteres
     };
 
+    app.toggleWelcomeMenu = function() {
+        const dropdown = document.getElementById('welcome-menu-dropdown');
+        if (!dropdown) return;
+
+        // Limpa listener anterior
+        if (app._welcomeMenuOutsideListener) {
+            document.removeEventListener('click', app._welcomeMenuOutsideListener);
+            app._welcomeMenuOutsideListener = null;
+        }
+
+        // Toggle
+        if (dropdown.style.display === 'block') {
+            dropdown.style.display = 'none';
+            return;
+        }
+
+        dropdown.style.display = 'block';
+        if (window.lucide) lucide.createIcons();
+
+        // Fecha ao clicar fora
+        setTimeout(() => {
+            app._welcomeMenuOutsideListener = (e) => {
+                const wrapper = document.getElementById('welcome-menu-btn')?.parentElement;
+                if (wrapper && !wrapper.contains(e.target)) {
+                    dropdown.style.display = 'none';
+                    document.removeEventListener('click', app._welcomeMenuOutsideListener);
+                    app._welcomeMenuOutsideListener = null;
+                }
+            };
+            document.addEventListener('click', app._welcomeMenuOutsideListener);
+        }, 50);
+    };
+
     app.shareReferralLink = function() {
         if (!app.currentUser) {
             app.showNotification('Faça login para pegar seu link de indicação!', 'error');

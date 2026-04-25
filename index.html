@@ -242,14 +242,34 @@
                         <span style="width: 4px; height: 4px; background: #000; border-radius: 50%; display: block;"></span>
                     </button>
 
-                    <!-- Dropdown -->
-                    <div id="welcome-menu-dropdown" style="display: none; position: absolute; top: 46px; right: 0; background: #fff; border-radius: 14px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); border: 1px solid #f0f0f0; padding: 6px; min-width: 150px; z-index: 200; animation: slideUpFade 0.25s ease forwards;">
-                        <button onclick="app.navigate('login', 'right')" style="width: 100%; padding: 12px 14px; background: transparent; border: none; text-align: left; font-size: 13px; font-weight: 800; color: #000; display: flex; align-items: center; gap: 10px; cursor: pointer; border-radius: 10px; transition: 0.2s;" onmouseover="this.style.background='#f9f9f9'" onmouseout="this.style.background='transparent'">
-                            <i data-lucide="log-in" style="width: 16px; color: #000;"></i> Entrar
+                    <!-- Overlay de Fundo -->
+                    <div id="welcome-menu-overlay" onclick="app.toggleWelcomeMenu()" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); z-index: 150; backdrop-filter: blur(4px); transition: opacity 0.3s ease; opacity: 0;"></div>
+
+                    <!-- Drawer (Gaveta Lateral) -->
+                    <div id="welcome-menu-dropdown" style="display: none; position: fixed; top: 0; right: 0; bottom: 0; width: 80%; max-width: 320px; background: #fff; z-index: 200; flex-direction: column; padding: 40px 24px; box-shadow: -10px 0 40px rgba(0,0,0,0.1); transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 48px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <img src="D.png" style="width: 32px; height: 32px; object-fit: contain;">
+                                <span style="font-size: 18px; font-weight: 950; color: #ffba09; letter-spacing: -1px;">Dito</span>
+                            </div>
+                            <button onclick="app.toggleWelcomeMenu()" style="background: #f5f5f5; border: none; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                                <i data-lucide="x" style="width: 20px; color: #000;"></i>
+                            </button>
+                        </div>
+
+                        <p style="font-size: 11px; font-weight: 900; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px;">Bem-vindo ao Dito</p>
+
+                        <button onclick="app.navigate('cadastro', 'right')" style="width: 100%; padding: 18px 20px; background: #000; border: none; text-align: left; font-size: 15px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 14px; cursor: pointer; border-radius: 20px; margin-bottom: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+                            <i data-lucide="user-plus" style="width: 20px;"></i> Criar Conta
                         </button>
-                        <button onclick="app.navigate('cadastro', 'right')" style="width: 100%; padding: 12px 14px; background: transparent; border: none; text-align: left; font-size: 13px; font-weight: 800; color: #000; display: flex; align-items: center; gap: 10px; cursor: pointer; border-radius: 10px; transition: 0.2s;" onmouseover="this.style.background='#f9f9f9'" onmouseout="this.style.background='transparent'">
-                            <i data-lucide="user-plus" style="width: 16px; color: #000;"></i> Criar Conta
+                        
+                        <button onclick="app.navigate('login', 'right')" style="width: 100%; padding: 18px 20px; background: #fff; border: 1px solid #eee; text-align: left; font-size: 15px; font-weight: 800; color: #000; display: flex; align-items: center; gap: 14px; cursor: pointer; border-radius: 20px;">
+                            <i data-lucide="log-in" style="width: 20px;"></i> Entrar
                         </button>
+
+                        <div style="margin-top: auto; padding-top: 40px; border-top: 1px solid #f0f0f0;">
+                            <p style="font-size: 12px; color: #bbb; text-align: center; font-weight: 600;">Sua melhor escolha.</p>
+                        </div>
                     </div>
                 </div>
             </div>

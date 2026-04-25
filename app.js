@@ -231,7 +231,7 @@
             
             // Otimização Crítica: Se o avatar for um monstro Base64 (não otimizado), limpa para economizar espaço
             if (thinUser.avatar && thinUser.avatar.startsWith('data:') && thinUser.avatar.length > 500000) {
-                console.warn("🛡️ [Otimização] Foto extremamente pesada (>400KB).");
+                console.warn(`🛡️ [Otimização] Foto do usuário ${thinUser.username || thinUser.name} extremamente pesada (>500KB).`);
                 thinUser.avatar = ""; 
             }
 
@@ -8277,35 +8277,28 @@
 
     app.toggleWelcomeMenu = function() {
         const dropdown = document.getElementById('welcome-menu-dropdown');
-        if (!dropdown) return;
-
-        // Limpa listener anterior
-        if (app._welcomeMenuOutsideListener) {
-            document.removeEventListener('click', app._welcomeMenuOutsideListener);
-            app._welcomeMenuOutsideListener = null;
-        }
+        const overlay = document.getElementById('welcome-menu-overlay');
+        if (!dropdown || !overlay) return;
 
         // Toggle
-        if (dropdown.style.display === 'block') {
-            dropdown.style.display = 'none';
+        if (dropdown.style.display === 'flex') {
+            dropdown.style.transform = 'translateX(100%)';
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                dropdown.style.display = 'none';
+                overlay.style.display = 'none';
+            }, 300);
             return;
         }
 
-        dropdown.style.display = 'block';
+        overlay.style.display = 'block';
+        dropdown.style.display = 'flex';
         if (window.lucide) lucide.createIcons();
 
-        // Fecha ao clicar fora
         setTimeout(() => {
-            app._welcomeMenuOutsideListener = (e) => {
-                const wrapper = document.getElementById('welcome-menu-btn')?.parentElement;
-                if (wrapper && !wrapper.contains(e.target)) {
-                    dropdown.style.display = 'none';
-                    document.removeEventListener('click', app._welcomeMenuOutsideListener);
-                    app._welcomeMenuOutsideListener = null;
-                }
-            };
-            document.addEventListener('click', app._welcomeMenuOutsideListener);
-        }, 50);
+            dropdown.style.transform = 'translateX(0)';
+            overlay.style.opacity = '1';
+        }, 10);
     };
 
     app.shareReferralLink = function() {

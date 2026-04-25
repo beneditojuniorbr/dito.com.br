@@ -4422,10 +4422,11 @@
                 // Controle do Botão de Gerenciar Transmissão (Lado Direito)
                 const liveAction = document.getElementById('global-fixed-actions-right');
                 if (liveAction) {
-                    const isGlobalAdmin = (this.currentUser?.username === 'Ditão' || this.currentUser?.username === 'benedito_pro' || this.currentUser?.username === 'admin');
-                    const isMentorshipOwner = (this.currentCourse && this.currentCourse.type === 'Mentoria' && this.currentCourse.owner === this.currentUser?.username);
+                    const myUser = this.currentUser?.username;
+                    const isOwner = (myUser === 'Ditão' || myUser === 'benedito_pro' || myUser === 'admin' || myUser === 'Macarrão');
+                    const isInMentorshipRoom = (this.currentCourse && this.currentCourse.type === 'Mentoria' && (this.currentCourse.owner === myUser || this.currentCourse.author === myUser));
                     
-                    if (isMentorshipOwner || (view === 'dashboard' && isGlobalAdmin)) {
+                    if (isOwner || isInMentorshipRoom) {
                         liveAction.style.display = 'flex';
                         if (window.lucide) lucide.createIcons();
                     } else {

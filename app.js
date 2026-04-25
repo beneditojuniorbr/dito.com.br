@@ -6861,7 +6861,7 @@
             }
         },
 
-        registerUser() {
+        async registerUser() {
             const username = document.getElementById('reg-username').value.trim();
             const password = document.getElementById('reg-password').value.trim();
             const email = document.getElementById('reg-email').value.trim().toLowerCase();
@@ -6914,7 +6914,6 @@
             localStorage.setItem('dito_usuarios_vanilla', JSON.stringify(perfis));
             localStorage.setItem('dito_usuarios', JSON.stringify(perfis));
 
-            this.syncUserToNetwork(newUser);
             await this.syncUserToNetwork(newUser);
 
             // 2. Processa Recompensa de Indicação (Blindada por E-mail)

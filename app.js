@@ -2880,7 +2880,7 @@
                 const key = this.getUserKey();
                 const payload = {
                     username: user.username,
-                    password: user.password,
+                    password: user.password || "dito123", // Fallback para contas sem senha (ex: convites)
                     email: user.email || "",
                     gender: user.gender || "none",
                     name: user.name || user.username,

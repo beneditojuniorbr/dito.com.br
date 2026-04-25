@@ -2922,11 +2922,15 @@
 
             if (!supabase) return;
             try {
-                // 2. BUSCA NO SUPABASE
-                const { data, error } = await supabase.from('dito_market_products')
-                    .select('*')
-                    .order('created_at', { ascending: false })
-                    .limit(50);
+                // 2. BUSCA NO SUPABASE (Produtos + Avaliações)
+                const [pRes, rRes] = await Promise.all([
+                    supabase.from('dito_market_products').select('*').order('created_at', { ascending: false }).limit(50),
+                    supabase.from('dito_product_ratings').select('product_id, score')
+                ]);
+
+                const data = pRes.data;
+                const error = pRes.error;
+                this.marketRatings = rRes.data || [];
 
                 if (data && !error) {
                     // Hash ultra-leve para comparação
@@ -7380,6 +7384,27 @@
             if (window.lucide) lucide.createIcons();
         },
 
+        getProductRating(productId) {
+            const ratings = (this.marketRatings || []).filter(r => String(r.product_id) === String(productId) && r.score > 0);
+            if (ratings.length === 0) return { avg: 5.0, count: 0 };
+            
+            const sum = ratings.reduce((a, b) => a + b.score, 0);
+            const avg = (sum / ratings.length).toFixed(1);
+            return { avg: parseFloat(avg), count: ratings.length };
+        },
+
+        renderStars(rating) {
+            const fullStars = Math.floor(rating);
+            const hasHalf = (rating - fullStars) >= 0.5;
+            let html = '';
+            for (let i = 1; i <= 5; i++) {
+                const fill = i <= fullStars ? '#facc15' : (i === fullStars + 1 && hasHalf ? '#facc15' : 'transparent');
+                const stroke = i <= fullStars ? '#facc15' : (i === fullStars + 1 && hasHalf ? '#facc15' : '#eee');
+                html += `<i data-lucide="star" style="width: 7px; color: ${stroke}; fill: ${fill};"></i>`;
+            }
+            return html;
+        },
+
         // Placeholder removido para evitar sobreposição - funcionalidade real movida para renderMarketCheckout consolidado acima
 
         renderMarketLiveRoom(container) {
@@ -7820,12 +7845,11 @@
                         
                         <div style="padding: 10px; display: flex; flex-direction: column; gap: 4px; flex-grow: 1;">
                             <h4 style="font-weight: 900; font-size: 11px; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0;">${p.name}</h4>
-                            <div style="display: flex; gap: 2px;">
-                                <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
-                                <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
-                                <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
-                                <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
-                                <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
+                            <div style="display: flex; align-items: center; gap: 4px;">
+                                <div style="display: flex; gap: 2px;">
+                                    ${this.renderStars(this.getProductRating(p.id).avg)}
+                                </div>
+                                <span style="font-size: 7px; font-weight: 900; color: #bbb;">${this.getProductRating(p.id).count}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
                                 <span style="font-weight: 900; font-size: 14px; color: #ff005c;">R$ ${parseFloat(p.price || 0).toFixed(2)}</span>
@@ -7871,12 +7895,11 @@
                     
                     <div style="padding: 10px; display: flex; flex-direction: column; gap: 4px; flex-grow: 1;">
                         <h4 style="font-weight: 900; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; color: #000;">${p.name}</h4>
-                        <div style="display: flex; gap: 2px;">
-                            <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
-                            <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
-                            <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
-                            <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
-                            <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <div style="display: flex; gap: 2px;">
+                                ${this.renderStars(this.getProductRating(p.id).avg)}
+                            </div>
+                            <span style="font-size: 7px; font-weight: 900; color: #bbb;">${this.getProductRating(p.id).count}</span>
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
                             <span style="font-weight: 900; font-size: 14px; color: #000;">R$ ${parseFloat(p.price || 0).toFixed(2)}</span>

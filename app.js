@@ -4405,6 +4405,9 @@
                     this.isProcessingDeepLink = false;
                 }
 
+                // Auto-fecha o menu da landing page se estiver aberto
+                this.toggleWelcomeMenu(true);
+
                 // Checkout direto NUNCA exige login
                 if (!isLoggedIn && (view !== 'welcome' && view !== 'login' && view !== 'cadastro' && view !== 'mercado' && view !== 'checkout-direto')) {
                     view = 'welcome';
@@ -8275,15 +8278,17 @@
         return fullCode.slice(-6); // Pega apenas os últimos 6 caracteres
     };
 
-    app.toggleWelcomeMenu = function() {
+    app.toggleWelcomeMenu = function(forceClose = false) {
         const dropdown = document.getElementById('welcome-menu-dropdown');
         const overlay = document.getElementById('welcome-menu-overlay');
         if (!dropdown || !overlay) return;
 
-        // Toggle
-        if (dropdown.style.display === 'flex') {
+        const isOpen = dropdown.getAttribute('data-open') === 'true';
+
+        if (isOpen || forceClose) {
             dropdown.style.transform = 'translateX(100%)';
             overlay.style.opacity = '0';
+            dropdown.setAttribute('data-open', 'false');
             setTimeout(() => {
                 dropdown.style.display = 'none';
                 overlay.style.display = 'none';
@@ -8293,7 +8298,11 @@
 
         overlay.style.display = 'block';
         dropdown.style.display = 'flex';
+        dropdown.setAttribute('data-open', 'true');
         if (window.lucide) lucide.createIcons();
+
+        // Força reflow para a transição funcionar
+        dropdown.offsetHeight;
 
         setTimeout(() => {
             dropdown.style.transform = 'translateX(0)';

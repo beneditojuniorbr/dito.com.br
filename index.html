@@ -2185,23 +2185,23 @@
         }
     </style>
     <!-- Botões Fixos Universais (Missão e Chat) -->
-    <div id="global-fixed-actions">
+    <div id="global-fixed-actions" style="position: fixed; left: 20px; bottom: 85px; z-index: 10001; display: flex; align-items: center;">
         <!-- Missões (Ícone de Pergaminho) -->
-        <button onclick="app.navigate('missoes')" title="Missões" style="width: 50px; height: 50px; background: #fff; color: #000; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); cursor: pointer; transition: 0.3s; border: 1px solid #f0f0f0; position: relative;">
-            <i data-lucide="scroll" style="width: 20px;"></i>
+        <button onclick="app.navigate('missoes')" title="Missões" style="width: 36px; height: 36px; background: #fff; color: #000; border: 1px solid #f0f0f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); cursor: pointer; position: relative;">
+            <i data-lucide="scroll" style="width: 16px;"></i>
             <!-- Bolinha de Notificação Missões -->
-            <div id="mission-dot" style="display: none; position: absolute; top: 8px; right: 8px; width: 10px; height: 10px; background: #ffd600; border: 2px solid #fff; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"></div>
+            <div id="mission-dot" style="display: none; position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; background: #ffd600; border: 1.5px solid #fff; border-radius: 50%;"></div>
         </button>
     </div>
 
     <!-- Botões Fixos Direita (Gerenciar Transmissão) -->
-    <div id="global-fixed-actions-right" style="position: relative;">
+    <div id="global-fixed-actions-right" style="position: fixed; right: 20px; bottom: 85px; z-index: 10001; display: none; align-items: center;">
         <!-- Menu Flutuante de Gestão (Sobe verticalmente) -->
-        <div id="live-management-popup" style="display: none; position: absolute; bottom: 45px; right: 0; background: #fff; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid #f0f0f0; padding: 8px; flex-direction: column; gap: 8px; min-width: 140px; z-index: 10000; animation: slideUpFade 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;">
+        <div id="live-management-popup" style="display: none; position: absolute; bottom: 45px; right: 0; background: #fff; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid #f0f0f0; padding: 8px; flex-direction: column; gap: 8px; min-width: 140px; z-index: 10002; animation: slideUpFade 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;">
             <!-- Opções serão injetadas via JS -->
         </div>
 
-        <button id="btn-manage-live" onclick="app.toggleLiveManagementPopup()" title="Gerenciar Transmissão" style="width: 36px; height: 36px; background: #fff; color: #000; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); cursor: pointer; transition: 0.3s; border: 1px solid #f0f0f0;">
+        <button id="btn-manage-live" onclick="app.toggleLiveManagementPopup()" title="Gerenciar Transmissão" style="width: 36px; height: 36px; background: #fff; color: #000; border: 1px solid #f0f0f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); cursor: pointer;">
             <i data-lucide="radio" style="width: 16px;"></i>
         </button>
     </div>

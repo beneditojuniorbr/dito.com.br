@@ -4437,8 +4437,7 @@
                 switch(view) {
                     case 'dashboard': 
                         this.updateBalanceUI(); 
-                        // Movimento automático desativado conforme solicitado
-                        // this.startEventsCarousel();
+                        this.startEventsCarousel();
                         break;
                     case 'mercado': setTimeout(() => this.renderStore(), 10); break;
                     case 'sociedade': this.fetchSocieties(); break;
@@ -6157,11 +6156,32 @@
         },
 
         startEventsCarousel() {
-            // Movimento automático desativado conforme solicitado
-            /*
             if (this.eventsInterval) clearInterval(this.eventsInterval);
-            ...
-            */
+            
+            const carousel = document.getElementById('eventos-carousel');
+            if (!carousel) return;
+
+            this.eventsInterval = setInterval(() => {
+                // Se o carrossel não estiver mais no DOM, para o intervalo
+                if (!document.getElementById('eventos-carousel')) {
+                    clearInterval(this.eventsInterval);
+                    return;
+                }
+                
+                const item = carousel.querySelector('div');
+                if (!item) return;
+                
+                const scrollAmount = item.offsetWidth + 12; // Largura da caixa + Gap de 12px
+                const maxScroll = carousel.scrollWidth - carousel.offsetWidth;
+                
+                if (carousel.scrollLeft >= maxScroll - 50) {
+                    // Loop Infinito: Volta para o começo
+                    carousel.scrollTo({ left: 0, behavior: 'smooth' });
+                } else {
+                    // Próxima caixa
+                    carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                }
+            }, 3000);
         },
 
         participateEvent(type) {

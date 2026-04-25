@@ -4418,21 +4418,30 @@
                 this.currentView = view;
                 this.checkLiveAdminStatus();
 
+                // Oculta botões flutuantes em telas públicas (landing, login, cadastro)
+                const isPublicPage = (view === 'welcome' || view === 'login' || view === 'cadastro');
+                const missionsAction = document.getElementById('global-fixed-actions');
+                if (missionsAction) missionsAction.style.display = isPublicPage ? 'none' : 'flex';
+
                 // Controle do Botão de Gerenciar Transmissão (Lado Direito)
                 const liveAction = document.getElementById('global-fixed-actions-right');
                 if (liveAction) {
-                    const myUser = this.currentUser?.username;
-                    // Super Admin Override (Sempre vê o botão se estiver logado)
-                    const isSuperAdmin = (myUser === 'Ditão' || myUser === 'benedito_pro' || myUser === 'Macarrão' || myUser === 'admin');
-                    
-                    // Checa se é dono de alguma mentoria na lista global
-                    const isMentor = this.products.some(p => (p.seller === myUser || p.author === myUser) && p.type === 'Mentoria');
-                    
-                    if (isSuperAdmin || isMentor) {
-                        liveAction.style.display = 'flex';
-                        if (window.lucide) lucide.createIcons();
-                    } else {
+                    if (isPublicPage) {
                         liveAction.style.display = 'none';
+                    } else {
+                        const myUser = this.currentUser?.username;
+                        // Super Admin Override (Sempre vê o botão se estiver logado)
+                        const isSuperAdmin = (myUser === 'Ditão' || myUser === 'benedito_pro' || myUser === 'Macarrão' || myUser === 'admin');
+                        
+                        // Checa se é dono de alguma mentoria na lista global
+                        const isMentor = this.products.some(p => (p.seller === myUser || p.author === myUser) && p.type === 'Mentoria');
+                        
+                        if (isSuperAdmin || isMentor) {
+                            liveAction.style.display = 'flex';
+                            if (window.lucide) lucide.createIcons();
+                        } else {
+                            liveAction.style.display = 'none';
+                        }
                     }
                 }
 

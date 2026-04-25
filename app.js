@@ -7612,28 +7612,15 @@
                 `;
             }
 
-            // CONTROLES DE TRANSMISSÃO (Exclusivo Mentor)
+            // CONTROLES DE TRANSMISSÃO CENTRALIZADOS NO HUB FLUTUANTE
             const controls = document.createElement('div');
             controls.style.cssText = 'padding: 16px; display: flex; gap: 10px; overflow-x: auto; background: #fff; border-top: 1px solid #eee;';
             
             if (this.currentUser && this.currentUser.username === p.seller) {
+                // Removido conforme solicitação: Agora tudo é controlado pelo botão flutuante de transmissão
                 controls.innerHTML = `
-                    <button onclick="app.startLiveCamera()" style="background: #ff005c; color: #fff; border: none; padding: 10px 20px; border-radius: 50px; font-weight: 900; font-size: 11px; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(255,0,92,0.2);">
-                        <i data-lucide="camera" style="width: 14px;"></i> INICIAR MINHA CÂMERA
-                    </button>
-                    ${p.sales_link ? `
-                        <button onclick="app.updateLiveLink('${p.id}')" style="background: #000; color: #fff; border: none; padding: 10px 20px; border-radius: 50px; font-weight: 900; font-size: 11px; cursor: pointer; white-space: nowrap;">
-                            TROCAR VÍDEO
-                        </button>
-                        <button onclick="app.renderMarketLiveRoom(document.getElementById('market-container'))" style="background: #f5f5f5; color: #666; border: none; padding: 10px 20px; border-radius: 50px; font-weight: 900; font-size: 11px; cursor: pointer; white-space: nowrap;">
-                            RESTAURAR VÍDEO
-                        </button>
-                    ` : `
-                        <button onclick="app.updateLiveLink('${p.id}')" style="background: #000; color: #fff; border: none; padding: 10px 20px; border-radius: 50px; font-weight: 900; font-size: 11px; cursor: pointer; white-space: nowrap;">
-                            DEFINIR LINK (YOUTUBE/VIMEO)
-                        </button>
-                    `}
-                    `;
+                    <p style="font-size: 11px; color: #999; font-weight: 800; margin: 0 auto; text-transform: uppercase; letter-spacing: 1px;">Use o botão flutuante para gerenciar sua live</p>
+                `;
                 container.appendChild(controls);
             } else {
                 // Versão Participante
@@ -8169,10 +8156,10 @@
             <button onclick="app.toggleLiveSignal('${target.id}', 'pause')" style="width: 100%; padding: 12px; background: transparent; border: none; text-align: left; font-size: 12px; font-weight: 800; color: #000; display: flex; align-items: center; gap: 8px; cursor: pointer; border-radius: 12px; transition: 0.2s;" onmouseover="this.style.background='#fdf2f8'" onmouseout="this.style.background='transparent'">
                 <i data-lucide="pause-circle" style="width: 16px; color: #ff005c;"></i> Pausar
             </button>
-            <button onclick="app.toggleLiveSignal('${target.id}', 'on')" style="width: 100%; padding: 12px; background: transparent; border: none; text-align: left; font-size: 12px; font-weight: 800; color: #000; display: flex; align-items: center; gap: 8px; cursor: pointer; border-radius: 12px; transition: 0.2s;" onmouseover="this.style.background='#fdf2f8'" onmouseout="this.style.background='transparent'">
-                <i data-lucide="play-circle" style="width: 16px; color: #ff005c;"></i> Iniciar
+            <button onclick="app.toggleLiveSignal('${target.id}', 'on'); app.startLiveCamera()" style="width: 100%; padding: 12px; background: transparent; border: none; text-align: left; font-size: 12px; font-weight: 800; color: #000; display: flex; align-items: center; gap: 8px; cursor: pointer; border-radius: 12px; transition: 0.2s;" onmouseover="this.style.background='#fdf2f8'" onmouseout="this.style.background='transparent'">
+                <i data-lucide="video" style="width: 16px; color: #ff005c;"></i> Iniciar Câmera
             </button>
-            <button onclick="app.toggleLiveSignal('${target.id}', 'on')" style="width: 100%; padding: 12px; background: transparent; border: none; text-align: left; font-size: 12px; font-weight: 800; color: #000; display: flex; align-items: center; gap: 8px; cursor: pointer; border-radius: 12px; transition: 0.2s;" onmouseover="this.style.background='#fdf2f8'" onmouseout="this.style.background='transparent'">
+            <button onclick="app.toggleLiveSignal('${target.id}', 'on'); app.startLiveCamera()" style="width: 100%; padding: 12px; background: transparent; border: none; text-align: left; font-size: 12px; font-weight: 800; color: #000; display: flex; align-items: center; gap: 8px; cursor: pointer; border-radius: 12px; transition: 0.2s;" onmouseover="this.style.background='#fdf2f8'" onmouseout="this.style.background='transparent'">
                 <i data-lucide="refresh-cw" style="width: 16px; color: #ff005c;"></i> Reiniciar
             </button>
             <button onclick="app.accessLiveDirectly('${target.id}')" style="width: 100%; padding: 12px; background: #000; border: none; text-align: center; font-size: 11px; font-weight: 900; color: #fff; cursor: pointer; border-radius: 12px; margin-top: 5px;">

@@ -310,14 +310,14 @@
 
             <!-- Download Button -->
             <div style="margin-top: 40px;">
-                <button class="clickable" onclick="installPWA()" style="background: transparent; border: none; font-size: 12px; font-weight: 800; color: #ccc; display: flex; align-items: center; gap: 8px; margin: 0 auto;">
-                    <i data-lucide="download" style="width: 16px;"></i>
+                <button class="clickable" onclick="installPWA()" style="background: transparent; border: none; font-size: 12px; font-weight: 800; color: #000; display: flex; align-items: center; gap: 8px; margin: 0 auto;">
+                    <i data-lucide="download" style="width: 16px; color: #000;"></i>
                     Baixar App Dito
                 </button>
             </div>
 
             <!-- Landing Page Section (Now in Welcome Screen) -->
-            <div style="margin-top: 80px; width: 100%; text-align: left; padding: 60px 24px; background: #fff; border-top: 1px solid #f9f9f9;">
+            <div style="margin-top: 40px; width: 100%; text-align: left; padding: 40px 24px; background: #fff; border-top: 1px solid #f9f9f9;">
                 <div style="text-align: center; margin-bottom: 64px;">
                     <h2 style="font-size: 42px; font-weight: 950; letter-spacing: -3px; color: #000; line-height: 0.9; margin-bottom: 8px;">Sua melhor escolha.</h2>
                     <p style="font-size: 13px; font-weight: 700; color: #999; letter-spacing: -0.5px;">Onde os produtores crescem de verdade.</p>
@@ -325,9 +325,9 @@
                 
                 <div style="display: grid; gap: 16px;">
                     <!-- Benefício 1: Taxa -->
-                    <div class="clickable" style="background: #fff; padding: 24px; border-radius: 24px; border: 1px solid #f0f0f0; display: flex; gap: 20px; align-items: flex-start; box-shadow: 0 4px 10px rgba(0,0,0,0.02);">
-                        <div style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <i data-lucide="percent" stroke="#000" style="width: 28px; height: 28px;"></i>
+                    <div style="padding: 16px 0; display: flex; gap: 20px; align-items: flex-start;">
+                        <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: #ffba09; border-radius: 50%; margin-top: 4px;">
+                            <i data-lucide="check" style="width: 10px; color: #fff; stroke-width: 4;"></i>
                         </div>
                         <div>
                             <h4 style="font-weight: 950; font-size: 16px; color: #000; margin-bottom: 4px; letter-spacing: -0.5px;">Taxa Fixa de 3%</h4>
@@ -336,11 +336,9 @@
                     </div>
 
                     <!-- Benefício 2: Pix -->
-                    <div class="clickable" style="background: #fff; padding: 24px; border-radius: 24px; border: 1px solid #f0f0f0; display: flex; gap: 20px; align-items: flex-start; box-shadow: 0 4px 10px rgba(0,0,0,0.02);">
-                        <div style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <svg viewBox="0 0 512 512" width="28" height="28" fill="#000">
-                                <path d="M492.7 256c0-14.2-5.7-27.8-15.8-37.8L293.8 35.1c-20.9-20.9-54.7-20.9-75.6 0L35.1 218.2c-20.9 20.9-20.9 54.7 0 75.6l183.1 183.1c20.9 20.9 54.7 20.9 75.6 0l183.1-183.1c10.1-10 15.8-23.6 15.8-37.8zm-143.2 0c0 21.7-8.3 42.3-23.2 57.3L256 383.5l-70.3-70.3c-14.9-15-23.2-35.6-23.2-57.3s8.3-42.3 23.2-57.3L256 128.5l70.3 70.3c14.9 14.9 23.2 35.6 23.2 57.2zM256 215.3l-40.7 40.7 40.7 40.7 40.7-40.7-40.7-40.7z"/>
-                            </svg>
+                    <div style="padding: 16px 0; display: flex; gap: 20px; align-items: flex-start;">
+                        <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: #ffba09; border-radius: 50%; margin-top: 4px;">
+                            <i data-lucide="check" style="width: 10px; color: #fff; stroke-width: 4;"></i>
                         </div>
                         <div>
                             <h4 style="font-weight: 950; font-size: 16px; color: #000; margin-bottom: 4px; letter-spacing: -0.5px;">Pagamentos Instantâneos</h4>
@@ -349,9 +347,9 @@
                     </div>
 
                     <!-- Benefício 3: Ecossistema -->
-                    <div class="clickable" style="background: #fff; padding: 24px; border-radius: 24px; border: 1px solid #f0f0f0; display: flex; gap: 20px; align-items: flex-start; box-shadow: 0 4px 10px rgba(0,0,0,0.02);">
-                        <div style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <i data-lucide="layout" stroke="#000" style="width: 28px; height: 28px;"></i>
+                    <div style="padding: 16px 0; display: flex; gap: 20px; align-items: flex-start;">
+                        <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: #ffba09; border-radius: 50%; margin-top: 4px;">
+                            <i data-lucide="check" style="width: 10px; color: #fff; stroke-width: 4;"></i>
                         </div>
                         <div>
                             <h4 style="font-weight: 950; font-size: 16px; color: #000; margin-bottom: 4px; letter-spacing: -0.5px;">Plataforma Todos em Um</h4>
@@ -360,7 +358,7 @@
                     </div>
                 </div>
 
-                <button onclick="app.navigate('cadastro')" style="margin-top: 60px; width: 100%; height: 64px; background: linear-gradient(90deg, #ff0045 0%, #0094ff 100%); color: #fff; border: none; border-radius: 50px; font-weight: 950; font-size: 14px; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 25px rgba(255, 0, 92, 0.2); letter-spacing: 1px;">
+                <button onclick="app.navigate('cadastro')" style="margin-top: 60px; width: 100%; background: transparent; color: #000; border: none; font-weight: 950; font-size: 14px; cursor: pointer; transition: 0.2s; letter-spacing: 1px; text-decoration: underline; text-underline-offset: 8px;">
                     CRIAR MINHA CONTA GRÁTIS
                 </button>
 

@@ -2069,7 +2069,7 @@
                 const progress = Math.min((evt.current / evt.goal) * 100, 100);
 
                 return `
-                <div style="scroll-snap-align: start; min-width: 200px; padding: 20px; border-radius: 24px; border: 2px solid transparent; background: linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #ef4444 0%, #0ea5e9 100%) border-box; display: flex; flex-direction: column; gap: 12px; position: relative; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.05);">
+                <div style="scroll-snap-align: start; min-width: 200px; padding: 20px; border-radius: 24px; border: 1.5px solid #eee; background: #fff; display: flex; flex-direction: column; gap: 12px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
                     <div style="position: absolute; top: 12px; right: 12px; background: ${evt.color}15; color: ${evt.color}; font-size: 9px; font-weight: 950; padding: 4px 10px; border-radius: 50px;">+${evt.reward}</div>
                     <div style="width: 44px; height: 44px; background: ${evt.color}15; border-radius: 14px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.02);">
                         <i data-lucide="ticket" style="width: 22px; color: ${evt.color};"></i>

@@ -6171,7 +6171,7 @@
                 const item = carousel.querySelector('div');
                 if (!item) return;
                 
-                const scrollAmount = item.offsetWidth + 12; // Largura da caixa + Gap de 12px
+                const scrollAmount = item.offsetWidth; // Gap removido conforme solicitado
                 const maxScroll = carousel.scrollWidth - carousel.offsetWidth;
                 
                 if (carousel.scrollLeft >= maxScroll - 50) {

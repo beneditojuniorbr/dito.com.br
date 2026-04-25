@@ -1618,6 +1618,10 @@
             drawer.classList.add('active');
             drawer.style.left = '0';
             
+            // Oculta botão de missões enquanto chat está aberto
+            const missionsBtn = document.getElementById('global-fixed-actions');
+            if (missionsBtn) missionsBtn.style.display = 'none';
+            
             const dot = document.getElementById('dot-world-chat');
             if (dot) dot.style.display = 'none';
 
@@ -2626,6 +2630,10 @@
             const drawer = document.getElementById('world-chat-drawer');
             drawer.classList.remove('active');
             drawer.style.left = '-100%';
+            
+            // Restaura botão de missões ao fechar o chat
+            const missionsBtn = document.getElementById('global-fixed-actions');
+            if (missionsBtn) missionsBtn.style.display = 'flex';
         },
 
         async sendWorldMessage() {
@@ -7595,11 +7603,7 @@
             controls.style.cssText = 'padding: 16px; display: flex; gap: 10px; overflow-x: auto; background: #fff; border-top: 1px solid #eee;';
             
             if (this.currentUser && this.currentUser.username === p.seller) {
-                // Removido conforme solicitação: Agora tudo é controlado pelo botão flutuante de transmissão
-                controls.innerHTML = `
-                    <p style="font-size: 11px; color: #999; font-weight: 800; margin: 0 auto; text-transform: uppercase; letter-spacing: 1px;">Use o botão flutuante para gerenciar sua live</p>
-                `;
-                container.appendChild(controls);
+                // Mentor: controles centralizados no botão flutuante, sem barra extra
             } else {
                 // Versão Participante
                 controls.innerHTML = `

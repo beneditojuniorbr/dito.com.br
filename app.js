@@ -1627,18 +1627,40 @@
         },
 
         async accessLiveDirectly(productId) {
-            const p = this.products.find(p => String(p.id) === String(productId));
-            if (!p) return;
+            this.showLoading(true, "Verificando seu ingresso...");
             
-            this.showNotification("Acesso Verificado! Abrindo sala...", "success");
+            // Força sincronia de compras para garantir que o ingresso recém-pago esteja aqui
+            if (supabase && this.currentUser && !this.currentUser.isGuest) {
+                await this.fetchNetworkUsers();
+            }
+
+            const p = this.products.find(p => String(p.id) === String(productId)) || 
+                      this.purchasedProducts.find(p => String(p.id) === String(productId));
+                      
+            if (!p) {
+                this.showLoading(false);
+                this.showNotification("Erro: Mentoria não encontrada.", "error");
+                return;
+            }
             
-            // Força sincronia para garantir o link mais recente da transmissão
+            const isOwner = this.currentUser && (p.seller === this.currentUser.username || p.author === this.currentUser.username);
+            const hasPurchased = this.purchasedProducts && this.purchasedProducts.some(pp => String(pp.id) === String(p.id));
+
+            if (!isOwner && !hasPurchased) {
+                this.showLoading(false);
+                this.selectedProduct = p;
+                this.setMarketView('live-room'); // Vai mostrar a tela de "Comprar Ingresso"
+                return;
+            }
+            
+            this.showNotification("Ingresso Confirmado! ✨", "success");
+            
+            // Re-localiza o produto na vitrine para pegar o link de transmissão mais recente
             await this.fetchNetworkProducts(true);
-            
-            // Re-localiza o produto na lista atualizada para pegar o sales_link novo
             const updatedP = this.products.find(item => String(item.id) === String(productId));
             this.selectedProduct = updatedP || p;
             
+            this.showLoading(false);
             this.setMarketView('live-room');
         },
 
@@ -2878,6 +2900,9 @@
                             const cloudPurchases = typeof netUser.purchases === 'string' ? JSON.parse(netUser.purchases) : netUser.purchases;
                             if (Array.isArray(cloudPurchases)) {
                                 this.purchasedProducts = cloudPurchases;
+                                // Salva no storage local do usuário específico para persistência offline
+                                const buyerKey = this.getUserKey();
+                                this.safeLocalStorageSet(`dito_purchased_products_${buyerKey}`, JSON.stringify(this.purchasedProducts));
                             }
                         } catch (e) { console.error("Erro ao restaurar compras:", e); }
                     }
@@ -3452,20 +3477,11 @@
                 paymentText.innerText = "Escaneie o QR Code acima para pagar via Pix e receber seu acesso imediato.";
                 copyText.innerText = "Copiar código Pix";
                 
-                // Botão de simulação APENAS para o Ditão (Admin)
+                // Remove o container de simulação se existir para garantir limpeza
                 const ppContainer = document.getElementById('paypal-button-container');
                 if (ppContainer) {
-                    if (this.currentUser && (this.currentUser.username === 'Ditão' || this.currentUser.username === 'benedito_pro')) {
-                        ppContainer.style.display = 'block';
-                        ppContainer.innerHTML = `
-                            <button onclick="app.processPayment()" style="width: 100%; height: 56px; background: #22c55e; color: #fff; border: none; border-radius: 16px; font-weight: 900; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 10px 20px rgba(34, 197, 94, 0.1);">
-                                <i data-lucide="check-circle" style="width: 18px;"></i> Simular Pagamento Pix (ADM)
-                            </button>
-                        `;
-                    } else {
-                        ppContainer.style.display = 'none'; // Outros usuários não vêem botão de simulação
-                    }
-                    if (window.lucide) lucide.createIcons();
+                    ppContainer.style.display = 'none';
+                    ppContainer.innerHTML = '';
                 }
             } else {
                 // Se for PayPal (Cartão)

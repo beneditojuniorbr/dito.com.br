@@ -19,7 +19,7 @@ export default function RootLayout({
   const router = useRouter()
   const pathname = usePathname()
   const [loading, setLoading] = useState(true)
-  const [showSplash, setShowSplash] = useState(false)
+  const [showSplash, setShowSplash] = useState(true)
   const [notification, setNotification] = useState<{ message: string, type: 'success' | 'error' | 'default' } | null>(null)
 
   useEffect(() => {

@@ -8139,18 +8139,96 @@
         }, 150);
     };
 
-    app.openLiveConsole = function() {
-        if (!this.currentCourse) return;
-        // Abre o painel de controle da live (que já existe na lógica do mentor)
-        this.showNotification("Abrindo painel de transmissão...", "info");
-        const consoleEl = document.getElementById('live-mentor-console');
-        if (consoleEl) {
-            consoleEl.scrollIntoView({ behavior: 'smooth' });
-            // Adiciona um efeito de destaque
-            consoleEl.style.boxShadow = '0 0 50px rgba(255, 0, 92, 0.4)';
-            setTimeout(() => consoleEl.style.boxShadow = '', 2000);
-        } else {
-            this.showNotification("Painel de controle não encontrado nesta tela.", "error");
+    app.openLiveManagementHub = function() {
+        // 1. Identifica as mentorias que eu sou dono
+        const myMentorships = this.products.filter(p => (p.seller === this.currentUser?.username || p.author === this.currentUser?.username) && p.type === 'Mentoria');
+        
+        if (myMentorships.length === 0) {
+            this.showNotification("Você ainda não possui mentorias criadas.", "info");
+            return;
+        }
+
+        // 2. Se estivermos no player, foca na mentoria atual. Se não, pega a primeira ou abre lista.
+        let target = (this.currentView === 'curso-player' || this.currentView === 'live-room') ? this.activeCourse : myMentorships[0];
+        if (!target || target.type !== 'Mentoria') target = myMentorships[0];
+
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay active';
+        modal.style.zIndex = '2000000';
+        
+        modal.innerHTML = `
+            <div class="modal-content animate-slide-up" style="max-width: 450px; border-radius: 30px 30px 0 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <div>
+                        <h2 style="font-size: 20px; font-weight: 950; margin: 0;">Hub de Transmissão</h2>
+                        <p style="font-size: 11px; color: #666; font-weight: 700; margin: 0; text-transform: uppercase;">Gerencie seu sinal ao vivo</p>
+                    </div>
+                    <button onclick="app.closeModal()" style="background: #f5f5f5; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer;">
+                        <i data-lucide="x" style="width: 20px; color: #000;"></i>
+                    </button>
+                </div>
+
+                <div style="background: #fdf2f8; padding: 16px; border-radius: 20px; display: flex; align-items: center; gap: 12px; margin-bottom: 24px; border: 1px solid #ff005c22;">
+                    <div style="width: 40px; height: 40px; background: #fff; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(255,0,92,0.1);">
+                        <i data-lucide="radio" style="width: 20px; color: #ff005c;"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <p style="font-size: 13px; font-weight: 900; color: #000; margin: 0;">${target.name}</p>
+                        <p style="font-size: 10px; font-weight: 700; color: #ff005c; margin: 0; text-transform: uppercase;">Sinal: ${target.sales_link === 'NATIVE_LIVE' ? 'Native Dito (Ativo)' : 'Inativo'}</p>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;">
+                    <button onclick="app.toggleLiveSignal('${target.id}', 'on')" style="height: 60px; background: #000; color: #fff; border: none; border-radius: 18px; font-weight: 900; font-size: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;">
+                        <i data-lucide="play" style="width: 16px;"></i> ENTRAR AO VIVO
+                    </button>
+                    <button onclick="app.toggleLiveSignal('${target.id}', 'pause')" style="height: 60px; background: #f5f5f5; color: #000; border: none; border-radius: 18px; font-weight: 900; font-size: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;">
+                        <i data-lucide="pause" style="width: 16px;"></i> PAUSAR SINAL
+                    </button>
+                    <button onclick="app.toggleLiveSignal('${target.id}', 'off')" style="height: 60px; background: #fff; color: #ef4444; border: 1px solid #ef444433; border-radius: 18px; font-weight: 900; font-size: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;">
+                        <i data-lucide="square" style="width: 16px;"></i> ENCERRAR LIVE
+                    </button>
+                    <button onclick="app.closeModal(); app.editProduct('${target.id}')" style="height: 60px; background: #fff; color: #000; border: 1px solid #eee; border-radius: 18px; font-weight: 900; font-size: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;">
+                        <i data-lucide="edit-3" style="width: 16px;"></i> EDITAR DETALHES
+                    </button>
+                </div>
+
+                <button onclick="app.closeModal(); app.accessLiveDirectly('${target.id}')" style="width: 100%; height: 56px; background: #ff005c; color: #fff; border: none; border-radius: 50px; font-weight: 950; font-size: 13px; cursor: pointer; letter-spacing: 1px; box-shadow: 0 10px 25px rgba(255,0,92,0.2);">
+                    ABRIR SALA DE AULA
+                </button>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+        if (window.lucide) lucide.createIcons();
+    };
+
+    app.toggleLiveSignal = async function(courseId, status) {
+        this.showLoading(true, "Atualizando sinal...");
+        try {
+            const newLink = (status === 'on') ? 'NATIVE_LIVE' : (status === 'pause' ? 'PAUSED' : '');
+            
+            const { error } = await supabase
+                .from('dito_market_products')
+                .update({ sales_link: newLink })
+                .eq('id', courseId);
+
+            if (error) throw error;
+            
+            // Força atualização local
+            const prod = this.products.find(p => String(p.id) === String(courseId));
+            if (prod) prod.sales_link = newLink;
+
+            this.showNotification(`Sinal ${status === 'on' ? 'ATIVADO' : (status === 'pause' ? 'PAUSADO' : 'ENCERRADO')}! 🚀`, "success");
+            this.closeModal();
+            
+            // Se estiver na sala, recarrega
+            if (this.currentView === 'live-room') this.renderMarketLiveRoom(document.getElementById('app'));
+        } catch (e) {
+            console.error(e);
+            this.showNotification("Erro ao atualizar sinal.", "error");
+        } finally {
+            this.showLoading(false);
         }
     };
 

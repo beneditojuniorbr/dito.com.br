@@ -170,13 +170,13 @@ input::placeholder, textarea::placeholder {
 
 @media (max-width: 1023px) {
     #global-fixed-actions {
-        bottom: 110px;
+        bottom: 140px;
         left: 20px;
         flex-direction: row; 
         gap: 12px;
     }
     #global-fixed-actions-right {
-        bottom: 110px;
+        bottom: 140px;
         right: 20px;
         flex-direction: row; 
         gap: 12px;

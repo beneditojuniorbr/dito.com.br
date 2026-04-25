@@ -3114,8 +3114,6 @@
                         </div>
                     </div>
                 `;
-            }
-
             // Customizar Botões de Ação
             const actionsContainer = document.getElementById('product-actions');
             if (actionsContainer) {
@@ -3148,7 +3146,7 @@
                                 <i data-lucide="shopping-bag" style="width: 20px;"></i> ADICIONAR À SACOLA
                             </button>
                             <button onclick="app.buyNowFromDetail()" style="width: 100%; height: 60px; background: #000; color: #fff; border: none; border-radius: 100px; font-size: 13px; font-weight: 900; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
-                                COMPRAR AGORA
+                                COMPRAR INGRESSO
                             </button>
                         `;
                     }
@@ -7428,6 +7426,29 @@
             const temp = document.getElementById('template-live-room');
             if (!temp) return;
             
+            const isOwner = this.currentUser && (p.seller === this.currentUser.username || p.author === this.currentUser.username);
+            const hasPurchased = this.purchasedProducts && this.purchasedProducts.some(pp => String(pp.id) === String(p.id));
+
+            if (!isOwner && !hasPurchased) {
+                container.innerHTML = `
+                    <div style="padding: 80px 32px; text-align: center; background: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                        <div style="width: 80px; height: 80px; background: #fdf2f8; border-radius: 30px; display: flex; align-items: center; justify-content: center; margin-bottom: 32px;">
+                            <i data-lucide="lock" style="width: 32px; height: 32px; color: #ff005c;"></i>
+                        </div>
+                        <h2 style="font-size: 26px; font-weight: 950; color: #000; margin-bottom: 12px; letter-spacing: -1px;">Área Exclusiva</h2>
+                        <p style="color: #666; font-size: 14px; margin-bottom: 40px; font-weight: 600; line-height: 1.6; max-width: 280px;">Esta Mentoria é restrita a portadores de ingresso. Garanta o seu para liberar o acesso ao sinal ao vivo e o chat VIP.</p>
+                        
+                        <button onclick="app.buyNowFromDetail()" style="width: 100%; max-width: 300px; height: 64px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 950; font-size: 15px; letter-spacing: 1px; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 20px;">
+                            COMPRAR INGRESSO - R$ ${p.price.toFixed(2)}
+                        </button>
+                        
+                        <button onclick="app.setMarketView('home')" style="background: transparent; border: none; color: #ccc; font-weight: 900; font-size: 12px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">Voltar ao mercado</button>
+                    </div>
+                `;
+                if (window.lucide) lucide.createIcons();
+                return;
+            }
+
             container.innerHTML = temp.innerHTML;
 
             document.getElementById('live-room-title').innerText = p.name;

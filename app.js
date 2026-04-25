@@ -2888,14 +2888,10 @@
                     sales: Number(user.sales || 0),
                     fans: Number(user.fans || 0),
                     balance: Number(localStorage.getItem(`user_balance_vanilla_${key}`) || user.balance || 0),
+                    coins: Number(localStorage.getItem(`dito_coins_${key}`) || 0),
                     purchases: JSON.stringify(this.purchasedProducts),
-                    link: user.link || "",
                     avatar: user.avatar || "",
-                    posts: JSON.stringify(user.posts || []),
-                    last_seen: new Date().toISOString(),
-                    withdrawPixKey: user.withdrawPixKey || "",
-                    withdrawCardNumber: user.withdrawCardNumber || "",
-                    withdrawCardName: user.withdrawCardName || ""
+                    last_seen: new Date().toISOString()
                 };
                 
                 const { error } = await supabase.from('dito_users').upsert([payload], { onConflict: 'username' });

@@ -228,8 +228,8 @@
             delete thinUser.password;
             
             // Otimização Crítica: Se o avatar for um monstro Base64 (não otimizado), limpa para economizar espaço
-            if (thinUser.avatar && thinUser.avatar.startsWith('data:') && thinUser.avatar.length > 400000) {
-                console.warn("🛡️ [Otimização] Foto muito pesada para o cache local (>300KB).");
+            if (thinUser.avatar && thinUser.avatar.startsWith('data:') && thinUser.avatar.length > 500000) {
+                console.warn("🛡️ [Otimização] Foto extremamente pesada (>400KB).");
                 thinUser.avatar = ""; 
             }
 
@@ -2844,7 +2844,21 @@
                 if (meRes && meRes.data && this.currentUser) {
                     const netUser = meRes.data;
                     this.currentUser.sales = parseFloat(netUser.sales || 0);
-                    this.currentUser.avatar = netUser.avatar || this.currentUser.avatar;
+                    
+                    // Sincronia de Avatar com Auto-Compressão para o Cache Local
+                    if (netUser.avatar && netUser.avatar.startsWith('data:')) {
+                        if (netUser.avatar.length > 300000) {
+                            this.compressImage(netUser.avatar, 400, 0.6).then(compressed => {
+                                this.currentUser.avatar = compressed;
+                                this.saveSession(this.currentUser);
+                            });
+                        } else {
+                            this.currentUser.avatar = netUser.avatar;
+                        }
+                    } else {
+                        this.currentUser.avatar = netUser.avatar || this.currentUser.avatar;
+                    }
+                    
                     localStorage.setItem('dito_balance', netUser.balance || '0');
                     
                     // RESTAURAÇÃO DE SEGURANÇA (Caso cache tenha sido limpo ou compra manual por ADM)
@@ -5920,6 +5934,15 @@
                         this.currentUser.avatar = avatarData;
                         this.saveSession(this.currentUser); // Usa o método centralizado e passa o user
                         await this.syncUserToNetwork(this.currentUser); // Garante envio pra rede
+                        
+                        // Atualização Instantânea no Hall da Fama (Sem esperar rede)
+                        if (this.networkUsers) {
+                            const netIdx = this.networkUsers.findIndex(u => u.username === this.currentUser.username);
+                            if (netIdx !== -1) {
+                                this.networkUsers[netIdx].avatar = avatarData;
+                                if (this.currentView === 'hall') this.renderHallOfFame();
+                            }
+                        }
                         
                         // Atualiza no Banco de Dados Local proativamente
                         this.syncUserToNetwork(this.currentUser);

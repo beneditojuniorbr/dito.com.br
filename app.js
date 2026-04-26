@@ -4455,15 +4455,14 @@
                 this.checkLiveAdminStatus();
 
                 // Oculta botões flutuantes em telas públicas (landing, login, cadastro) ou criação de produto
-                const isPublicPage = (view === 'welcome' || view === 'login' || view === 'cadastro');
-                const isProductCreate = (view === 'criar-produto');
+                const isPublicPage = (view === 'welcome' || view === 'login' || view === 'cadastro' || view === 'criar-produto');
                 const missionsAction = document.getElementById('global-fixed-actions');
-                if (missionsAction) missionsAction.style.display = (isPublicPage || isProductCreate || (view === 'mercado' && this.marketView === 'checkout')) ? 'none' : 'flex';
+                if (missionsAction) missionsAction.style.display = (isPublicPage || (view === 'mercado' && this.marketView === 'checkout')) ? 'none' : 'flex';
 
                 // Controle do Botão de Gerenciar Transmissão (Lado Direito)
                 const liveAction = document.getElementById('global-fixed-actions-right');
                 if (liveAction) {
-                    if (isPublicPage || isProductCreate || (view === 'mercado' && this.marketView === 'checkout')) {
+                    if (isPublicPage || (view === 'mercado' && this.marketView === 'checkout')) {
                         liveAction.style.display = 'none';
                     } else {
                         const myUser = this.currentUser?.username;
@@ -4573,11 +4572,11 @@
                 const downloadLink = document.getElementById('download-app-link');
                 const floatingActions = document.getElementById('global-fixed-actions');
                 const isAuthPage = view === 'welcome' || view === 'login' || view === 'cadastro';
-                const isProductCreate = view === 'criar-produto';
                 const isCheckoutPage = view === 'checkout-direto';
+                const isHideButtons = isAuthPage || isCheckoutPage || view === 'criar-produto';
                 
                 if (floatingActions) {
-                    floatingActions.style.display = (isAuthPage || isCheckoutPage || isProductCreate) ? 'none' : 'flex';
+                    floatingActions.style.display = isHideButtons ? 'none' : 'flex';
                 }
 
                 if (nav) {
@@ -4606,8 +4605,8 @@
                 const missionsBtn = document.getElementById('btn-missions');
                 const liveBtn = document.getElementById('btn-live-admin');
 
-                if (worldChatBtn) worldChatBtn.style.display = isAuthPage ? 'none' : 'flex';
-                if (missionsBtn) missionsBtn.style.display = isAuthPage ? 'none' : 'flex';
+                if (worldChatBtn) worldChatBtn.style.display = isHideButtons ? 'none' : 'flex';
+                if (missionsBtn) missionsBtn.style.display = isHideButtons ? 'none' : 'flex';
                 
                 // Re-calcula status do admin para o botão de live
                 this.checkLiveAdminStatus();
@@ -4692,10 +4691,9 @@
             // Sincroniza visibilidade de botões flutuantes
             const fixedActions = document.getElementById('global-fixed-actions');
             if (fixedActions) {
-                const hideViews = ['login', 'cadastro', 'checkout-direto', 'criar-produto'];
-                if (view === 'checkout' || hideViews.includes(this.currentView)) {
-                    fixedActions.style.display = 'none';
-                } else {
+                const isCreating = this.currentView === 'criar-produto';
+                if (view === 'checkout' || isCreating) fixedActions.style.display = 'none';
+                else if (this.currentView !== 'login' && this.currentView !== 'cadastro' && this.currentView !== 'checkout-direto') {
                     fixedActions.style.display = 'flex';
                 }
             }

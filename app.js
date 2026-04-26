@@ -8960,9 +8960,9 @@
         const totalBase = this.cart.reduce((acc, i) => acc + parseFloat(i.price || 0), 0);
         let final = totalBase;
         
-        // Limita o desconto das cupons em no máximo 75%
+        // Limita o desconto das cupons em no máximo 100%
         let coins = parseInt(document.getElementById('coin-discount-slider')?.value || '0');
-        if (coins > 75) coins = 75; 
+        if (coins > 100) coins = 100; 
         
         final -= (final * (coins / 100));
         const disp = document.getElementById('checkout-total-value');

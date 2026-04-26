@@ -2242,7 +2242,7 @@
                 { 
                     id: 'sale', title: 'Mestre das Vendas', icon: 'shopping-cart',
                     stages: [
-                        { goal: 1, reward: 100 }, { goal: 5, reward: 500 }, { goal: 10, reward: 1000 }, { goal: 25, reward: 2500 }, { goal: 50, reward: 5000 }
+                        { goal: 1, reward: 30 }, { goal: 5, reward: 150 }, { goal: 10, reward: 300 }, { goal: 25, reward: 750 }, { goal: 50, reward: 1500 }
                     ],
                     currentVal: salesHistory.length
                 },

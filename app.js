@@ -8423,19 +8423,19 @@
                 <p style="font-size: 10px; font-weight: 900; color: #000; text-transform: uppercase; margin: 0;">Gestão Live</p>
                 <p style="font-size: 9px; color: #999; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">${target.name}</p>
             </div>
-            <button onclick="app.toggleLiveSignal('${target.id}', 'pause')" style="width: 100%; padding: 12px; background: transparent; border: none; text-align: left; font-size: 12px; font-weight: 800; color: #000; display: flex; align-items: center; gap: 8px; cursor: pointer; border-radius: 12px; transition: 0.2s;" onmouseover="this.style.background='#fdf2f8'" onmouseout="this.style.background='transparent'">
-                <i data-lucide="pause-circle" style="width: 16px; color: #ff005c;"></i> Pausar
+            <button onclick="app.toggleLiveSignal('${target.id}', 'pause')" style="width: 100%; padding: 12px; background: transparent; border: none; text-align: left; font-size: 12px; font-weight: 800; color: #000; display: flex; align-items: center; gap: 8px; cursor: pointer; border-radius: 12px; transition: 0.2s;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='transparent'">
+                <i data-lucide="pause-circle" style="width: 16px; color: #000;"></i> Pausar
             </button>
-            <button onclick="app.toggleLiveSignal('${target.id}', 'on'); app.startLiveCamera()" style="width: 100%; padding: 12px; background: transparent; border: none; text-align: left; font-size: 12px; font-weight: 800; color: #000; display: flex; align-items: center; gap: 8px; cursor: pointer; border-radius: 12px; transition: 0.2s;" onmouseover="this.style.background='#fdf2f8'" onmouseout="this.style.background='transparent'">
-                <i data-lucide="video" style="width: 16px; color: #ff005c;"></i> Iniciar Câmera
+            <button onclick="app.toggleLiveSignal('${target.id}', 'on'); app.startLiveCamera()" style="width: 100%; padding: 12px; background: transparent; border: none; text-align: left; font-size: 12px; font-weight: 800; color: #000; display: flex; align-items: center; gap: 8px; cursor: pointer; border-radius: 12px; transition: 0.2s;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='transparent'">
+                <i data-lucide="video" style="width: 16px; color: #000;"></i> Iniciar Câmera
             </button>
-            <button onclick="app.toggleLiveSignal('${target.id}', 'on'); app.startLiveCamera()" style="width: 100%; padding: 12px; background: transparent; border: none; text-align: left; font-size: 12px; font-weight: 800; color: #000; display: flex; align-items: center; gap: 8px; cursor: pointer; border-radius: 12px; transition: 0.2s;" onmouseover="this.style.background='#fdf2f8'" onmouseout="this.style.background='transparent'">
-                <i data-lucide="refresh-cw" style="width: 16px; color: #ff005c;"></i> Reiniciar
+            <button onclick="app.toggleLiveSignal('${target.id}', 'on'); app.startLiveCamera()" style="width: 100%; padding: 12px; background: transparent; border: none; text-align: left; font-size: 12px; font-weight: 800; color: #000; display: flex; align-items: center; gap: 8px; cursor: pointer; border-radius: 12px; transition: 0.2s;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='transparent'">
+                <i data-lucide="refresh-cw" style="width: 16px; color: #000;"></i> Reiniciar
             </button>
-            <button onclick="app.accessLiveDirectly('${target.id}')" style="width: 100%; padding: 12px; background: #000; border: none; text-align: center; font-size: 11px; font-weight: 900; color: #fff; cursor: pointer; border-radius: 12px; margin-top: 5px;">
+            <button onclick="app.accessLiveDirectly('${target.id}')" style="width: 100%; padding: 12px; background: #000; border: none; text-align: center; font-size: 11px; font-weight: 900; color: #fff; cursor: pointer; border-radius: 50px; margin-top: 5px;">
                 ENTRAR NA SALA
             </button>
-            <button onclick="app.endLiveAndMarket('${target.id}')" style="width: 100%; padding: 12px; background: #fff; border: 1px solid #ff005c; text-align: center; font-size: 11px; font-weight: 900; color: #ff005c; cursor: pointer; border-radius: 12px; margin-top: 5px;">
+            <button onclick="app.endLiveAndMarket('${target.id}')" style="width: 100%; padding: 12px; background: #fff; border: 1.5px solid #000; text-align: center; font-size: 11px; font-weight: 900; color: #000; cursor: pointer; border-radius: 50px; margin-top: 5px;">
                 ENCERRAR TRANSMISSÃO
             </button>
         `;

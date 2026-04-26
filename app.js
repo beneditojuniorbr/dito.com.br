@@ -3766,15 +3766,7 @@
                 if (pixActions) pixActions.style.display = 'none';
                 if (ppContainer) {
                     ppContainer.style.display = 'block';
-                    ppContainer.innerHTML = `
-                        <div style="padding: 20px; background: #fafafa; border-radius: 20px; border: 1px dashed #ddd; text-align: center;">
-                            <p style="font-size: 10px; color: #ff005c; font-weight: 950; text-transform: uppercase; margin-bottom: 12px;">🛠️ Modo Desenvolvedor</p>
-                            <button onclick="app.finalizeSuccessfulPurchase()" style="width: 100%; height: 56px; background: #ff005c; color: #fff; border: none; border-radius: 16px; font-weight: 950; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 10px 20px rgba(255,0,92,0.1);">
-                                <i data-lucide="credit-card" style="width: 18px;"></i> SIMULAR APROVAÇÃO CARTÃO
-                            </button>
-                            <p style="font-size: 10px; color: #999; margin-top: 12px; font-weight: 700;">Simula uma aprovação instantânea via Cartão/PayPal.</p>
-                        </div>
-                    `;
+                    ppContainer.innerHTML = '';
                 }
                 if (statusMsg) statusMsg.innerHTML = `<i data-lucide="credit-card" style="width: 32px; color: #0487ff; margin-bottom: 12px;"></i><p style="font-size: 11px; font-weight: 800; color: #999; line-height: 1.4;">Finalize seu pagamento com segurança usando seu cartão via PayPal.</p>`;
             }

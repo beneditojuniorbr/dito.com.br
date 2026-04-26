@@ -137,29 +137,25 @@ input::placeholder, textarea::placeholder {
     animation: spin 0.8s linear infinite;
 }
 
-/* Cards Premium com Borda Degrade */
-.card-loja {
-    position: relative;
-    border: 2px solid transparent;
-    border-radius: 12px;
-    background: 
-        linear-gradient(#fff, #fff) padding-box, 
-        linear-gradient(45deg, #f0f0f0, #e0e0e0) border-box; /* Borda sutil inicial */
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.card-mercado-premium {
+    background: linear-gradient(#fff, #fff) padding-box, 
+                linear-gradient(135deg, #ff005c, #7000ff) border-box !important;
+    border: 2px solid transparent !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03) !important;
+    overflow: hidden !important;
+    transition: 0.3s ease !important;
     cursor: pointer;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
 }
 
-.card-loja:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 15px 30px rgba(112, 0, 255, 0.1);
-    background: 
-        linear-gradient(#fff, #fff) padding-box, 
-        linear-gradient(45deg, #ff005c, #7000ff) border-box; /* Borda degrade no hover */
-}
-
-.card-loja:active {
-    transform: translateY(-2px) scale(0.98);
+.card-mercado-premium:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08) !important;
 }
 
 /* Visibility Utilities */

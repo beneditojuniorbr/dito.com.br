@@ -4416,7 +4416,7 @@
                 // Controle dos Botões Flutuantes (Missões e Chat)
                 const fixedActions = document.getElementById('global-fixed-actions');
                 if (fixedActions) {
-                    const hideViews = ['welcome', 'login', 'cadastro', 'checkout-direto'];
+                    const hideViews = ['welcome', 'login', 'cadastro', 'checkout-direto', 'produto-novo'];
                     if (hideViews.includes(view) || (view === 'mercado' && this.marketView === 'checkout')) {
                         fixedActions.style.display = 'none';
                     } else {
@@ -4454,15 +4454,15 @@
                 this.currentView = view;
                 this.checkLiveAdminStatus();
 
-                // Oculta botões flutuantes em telas públicas (landing, login, cadastro)
-                const isPublicPage = (view === 'welcome' || view === 'login' || view === 'cadastro');
+                // Oculta botões flutuantes em telas públicas (landing, login, cadastro) ou criação de produto
+                const isPublicPage = (view === 'welcome' || view === 'login' || view === 'cadastro' || view === 'produto-novo');
                 const missionsAction = document.getElementById('global-fixed-actions');
-                if (missionsAction) missionsAction.style.display = isPublicPage ? 'none' : 'flex';
+                if (missionsAction) missionsAction.style.display = (isPublicPage || (view === 'mercado' && this.marketView === 'checkout')) ? 'none' : 'flex';
 
                 // Controle do Botão de Gerenciar Transmissão (Lado Direito)
                 const liveAction = document.getElementById('global-fixed-actions-right');
                 if (liveAction) {
-                    if (isPublicPage) {
+                    if (isPublicPage || (view === 'mercado' && this.marketView === 'checkout')) {
                         liveAction.style.display = 'none';
                     } else {
                         const myUser = this.currentUser?.username;

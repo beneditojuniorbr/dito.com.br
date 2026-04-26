@@ -137,27 +137,6 @@ input::placeholder, textarea::placeholder {
     animation: spin 0.8s linear infinite;
 }
 
-}
-
-.card-mercado-premium {
-    background: linear-gradient(#fff, #fff) padding-box, 
-                linear-gradient(135deg, #ff005c, #7000ff) border-box !important;
-    border: 2px solid transparent !important;
-    border-radius: 12px !important;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.03) !important;
-    overflow: hidden !important;
-    transition: 0.3s ease !important;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-}
-
-.card-mercado-premium:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.08) !important;
-}
-
 /* Visibility Utilities */
 .mobile-only { display: block; }
 .desktop-only { display: none; }
@@ -1319,4 +1298,26 @@ input[type=range].coin-slider::-webkit-slider-thumb {
     .profile-stat-item { border-bottom: 1px solid #f9f9f9; padding-bottom: 8px; }
     .btn-sacar-inline { font-size: 10px; padding: 8px 20px; }
     .stat-val { font-size: 20px; }
+}
+
+/* Estilo Premium para Cards do Mercado */
+.mercado-card-premium {
+    background: #fff;
+    border-radius: 12px;
+    position: relative;
+    border: 2px solid transparent;
+    background-image: linear-gradient(#fff, #fff), linear-gradient(45deg, #ff005c, #7000ff);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+}
+
+.mercado-card-premium:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(255, 0, 92, 0.12);
 }

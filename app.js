@@ -8039,7 +8039,7 @@
                     `;
                     
                     return `
-                    <div onclick="app.viewProduct('${p.id}')" class="card-mercado-premium" style="width: 165px; min-width: 165px; scroll-snap-align: start;">
+                    <div onclick="app.viewProduct('${p.id}')" class="mercado-card-premium" style="width: 165px; min-width: 165px; scroll-snap-align: start;">
                         ${isMentoria ? `
                             <div style="padding: 12px; display: flex; flex-direction: column; align-items: center;">
                                 ${imgContainer}
@@ -8089,7 +8089,7 @@
                 `;
 
                 return `
-                <div onclick="app.viewProduct('${p.id}')" class="card-mercado-premium">
+                <div onclick="app.viewProduct('${p.id}')" class="mercado-card-premium">
                     ${isMentoria ? `
                         <div style="padding: 12px; display: flex; flex-direction: column; align-items: center;">
                             ${imgContainer}

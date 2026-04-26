@@ -7869,8 +7869,28 @@
             container.innerHTML = temp.innerHTML;
 
             document.getElementById('live-room-title').innerText = p.name;
-            document.getElementById('live-host-name').innerText = p.seller || p.author || 'Mestre Dito';
+            const hostName = p.seller || p.author || 'Mestre Dito';
+            document.getElementById('live-host-name').innerText = hostName;
             document.getElementById('live-description').innerText = p.description || "Bem-vindo à transmissão exclusiva.";
+
+            // --- NOVO: DADOS DO MENTOR E ESPECTADORES ---
+            const hostUser = (this.networkUsers && this.networkUsers.find(u => u.username === hostName)) || 
+                             JSON.parse(localStorage.getItem('dito_usuarios') || '[]').find(u => u.username === hostName);
+            
+            const avatarEl = document.getElementById('live-host-avatar');
+            if (avatarEl && hostUser && hostUser.avatar) {
+                avatarEl.innerHTML = `<img src="${hostUser.avatar}" style="width: 100%; height: 100%; object-fit: cover;">`;
+            } else if (avatarEl) {
+                // Fallback: Usa a imagem do produto se o mentor não tiver avatar
+                avatarEl.innerHTML = `<img src="${this.rGetPImage(p.image, p.name, p.type)}" style="width: 100%; height: 100%; object-fit: cover;">`;
+            }
+            
+            const specCountEl = document.getElementById('live-spectator-count');
+            if (specCountEl) {
+                const base = parseInt(p.sales || 0) + 7;
+                const randomSpecs = Math.floor(Math.random() * 12) + base;
+                specCountEl.innerText = randomSpecs;
+            }
 
             const playerContainer = document.getElementById('live-player-container');
             const chatBtn = document.getElementById('btn-open-live-chat');

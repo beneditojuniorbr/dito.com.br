@@ -1777,30 +1777,31 @@
                         <p style="font-size: 12px; color: rgba(255,255,255,0.6); font-weight: 700;">Audite usuários, mude bios e gerencie permissões.</p>
                     </div>
 
-                    <!-- Card Gerenciar Produtos -->
-                    <div onclick="app.navigate('admin-produtos')" style="background: #f5f5f5; padding: 32px; border-radius: 32px; color: #000; cursor: pointer; position: relative; overflow: hidden;">
-                        <div style="position: absolute; top: -20px; right: -20px; opacity: 0.05;">
-                            <i data-lucide="package" style="width: 100px; height: 100px;"></i>
+                    <!-- Card Gerenciar Saques -->
+                    <div onclick="app.navigate('admin-saques')" style="background: #fff; padding: 32px; border-radius: 32px; color: #000; cursor: pointer; position: relative; overflow: hidden; border: 1.5px solid #000;">
+                        <div style="position: absolute; top: -10px; right: -10px; opacity: 0.15;">
+                            <i data-lucide="banknote" style="width: 80px; height: 80px;"></i>
                         </div>
-                        <h3 style="font-size: 20px; font-weight: 950; margin-bottom: 8px;">Gerenciar Produtos</h3>
-                        <p style="font-size: 12px; color: #999; font-weight: 700;">Remova itens, edite preços e controle o mercado global.</p>
+                        <h3 style="font-size: 20px; font-weight: 950; margin-bottom: 8px;">Gerenciar Saques</h3>
+                        <p style="font-size: 12px; color: #999; font-weight: 700;">Veja e aprove solicitações de saque dos usuários.</p>
                     </div>
                 </div>
              </div>
         </div>
     </template>
 
-    <template id="template-admin-produtos">
-        <div style="padding: 24px; padding-bottom: 120px;">
+    <template id="template-admin-saques">
+        <div style="padding: 24px; padding-bottom: 120px; background: #fff; min-height: 100vh;">
             <header style="display: flex; align-items: center; gap: 16px; margin-bottom: 32px;">
-                <div onclick="app.navigate('perfil')" style="width: 44px; height: 44px; background: #f5f5f5; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                <div onclick="app.navigate('admin-painel-unificado')" style="width: 44px; height: 44px; background: #f5f5f5; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
                     <i data-lucide="arrow-left" style="width: 20px; color: #000;"></i>
                 </div>
-                <h2 style="font-weight: 900; font-size: 20px;">Gestão da Loja</h2>
+                <h2 style="font-weight: 900; font-size: 20px; letter-spacing: -1px;">Pedidos de Saque</h2>
             </header>
 
-            <div id="admin-products-list" style="display: flex; flex-direction: column; gap: 16px;">
-                <!-- Lista de produtos carregada via JS -->
+            <div id="admin-saques-list" style="display: flex; flex-direction: column; gap: 16px;">
+                <!-- Carregado via JS -->
+                <div style="text-align: center; padding: 40px; color: #ccc; font-weight: 800;">Carregando pedidos...</div>
             </div>
         </div>
     </template>

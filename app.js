@@ -4499,6 +4499,7 @@
                     case 'loja-cupons': this.renderLojaCupons(appContainer); break;
                     case 'links': this.renderLinks(); break;
                     case 'checkout-direto': this.renderMarketCheckout(appContainer, 'template-checkout-direto'); break;
+                    case 'admin-saques': this.renderAdminWithdrawals(); break;
                     case 'admin-painel-unificado': break;
                 }
 
@@ -5546,6 +5547,103 @@
                 </div>
             `}).join('');
             if (window.lucide) lucide.createIcons();
+        },
+
+        async renderAdminWithdrawals() {
+            const list = document.getElementById('admin-saques-list');
+            if (!list || !supabase) return;
+
+            try {
+                const { data: withdrawals, error } = await supabase
+                    .from('dito_withdrawals')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (!withdrawals || withdrawals.length === 0) {
+                    list.innerHTML = `
+                        <div style="text-align: center; padding: 60px 24px;">
+                            <i data-lucide="check-circle" style="width: 48px; color: #eee; margin-bottom: 16px;"></i>
+                            <h3 style="font-weight: 900; color: #ccc;">Nenhum pedido pendente</h3>
+                        </div>
+                    `;
+                    if (window.lucide) lucide.createIcons();
+                    return;
+                }
+
+                list.innerHTML = withdrawals.map(w => `
+                    <div style="padding: 24px; border: 1px solid #f0f0f0; border-radius: 24px; display: flex; flex-direction: column; gap: 12px; background: ${w.status === 'pending' ? '#fff' : '#f9f9f9'};">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div>
+                                <h4 style="font-weight: 950; font-size: 16px; color: #000;">@${w.username}</h4>
+                                <span style="font-size: 10px; font-weight: 800; color: #999; text-transform: uppercase;">${new Date(w.created_at).toLocaleString()}</span>
+                            </div>
+                            <span style="padding: 4px 12px; border-radius: 50px; font-size: 10px; font-weight: 900; background: ${w.status === 'pending' ? '#ffd700' : (w.status === 'approved' ? '#22c55e' : '#ef4444')}; color: ${w.status === 'pending' ? '#000' : '#fff'}; text-transform: uppercase;">
+                                ${w.status}
+                            </span>
+                        </div>
+
+                        <div style="background: #f8f8f8; padding: 16px; border-radius: 16px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span style="font-size: 11px; font-weight: 800; color: #777;">VALOR:</span>
+                                <span style="font-size: 16px; font-weight: 950; color: #000;">R$ ${parseFloat(w.amount).toFixed(2)}</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                                <span style="font-size: 11px; font-weight: 800; color: #777;">CHAVE PIX:</span>
+                                <span style="font-size: 13px; font-weight: 900; color: #000; word-break: break-all;">${w.pix_key}</span>
+                            </div>
+                        </div>
+
+                        ${w.status === 'pending' ? `
+                            <div style="display: flex; gap: 10px; margin-top: 8px;">
+                                <button onclick="app.processAdminWithdrawal(${w.id}, 'approved')" style="flex: 1; height: 44px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 900; font-size: 11px; cursor: pointer; text-transform: uppercase;">Aprovar Saque</button>
+                                <button onclick="app.processAdminWithdrawal(${w.id}, 'declined')" style="width: 100px; height: 44px; background: #fff; color: #ef4444; border: 1.5px solid #ef4444; border-radius: 50px; font-weight: 900; font-size: 11px; cursor: pointer; text-transform: uppercase;">Recusar</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+
+                if (window.lucide) lucide.createIcons();
+
+            } catch (e) {
+                console.error("❌ [Admin Saques] Erro:", e);
+                list.innerHTML = `<div style="color: red; padding: 20px; font-weight: 800;">Erro ao carregar pedidos.</div>`;
+            }
+        },
+
+        async processAdminWithdrawal(id, newStatus) {
+            if (!supabase) return;
+            const confirmMsg = newStatus === 'approved' ? 'Confirma que você já realizou o PIX para este usuário?' : 'Deseja recusar este pedido de saque?';
+            if (!confirm(confirmMsg)) return;
+
+            this.showLoading(true, "Processando...");
+
+            try {
+                // Se for recusado, devolve o dinheiro para o usuário
+                if (newStatus === 'declined') {
+                    const { data: wData } = await supabase.from('dito_withdrawals').select('*').eq('id', id).single();
+                    if (wData) {
+                        const { data: userData } = await supabase.from('dito_users').select('balance').eq('username', wData.username).single();
+                        if (userData) {
+                            const currentBalance = parseFloat(userData.balance || 0);
+                            const refundAmount = parseFloat(wData.amount || 0);
+                            await supabase.from('dito_users').update({ balance: (currentBalance + refundAmount).toFixed(2) }).eq('username', wData.username);
+                        }
+                    }
+                }
+
+                const { error } = await supabase.from('dito_withdrawals').update({ status: newStatus }).eq('id', id);
+                if (error) throw error;
+
+                this.showLoading(false);
+                this.showNotification(`Pedido ${newStatus === 'approved' ? 'aprovado' : 'recusado'} com sucesso!`, 'success');
+                this.renderAdminWithdrawals();
+            } catch (e) {
+                console.error(e);
+                this.showLoading(false);
+                this.showNotification('Erro ao processar alteração.', 'error');
+            }
         },
 
         async deleteProduct(id, name) {

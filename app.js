@@ -5597,8 +5597,8 @@
 
                         ${w.status === 'pending' ? `
                             <div style="display: flex; gap: 10px; margin-top: 8px;">
-                                <button onclick="app.processAdminWithdrawal(${w.id}, 'approved')" style="flex: 1; height: 44px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 900; font-size: 11px; cursor: pointer; text-transform: uppercase;">Aprovar Saque</button>
-                                <button onclick="app.processAdminWithdrawal(${w.id}, 'declined')" style="width: 100px; height: 44px; background: #fff; color: #ef4444; border: 1.5px solid #ef4444; border-radius: 50px; font-weight: 900; font-size: 11px; cursor: pointer; text-transform: uppercase;">Recusar</button>
+                                <button onclick="app.processAdminWithdrawal('${w.id}', 'approved')" style="flex: 1; height: 44px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 900; font-size: 11px; cursor: pointer; text-transform: uppercase;">Aprovar Saque</button>
+                                <button onclick="app.processAdminWithdrawal('${w.id}', 'declined')" style="width: 100px; height: 44px; background: #fff; color: #ef4444; border: 1.5px solid #ef4444; border-radius: 50px; font-weight: 900; font-size: 11px; cursor: pointer; text-transform: uppercase;">Recusar</button>
                             </div>
                         ` : ''}
                     </div>

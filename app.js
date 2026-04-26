@@ -4455,14 +4455,15 @@
                 this.checkLiveAdminStatus();
 
                 // Oculta botões flutuantes em telas públicas (landing, login, cadastro) ou criação de produto
-                const isPublicPage = (view === 'welcome' || view === 'login' || view === 'cadastro' || view === 'criar-produto');
+                const isPublicPage = (view === 'welcome' || view === 'login' || view === 'cadastro');
+                const isProductCreate = (view === 'criar-produto');
                 const missionsAction = document.getElementById('global-fixed-actions');
-                if (missionsAction) missionsAction.style.display = (isPublicPage || (view === 'mercado' && this.marketView === 'checkout')) ? 'none' : 'flex';
+                if (missionsAction) missionsAction.style.display = (isPublicPage || isProductCreate || (view === 'mercado' && this.marketView === 'checkout')) ? 'none' : 'flex';
 
                 // Controle do Botão de Gerenciar Transmissão (Lado Direito)
                 const liveAction = document.getElementById('global-fixed-actions-right');
                 if (liveAction) {
-                    if (isPublicPage || (view === 'mercado' && this.marketView === 'checkout')) {
+                    if (isPublicPage || isProductCreate || (view === 'mercado' && this.marketView === 'checkout')) {
                         liveAction.style.display = 'none';
                     } else {
                         const myUser = this.currentUser?.username;
@@ -4571,11 +4572,12 @@
                 const header = document.getElementById('global-header');
                 const downloadLink = document.getElementById('download-app-link');
                 const floatingActions = document.getElementById('global-fixed-actions');
-                const isAuthPage = view === 'welcome' || view === 'login' || view === 'cadastro' || view === 'criar-produto';
+                const isAuthPage = view === 'welcome' || view === 'login' || view === 'cadastro';
+                const isProductCreate = view === 'criar-produto';
                 const isCheckoutPage = view === 'checkout-direto';
                 
                 if (floatingActions) {
-                    floatingActions.style.display = (isAuthPage || isCheckoutPage) ? 'none' : 'flex';
+                    floatingActions.style.display = (isAuthPage || isCheckoutPage || isProductCreate) ? 'none' : 'flex';
                 }
 
                 if (nav) {

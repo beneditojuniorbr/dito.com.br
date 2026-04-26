@@ -6977,6 +6977,8 @@
                 let msg = 'Erro ao processar saque. Tente novamente.';
                 if (e.message?.includes('relation "dito_withdrawals" does not exist')) {
                     msg = 'Erro de Banco: Tabela de saques ausente. Verifique o SQL Editor.';
+                } else if (e.message?.includes('violates row-level security policy') || e.code === '42501') {
+                    msg = 'Permissão Negada: Desative o RLS da tabela "dito_withdrawals" no Supabase.';
                 }
                 
                 this.showNotification(msg, 'error');

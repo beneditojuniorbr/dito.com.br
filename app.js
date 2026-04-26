@@ -5510,43 +5510,52 @@
             }
         },
 
-        renderAdminProducts() {
+        async renderAdminProducts() {
             const list = document.getElementById('admin-products-list');
-            if (!list) return;
+            if (!list || !supabase) return;
 
-            // Busca produtos usando a mesma lógica consolidada da vitrine para garantir sincronia
-            const p1 = JSON.parse(localStorage.getItem('dito_products') || '[]');
-            const p2 = JSON.parse(localStorage.getItem('dito_products_vanilla') || '[]');
-            const p3 = JSON.parse(localStorage.getItem('dito_market_products') || '[]');
-            let allProducts = [...p1, ...p2, ...p3].filter((v, i, a) => a.findIndex(t => t.id === v.id) === i);
-            
-            if (allProducts.length === 0) {
-                list.innerHTML = `<p style="text-align: center; color: #999; font-weight: 800; padding: 40px;">Buscando produtos na rede...</p>`;
-                this.fetchNetworkProducts();
-                return;
-            }
+            list.innerHTML = `<div style="text-align: center; padding: 40px;"><div class="loading-spinner" style="margin: 0 auto 20px;"></div><p style="font-weight: 800; color: #999;">Buscando Catálogo Global...</p></div>`;
 
-            list.innerHTML = allProducts.map(p => {
-                const safeName = (p.name || '').replace(/'/g, "\\'");
-                // Garantimos que o ID seja passado como string segura
-                const pId = String(p.id);
-                return `
-                <div id="admin-prod-${pId}" style="background: #fff; border: 1px solid #f2f2f2; border-radius: 20px; padding: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
-                    <div style="display: flex; gap: 14px; align-items: center;">
-                        <div style="width: 54px; height: 54px; border-radius: 12px; overflow: hidden; background: #f9f9f9; border: 1px solid #eee; display: flex; align-items: center; justify-content: center;">
-                            ${p.image ? `<img src="${p.image}" style="width: 100%; height: 100%; object-fit: cover;">` : `<i data-lucide="package" style="width: 20px; color: #ccc;"></i>`}
+            try {
+                const { data: allProducts, error } = await supabase
+                    .from('dito_market_products')
+                    .select('*')
+                    .order('createdAt', { ascending: false });
+
+                if (error) throw error;
+
+                if (!allProducts || allProducts.length === 0) {
+                    list.innerHTML = `<p style="text-align: center; color: #999; font-weight: 800; padding: 40px;">Nenhum produto cadastrado na rede.</p>`;
+                    return;
+                }
+
+                list.innerHTML = allProducts.map(p => {
+                    const safeName = (p.name || '').replace(/'/g, "\\'");
+                    const pId = String(p.id);
+                    return `
+                    <div id="admin-prod-${pId}" style="background: #fff; border: 2px solid #f2f2f2; border-radius: 24px; padding: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
+                        <div style="display: flex; gap: 14px; align-items: center;">
+                            <div style="width: 54px; height: 54px; border-radius: 12px; overflow: hidden; background: #f9f9f9; border: 1px solid #eee; display: flex; align-items: center; justify-content: center;">
+                                ${p.image ? `<img src="${p.image}" style="width: 100%; height: 100%; object-fit: cover;">` : `<i data-lucide="package" style="width: 20px; color: #ccc;"></i>`}
+                            </div>
+                            <div style="max-width: 180px;">
+                                <h4 style="font-weight: 950; font-size: 13px; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0;">${p.name}</h4>
+                                <p style="font-size: 10px; font-weight: 800; color: #999; margin-top: 2px;">Vendedor: @${p.seller || 'admin'} • R$ ${(parseFloat(p.price || 0)).toFixed(2)}</p>
+                            </div>
                         </div>
-                        <div style="max-width: 180px;">
-                            <h4 style="font-weight: 900; font-size: 13px; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.name}</h4>
-                            <p style="font-size: 10px; font-weight: 800; color: #ccc; margin-top: 2px;">Vendedor: @${p.seller || 'admin'} • R$ ${(parseFloat(p.price || 0)).toFixed(2)}</p>
+                        <div style="display: flex; gap: 8px;">
+                             <button onclick="app.deleteProduct('${pId}', '${safeName}')" style="width: 44px; height: 44px; background: #fee2e2; color: #ef4444; border: none; border-radius: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;">
+                                <i data-lucide="trash-2" style="width: 18px;"></i>
+                            </button>
                         </div>
                     </div>
-                    <button onclick="app.deleteProduct('${pId}', '${safeName}')" style="width: 40px; height: 40px; background: #fee2e2; color: #ef4444; border: none; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-                        <i data-lucide="trash-2" style="width: 18px;"></i>
-                    </button>
-                </div>
-            `}).join('');
-            if (window.lucide) lucide.createIcons();
+                `}).join('');
+                if (window.lucide) lucide.createIcons();
+
+            } catch (e) {
+                console.error("❌ [Admin Produtos] Erro:", e);
+                list.innerHTML = `<div style="color: #ef4444; padding: 20px; font-weight: 800; text-align: center;">Erro ao carregar catálogo.</div>`;
+            }
         },
 
         async renderAdminWithdrawals() {

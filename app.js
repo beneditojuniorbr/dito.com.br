@@ -2100,12 +2100,12 @@
 
                 return `
                 <div style="scroll-snap-align: start; min-width: 200px; padding: 20px; border-radius: 24px; border: 1.5px solid #eee; background: #fff; display: flex; flex-direction: column; gap: 12px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
-                    <div style="position: absolute; top: 12px; right: 12px; background: ${evt.color}15; color: ${evt.color}; font-size: 9px; font-weight: 950; padding: 4px 10px; border-radius: 50px;">+${evt.reward}</div>
                     <div style="width: 44px; height: 44px; background: ${evt.color}15; border-radius: 14px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.02);">
                         <i data-lucide="ticket" style="width: 22px; color: ${evt.color};"></i>
                     </div>
                     <div>
                         <p style="font-weight: 950; font-size: 14px; color: #000; margin-bottom: 2px;">${evt.name}</p>
+                        <p style="font-size: 11px; font-weight: 950; background: linear-gradient(135deg, #ff005c 0%, #0487ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px;">+${evt.reward} Cupons</p>
                         <p style="font-size: 10px; font-weight: 700; color: #999;">Meta: ${evt.goal} ${evt.unit}</p>
                     </div>
                     <div style="margin-top: 5px;">

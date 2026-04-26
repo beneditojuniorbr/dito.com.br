@@ -8420,19 +8420,6 @@
         }
     };
 
-    app.calculateNetProfit = function(value) {
-        const label = document.getElementById('profit-calc-label');
-        if (label) {
-            const brute = parseFloat(value) || 0;
-            const net = brute * 0.93; // 3% Dito + 4% MP = 7% total
-            label.innerHTML = `
-                <div style="margin-top: 10px; margin-left: 12px;">
-                    <p style="font-size: 14px; font-weight: 900; color: #22c55e; margin-bottom: 2px;">Você receberá: R$ ${net.toFixed(2)}</p>
-                    <p style="font-size: 9px; color: #999; font-weight: 600;">(Já descontando 3% da Dito + taxas do Mercado Pago)</p>
-                </div>
-            `;
-        }
-    };
 
     app.updateCartBadge = function() {
         const count = this.cart ? this.cart.length : 0;

@@ -3136,15 +3136,12 @@
                     </div>
 
                     ${p.hasLimit ? `
-                        <div style="margin-bottom: 32px; background: #fff5f5; padding: 16px; border-radius: 20px; border: 1px solid #fee2e2;">
+                        <div style="margin-bottom: 32px; padding: 0;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                <span style="font-size: 11px; font-weight: 900; color: #ff005c;">DISPONIBILIDADE</span>
+                                <span style="font-size: 11px; font-weight: 900; color: #000;">DISPONIBILIDADE</span>
                                 <span style="font-size: 11px; font-weight: 900; color: #000;">${Math.max(0, p.stockLimit - (p.sales || 0))} / ${p.stockLimit}</span>
                             </div>
-                            <div style="width: 100%; height: 6px; background: #fee2e2; border-radius: 3px; overflow: hidden;">
-                                <div style="width: ${Math.min(100, Math.max(0, (p.stockLimit - (p.sales || 0)) / p.stockLimit * 100))}%; height: 100%; background: #ff005c; border-radius: 3px;"></div>
-                            </div>
-                            <p style="font-size: 10px; font-weight: 800; color: #b91c1c; margin-top: 8px; display: flex; align-items: center; gap: 4px;">
+                            <p style="font-size: 10px; font-weight: 900; color: #ff0000; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
                                 <i data-lucide="alert-circle" style="width: 12px;"></i>
                                 ${(p.stockLimit - (p.sales || 0)) <= 0 ? 'Inscrições encerradas.' : `Atenção: Apenas ${p.stockLimit - (p.sales || 0)} ${p.type === 'Curso' ? 'vagas disponíveis' : (p.type === 'Mentoria' ? 'ingressos' : 'unidades')} restantes.`}
                             </p>

@@ -2076,8 +2076,8 @@
             const claimedEvents = JSON.parse(localStorage.getItem(`dito_claimed_events_${key}`) || '[]');
 
             const eventConfigs = {
-                'flash': { name: 'Missão Veloz', goal: 1, current: salesToday, reward: 300, unit: 'venda', icon: 'ticket', color: '#ef4444' },
-                'master': { name: 'Missão Especialista', goal: 5, current: salesToday, reward: 500, unit: 'vendas', icon: 'ticket', color: '#0487ff' },
+                'flash': { name: 'Missão Veloz', goal: 1, current: salesToday, reward: 15, unit: 'venda', icon: 'ticket', color: '#ef4444' },
+                'master': { name: 'Missão Especialista', goal: 5, current: salesToday, reward: 30, unit: 'vendas', icon: 'ticket', color: '#0487ff' },
                 'king': { name: 'Rei da Rede', goal: 3, current: processedRefs.length, reward: 750, unit: 'indicações', icon: 'ticket', color: '#ffd600' }
             };
 

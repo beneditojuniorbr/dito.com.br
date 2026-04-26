@@ -6481,7 +6481,15 @@
             const name = document.getElementById('prod-name')?.value || "Nome do Produto";
             const category = document.getElementById('prod-category')?.value || "Categoria";
             const desc = document.getElementById('prod-desc')?.value || "Os detalhes que você escrever aparecerão aqui para o seu cliente...";
-            const price = parseFloat(document.getElementById('prod-price')?.value) || 0;
+            const priceInp = document.getElementById('prod-price');
+            let price = 0;
+            if (priceInp) {
+                // Remove qualquer caractere que não seja número, ponto ou vírgula
+                let cleanVal = priceInp.value.toString().replace(/[^0-9,.]/g, '');
+                // Se houver vírgula e ponto, assume que a vírgula é decimal (BR) ou vice-versa
+                // Para simplificar, vamos apenas trocar vírgula por ponto
+                price = parseFloat(cleanVal.replace(',', '.')) || 0;
+            }
             const formattedPrice = `R$ ${price.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
             const type = this.selectedProductType;
             const img = this.selectedProductImage;
@@ -6542,6 +6550,12 @@
                 checkoutThumb.style.backgroundImage = img ? `url(${img})` : 'none';
                 checkoutThumb.style.backgroundSize = 'cover';
                 checkoutThumb.style.backgroundPosition = 'center';
+            }
+
+            // Sincroniza também a calculadora se estiver no passo 3
+            const breakdownPrice = document.getElementById('breakdown-price');
+            if (breakdownPrice && price > 0) {
+                this.calculateNetProfit(price);
             }
 
             // 3. Content Area Updates
@@ -6729,6 +6743,7 @@
             }
 
             this.updateProductProgress();
+            this.updateProductPreview();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         },
 

@@ -4481,7 +4481,7 @@
                 const fixedActions = document.getElementById('global-fixed-actions');
                 if (fixedActions) {
                     const hideViews = ['welcome', 'login', 'cadastro', 'checkout-direto', 'criar-produto'];
-                    if (hideViews.includes(view) || (view === 'mercado' && this.marketView === 'checkout')) {
+                    if (hideViews.includes(view) || (view === 'mercado' && (this.marketView === 'checkout' || this.marketView === 'live-room'))) {
                         fixedActions.style.display = 'none';
                     } else {
                         fixedActions.style.display = 'flex';
@@ -4756,7 +4756,7 @@
             const fixedActions = document.getElementById('global-fixed-actions');
             if (fixedActions) {
                 const isCreating = this.currentView === 'criar-produto';
-                if (view === 'checkout' || isCreating) fixedActions.style.display = 'none';
+                if (view === 'checkout' || view === 'live-room' || isCreating) fixedActions.style.display = 'none';
                 else if (this.currentView !== 'login' && this.currentView !== 'cadastro' && this.currentView !== 'checkout-direto') {
                     fixedActions.style.display = 'flex';
                 }

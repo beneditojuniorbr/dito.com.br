@@ -6692,10 +6692,22 @@
         },
 
         calculateNetProfit(price) {
-            const label = document.getElementById('profit-calc-label');
-            const net = (parseFloat(price) * 0.97 || 0).toFixed(2);
-            if (label) {
-                label.innerText = `Receba até R$ ${parseFloat(net).toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            const container = document.getElementById('profit-calc-breakdown');
+            const elPrice = document.getElementById('breakdown-price');
+            const elFee = document.getElementById('breakdown-fee');
+            const elNet = document.getElementById('breakdown-net');
+            
+            const numPrice = parseFloat(price) || 0;
+            const fee = numPrice * 0.03;
+            const net = numPrice - fee;
+
+            if (numPrice > 0) {
+                if (container) container.style.display = 'flex';
+                if (elPrice) elPrice.innerText = `R$ ${numPrice.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+                if (elFee) elFee.innerText = `- R$ ${fee.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+                if (elNet) elNet.innerText = `R$ ${net.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            } else {
+                if (container) container.style.display = 'none';
             }
         },
 

@@ -1148,8 +1148,39 @@
             }
         },
 
-        finalizeSuccessfulPurchase() {
+        validateAndPayCard() {
+            const num = document.getElementById('card-num')?.value;
+            const name = document.getElementById('card-name')?.value;
+            const expiry = document.getElementById('card-expiry')?.value;
+            const cvv = document.getElementById('card-cvv')?.value;
+
+            if (!num || !name || !expiry || !cvv) {
+                this.showNotification("Por favor, preencha todos os dados do cartão!", "warning");
+                return;
+            }
+
+            if (num.length < 16) {
+                this.showNotification("Número do cartão inválido!", "warning");
+                return;
+            }
+
+            if (cvv.length < 3) {
+                this.showNotification("CVV inválido!", "warning");
+                return;
+            }
+
+            this.showLoading(true, "Processando pagamento seguro...");
+            setTimeout(() => {
+                this.finalizeSuccessfulPurchase();
+            }, 1500);
+        },
+
+        async finalizeSuccessfulPurchase() {
             if (this.paymentPollingTimer) clearInterval(this.paymentPollingTimer);
+            
+            // LIBERA O ACESSO E CREDITA O VENDEDOR AUTOMATICAMENTE
+            await this.unlockPurchasedProducts();
+            
             this.showLoading(false);
             
             // 1. Som de Vitória (Opcional mas Premium)
@@ -3575,7 +3606,13 @@
                 productsToUnlock = [directProduct];
             } else if (productId) {
                 const found = this.products.find(p => String(p.id) === String(productId));
-                productsToUnlock = [found || { name: 'Produto Dito', id: productId }];
+                if (found) {
+                    productsToUnlock = [found];
+                } else {
+                    // Tenta achar no carrinho se não estiver na lista global (raro)
+                    const inCart = this.cart.find(p => String(p.id) === String(productId));
+                    productsToUnlock = [inCart || { name: 'Produto Adquirido', id: productId }];
+                }
             } else {
                 productsToUnlock = [...this.cart];
             }
@@ -3771,28 +3808,28 @@
                             <div style="text-align: left;">
                                 <label style="display: block; font-size: 10px; font-weight: 900; color: #999; text-transform: uppercase; margin-bottom: 8px; margin-left: 4px;">Número do Cartão</label>
                                 <div style="position: relative;">
-                                    <input type="text" placeholder="0000 0000 0000 0000" maxlength="19" oninput="this.value = this.value.replace(/\\D/g, '').replace(/(.{4})/g, '$1 ').trim()" style="width: 100%; height: 50px; padding: 0 16px; background: #fff; border: 1.5px solid #eee; border-radius: 12px; font-weight: 800; font-size: 14px; outline: none; transition: 0.3s; color: #000;" onfocus="this.style.borderColor='#000'">
+                                    <input type="text" id="card-num" placeholder="0000 0000 0000 0000" maxlength="19" oninput="this.value = this.value.replace(/\\D/g, '').replace(/(.{4})/g, '$1 ').trim()" style="width: 100%; height: 50px; padding: 0 16px; background: #fff; border: 1.5px solid #eee; border-radius: 12px; font-weight: 800; font-size: 14px; outline: none; transition: 0.3s; color: #000;" onfocus="this.style.borderColor='#000'">
                                     <i data-lucide="credit-card" style="position: absolute; right: 16px; top: 15px; width: 18px; color: #ccc;"></i>
                                 </div>
                             </div>
 
                             <div style="text-align: left;">
                                 <label style="display: block; font-size: 10px; font-weight: 900; color: #999; text-transform: uppercase; margin-bottom: 8px; margin-left: 4px;">Nome no Cartão</label>
-                                <input type="text" placeholder="COMO ESTÁ NO CARTÃO" style="width: 100%; height: 50px; padding: 0 16px; background: #fff; border: 1.5px solid #eee; border-radius: 12px; font-weight: 800; font-size: 14px; outline: none; transition: 0.3s; text-transform: uppercase; color: #000;" onfocus="this.style.borderColor='#000'">
+                                <input type="text" id="card-name" placeholder="COMO ESTÁ NO CARTÃO" style="width: 100%; height: 50px; padding: 0 16px; background: #fff; border: 1.5px solid #eee; border-radius: 12px; font-weight: 800; font-size: 14px; outline: none; transition: 0.3s; text-transform: uppercase; color: #000;" onfocus="this.style.borderColor='#000'">
                             </div>
 
                             <div style="display: flex; gap: 12px;">
                                 <div style="flex: 1; text-align: left;">
                                     <label style="display: block; font-size: 10px; font-weight: 900; color: #999; text-transform: uppercase; margin-bottom: 8px; margin-left: 4px;">Validade</label>
-                                    <input type="text" placeholder="MM/AA" maxlength="5" oninput="this.value = this.value.replace(/\\D/g, '').replace(/(.{2})/g, '$1/').replace(/\\/$/, '')" style="width: 100%; height: 50px; padding: 0 16px; background: #fff; border: 1.5px solid #eee; border-radius: 12px; font-weight: 800; font-size: 14px; outline: none; transition: 0.3s; text-align: center; color: #000;" onfocus="this.style.borderColor='#000'">
+                                    <input type="text" id="card-expiry" placeholder="MM/AA" maxlength="5" oninput="this.value = this.value.replace(/\\D/g, '').replace(/(.{2})/g, '$1/').replace(/\\/$/, '')" style="width: 100%; height: 50px; padding: 0 16px; background: #fff; border: 1.5px solid #eee; border-radius: 12px; font-weight: 800; font-size: 14px; outline: none; transition: 0.3s; text-align: center; color: #000;" onfocus="this.style.borderColor='#000'">
                                 </div>
                                 <div style="flex: 1; text-align: left;">
                                     <label style="display: block; font-size: 10px; font-weight: 900; color: #999; text-transform: uppercase; margin-bottom: 8px; margin-left: 4px;">CVV</label>
-                                    <input type="password" placeholder="***" maxlength="3" style="width: 100%; height: 50px; padding: 0 16px; background: #fff; border: 1.5px solid #eee; border-radius: 12px; font-weight: 800; font-size: 14px; outline: none; transition: 0.3s; text-align: center; color: #000;" onfocus="this.style.borderColor='#000'">
+                                    <input type="password" id="card-cvv" placeholder="***" maxlength="3" style="width: 100%; height: 50px; padding: 0 16px; background: #fff; border: 1.5px solid #eee; border-radius: 12px; font-weight: 800; font-size: 14px; outline: none; transition: 0.3s; text-align: center; color: #000;" onfocus="this.style.borderColor='#000'">
                                 </div>
                             </div>
 
-                            <button onclick="app.finalizeSuccessfulPurchase()" style="width: 100%; height: 60px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 950; font-size: 13px; text-transform: uppercase; cursor: pointer; letter-spacing: 1px; margin-top: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); transition: 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 15px 30px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 25px rgba(0,0,0,0.1)'">
+                            <button onclick="app.validateAndPayCard()" style="width: 100%; height: 60px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 950; font-size: 13px; text-transform: uppercase; cursor: pointer; letter-spacing: 1px; margin-top: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); transition: 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 15px 30px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 25px rgba(0,0,0,0.1)'">
                                 <i data-lucide="shield-check" style="width: 18px; margin-right: 8px; vertical-align: middle;"></i> Pagar Agora
                             </button>
                             

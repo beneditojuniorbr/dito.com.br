@@ -1356,26 +1356,59 @@
                         <!-- 2. CHECKOUT PREVIEW -->
                         <div style="text-align: center;">
                             <span style="font-size: 10px; font-weight: 900; color: #ccc; text-transform: uppercase; display: block; margin-bottom: 20px;">2. Checkout (Página de Venda)</span>
-                            <div style="width: 260px; margin: 0 auto; background: #fff; border-radius: 20px; padding: 20px; border: 1px solid #f0f0f0; text-align: left; box-shadow: 0 10px 30px rgba(0,0,0,0.03);">
-                                <h4 style="font-size: 14px; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 16px; display: flex; align-items: center; gap: 6px;">
-                                    <i data-lucide="shield-check" style="width: 14px; color: #22c55e;"></i> Finalizar Pedido
-                                </h4>
-                                
-                                <div style="display:flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px dashed #eee;">
-                                    <div id="preview-checkout-thumb" style="width: 36px; height: 36px; background: #f5f5f5; border-radius: 10px; background-size: cover; background-position: center; flex-shrink: 0;"></div>
-                                    <div style="flex: 1; min-width: 0;">
-                                        <h6 id="preview-checkout-name" style="font-size: 11px; font-weight: 950; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Produto...</h6>
-                                        <span id="preview-checkout-price" style="font-size: 10px; font-weight: 800; color: #999;">R$ 0,00</span>
+                            <div id="preview-checkout-card" style="width: 280px; margin: 0 auto; background: #fff; border-radius: 24px; padding: 24px; border: 1px solid #f0f0f0; text-align: left; box-shadow: 0 10px 40px rgba(0,0,0,0.04);">
+                                <!-- Header -->
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+                                    <div style="width: 32px; height: 32px; background: #f5f5f5; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i data-lucide="arrow-left" style="width: 14px; color: #000;"></i></div>
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <i data-lucide="shield-check" style="width: 18px; color: #22c55e;"></i>
+                                        <h4 style="font-size: 18px; font-weight: 950; letter-spacing: -1px; margin: 0;">Checkout</h4>
                                     </div>
                                 </div>
                                 
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 16px; align-items: center;">
-                                    <span style="font-size: 11px; font-weight: 700; color: #000;">Total a pagar</span>
-                                    <span id="preview-checkout-total" style="font-weight: 950; font-size: 15px; color: #ee4d2d;">R$ 0,00</span>
+                                <!-- Summary -->
+                                <div style="margin-bottom: 24px;">
+                                    <h6 style="font-size: 9px; font-weight: 900; text-transform: uppercase; color: #bbb; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+                                        <i data-lucide="shopping-bag" style="width: 12px;"></i> Resumo do Pedido
+                                    </h6>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                        <span id="preview-checkout-name" style="font-size: 12px; font-weight: 800; color: #000; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 140px;">Produto...</span>
+                                        <span id="preview-checkout-price" style="font-size: 12px; font-weight: 950; color: #000;">R$ 0,00</span>
+                                    </div>
+                                    <div style="border-top: 1px dashed #eee; padding-top: 12px; display: flex; justify-content: space-between; align-items: center;">
+                                        <span style="font-size: 13px; font-weight: 800; color: #000;">Total a pagar</span>
+                                        <span id="preview-checkout-total" style="font-size: 16px; font-weight: 950; color: #ff005c;">R$ 0,00</span>
+                                    </div>
                                 </div>
 
-                                <div style="height: 44px; background: #000; border-radius: 50px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">
-                                    Gerar Pix agora
+                                <!-- Payments -->
+                                <h6 style="font-size: 9px; font-weight: 900; text-transform: uppercase; color: #bbb; margin-bottom: 12px;">Escolha o pagamento</h6>
+                                <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px;">
+                                    <div style="padding: 12px; border-radius: 12px; border: 2.5px solid #000; display: flex; align-items: center; gap: 12px;">
+                                        <div style="width: 32px; height: 32px; background: #f5f5f5; border-radius: 8px; display: flex; align-items: center; justify-content: center;"><i data-lucide="diamond" style="width: 14px; color: #000;"></i></div>
+                                        <div>
+                                            <p style="font-weight: 900; font-size: 11px; margin: 0;">Pix Instantâneo</p>
+                                            <p style="font-size: 8px; color: #999; font-weight: 700; margin: 0;">Liberação imediata</p>
+                                        </div>
+                                    </div>
+                                    <div style="padding: 12px; border-radius: 12px; border: 1.5px solid #f5f5f5; display: flex; align-items: center; gap: 12px; opacity: 0.7;">
+                                        <div style="width: 32px; height: 32px; background: #f5f5f5; border-radius: 8px; display: flex; align-items: center; justify-content: center;"><i data-lucide="credit-card" style="width: 14px; color: #000;"></i></div>
+                                        <div>
+                                            <p style="font-weight: 900; font-size: 11px; margin: 0;">Cartão de Crédito</p>
+                                            <p style="font-size: 8px; color: #999; font-weight: 700; margin: 0;">Até 12x via PayPal</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Button -->
+                                <div style="height: 48px; background: #000; border-radius: 50px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; font-weight: 950; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px;">
+                                    <i data-lucide="diamond" style="width: 14px; margin-right: 8px;"></i> Gerar Pix agora
+                                </div>
+
+                                <!-- Footer Secure -->
+                                <div style="background: #fdfdfd; border-radius: 16px; border: 1px solid #f9f9f9; padding: 12px; text-align: center;">
+                                    <i data-lucide="shield-check" style="width: 16px; color: #22c55e; margin-bottom: 4px;"></i>
+                                    <p style="font-size: 8px; font-weight: 800; color: #bbb; margin: 0; line-height: 1.2;">Clique no botão abaixo para gerar seu QR Code Pix real via Mercado Pago.</p>
                                 </div>
                             </div>
                         </div>

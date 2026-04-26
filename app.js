@@ -723,24 +723,52 @@
                     is_mentoria: product.type === 'Mentoria'
                 };
 
-                const response = await fetch(`${SUPABASE_URL}/functions/v1/mercado-pago-bridge`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                    },
-                    body: JSON.stringify({
-                        action: 'create-pix',
-                        amount: total,
-                        description: `Compra: ${product.name}`,
-                        email: email,
-                        metadata: metadata
-                    })
-                });
+                let response;
+                let attempts = 0;
+                const maxAttempts = 3;
+
+                while (attempts < maxAttempts) {
+                    try {
+                        response = await fetch(`${SUPABASE_URL}/functions/v1/mercado-pago-bridge`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                            },
+                            body: JSON.stringify({
+                                action: 'create-pix',
+                                amount: total,
+                                description: `Compra: ${product.name}`,
+                                email: email,
+                                metadata: metadata
+                            })
+                        });
+
+                        if (response.status === 503) {
+                            attempts++;
+                            console.warn(`⚠️ [Pagamento] Servidor Instável (503). Tentativa ${attempts}/${maxAttempts}...`);
+                            if (attempts < maxAttempts) {
+                                await new Promise(r => setTimeout(r, 2000 * attempts)); // Backoff exponencial
+                                continue;
+                            }
+                        }
+                        
+                        break; // Sucesso ou outro erro que não 503
+                    } catch (fetchErr) {
+                        attempts++;
+                        if (attempts >= maxAttempts) throw fetchErr;
+                        await new Promise(r => setTimeout(r, 2000 * attempts));
+                    }
+                }
 
                 if (!response.ok) {
                     const errorText = await response.text();
                     console.error("❌ [Pagamento] Erro na Resposta:", errorText);
+                    
+                    if (response.status === 503) {
+                        throw new Error(`O servidor de pagamentos está temporariamente sobrecarregado (Erro 503). Por favor, tente novamente em alguns instantes.`);
+                    }
+                    
                     throw new Error(`Servidor retornou erro ${response.status}: ${errorText}`);
                 }
 

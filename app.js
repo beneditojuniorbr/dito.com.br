@@ -2066,13 +2066,13 @@
             container.innerHTML = `
                 <div style="scroll-snap-align: start; min-width: 180px; background: linear-gradient(135deg, #fff 0%, #fff 100%); padding: 22px; border-radius: 24px; border: 1px solid #eee; display: flex; flex-direction: column; gap: 14px; position: relative; overflow: hidden;">
                     <div style="position: absolute; top: -10px; right: -10px; width: 60px; height: 60px; background: rgba(0, 0, 0, 0.03); border-radius: 50%;"></div>
-                    <div style="width: 50px; height: 50px; background: #fff; border: 1px solid #f0f0f0; border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03); position: relative;">
+                    <div style="width: 50px; height: 50px; background: #fff; border: 1px solid #f0f0f0; border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
                         <i data-lucide="handshake" style="width: 24px; color: #000;"></i>
-                        <div style="position: absolute; top: -8px; right: -8px; background: #22c55e; color: #fff; font-size: 9px; font-weight: 950; padding: 4px 8px; border-radius: 50px; box-shadow: 0 4px 8px rgba(34, 197, 94, 0.3);">+27</div>
                     </div>
                     <div>
-                        <p style="font-weight: 950; font-size: 14px; color: #000; margin-bottom: 4px;">Fazer uma venda</p>
-                        <p style="font-size: 10px; font-weight: 800; color: #999; line-height: 1.3;">Realize 1 venda hoje para ganhar +27 cupons.</p>
+                        <p style="font-weight: 950; font-size: 14px; color: #000; margin-bottom: 2px;">Fazer uma venda</p>
+                        <p style="font-size: 11px; font-weight: 950; background: linear-gradient(135deg, #ff005c 0%, #0487ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px;">+27 Cupons</p>
+                        <p style="font-size: 10px; font-weight: 800; color: #999; line-height: 1.3;">Realize 1 venda hoje para ganhar.</p>
                     </div>
                     <div style="margin-top: 10px;">
                         ${isClaimed ? 

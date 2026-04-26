@@ -1305,10 +1305,7 @@ input[type=range].coin-slider::-webkit-slider-thumb {
     background: #fff;
     border-radius: 12px;
     position: relative;
-    border: 1px solid transparent; /* Bordas degradê agora com 1px */
-    background-image: linear-gradient(#fff, #fff), linear-gradient(45deg, #ff005c, #7000ff);
-    background-origin: border-box;
-    background-clip: padding-box, border-box;
+    border: 1px solid #f2f2f2; /* Preto tom claro / Cinza suave */
     cursor: pointer;
     display: flex;
     flex-direction: column;

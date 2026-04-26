@@ -1911,7 +1911,6 @@
 
             this.renderDailyChallenges();
             this.renderLongTermMissions();
-            this.renderUserCoupons();
             this.renderEventMissions();
 
             container.innerHTML = checklist.map((item, i) => {
@@ -1974,55 +1973,6 @@
             if (window.lucide) lucide.createIcons();
         },
 
-        renderUserCoupons() {
-            const container = document.getElementById('my-coupons-container');
-            if (!container) return;
-
-            const key = this.getUserKey();
-            
-            // 1. Coleta Cupons de Indicação
-            const referralCoupons = (this.currentUser?.referralCoupons || []).map(c => ({
-                title: 'Cupom de Indicação',
-                value: c.value,
-                date: c.date,
-                type: 'indication'
-            }));
-
-            // 2. Coleta Histórico de Check-in
-            const historyKey = `dito_checkin_history_${key}`;
-            const checkinHistory = JSON.parse(localStorage.getItem(historyKey) || '[]').map(c => ({
-                title: `Check-in: ${c.day}`,
-                value: c.amount,
-                date: c.date,
-                type: 'checkin'
-            }));
-
-            // Une e ordena por data (mais recente primeiro)
-            const allCoupons = [...referralCoupons, ...checkinHistory].sort((a, b) => new Date(b.date) - new Date(a.date));
-
-            if (allCoupons.length === 0) {
-                container.innerHTML = `<p style="font-size: 12px; color: #999; text-align: center; padding: 20px;">Você ainda não possui cupons em seu extrato.</p>`;
-                return;
-            }
-
-            container.innerHTML = allCoupons.map(c => `
-                <div style="background: #fff; border-radius: 16px; padding: 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #efefef; box-shadow: 0 4px 10px rgba(0,0,0,0.02); margin-bottom: 8px;">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <img src="D.png" alt="Dito" style="width: 24px; height: 24px; border-radius: 6px; object-fit: contain;">
-                        <div>
-                            <h4 style="font-size: 13px; font-weight: 950; color: #000;">${c.title}</h4>
-                            <p style="font-size: 10px; font-weight: 700; color: #999;">${new Date(c.date).toLocaleDateString('pt-BR')} às ${new Date(c.date).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}</p>
-                        </div>
-                    </div>
-                    <div style="text-align: right;">
-                        <span style="display: block; font-size: 14px; font-weight: 950; color: #22c55e;">+${c.value}</span>
-                        <span style="font-size: 8px; font-weight: 900; color: #bbb; text-transform: uppercase;">Disponível</span>
-                    </div>
-                </div>
-            `).join('');
-            
-            if (window.lucide) lucide.createIcons();
-        },
 
         handleReferralReward() {
             if (!this.currentUser) return;

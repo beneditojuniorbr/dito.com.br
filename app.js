@@ -461,8 +461,9 @@
                 setInterval(() => {
                     this.fetchNetworkUsers();
                     this.fetchNetworkProducts();
-                    this.fetchUserCloudState(); // Garante que compras e saldo sincronizem entre PC e Celular
-                    this.updateLastSeen();      // Novo: Avisa que você está online
+                    this.fetchUserCloudState(); 
+                    this.updateLastSeen();      
+                    this.checkNetworkHealth();
                 }, 30000);
 
                 // Inicia Canais Realtime (Supabase)
@@ -2877,7 +2878,9 @@
                     this.checkSocietyPendingRequests(); 
                 }
                 this.syncChatAvatars();
+                this.handleNetworkSuccess();
             } catch (err) {
+                this.handleNetworkFailure(err);
                 console.warn("⚠️ [REDE] Radar offline. Usando cache.");
                 const cached = localStorage.getItem('dito_network_users');
                 if (cached) {
@@ -3016,9 +3019,64 @@
 
                     this.safeLocalStorageSet('dito_last_p_hash', currentHash);
                 }
+                this.handleNetworkSuccess();
             } catch (err) {
+                this.handleNetworkFailure(err);
                 console.warn("⚠️ [REDE] Falha ao sincronizar mercado com a nuvem:", err);
-                // Não usamos mais cache local para evitar dados desencontrados entre PC e Celular
+            }
+        },
+
+        handleNetworkFailure(err) {
+            this.consecutiveFailures = (this.consecutiveFailures || 0) + 1;
+            console.error("❌ [REDE] Erro de conexão:", err);
+            
+            if (this.consecutiveFailures >= 3) {
+                this.isCloudOnline = false;
+                this.updateNetworkUI('unstable');
+            }
+            if (this.consecutiveFailures >= 6) {
+                this.updateNetworkUI('offline');
+            }
+        },
+
+        handleNetworkSuccess() {
+            this.consecutiveFailures = 0;
+            if (!this.isCloudOnline) {
+                this.isCloudOnline = true;
+                this.updateNetworkUI('online');
+            }
+        },
+
+        checkNetworkHealth() {
+            if (!navigator.onLine) {
+                this.updateNetworkUI('offline');
+                return;
+            }
+            // Se não houve falhas recentemente, assume online
+            if (this.consecutiveFailures === 0) this.updateNetworkUI('online');
+        },
+
+        updateNetworkUI(status) {
+            const dot = document.getElementById('network-status-dot');
+            const container = document.getElementById('cloud-status-container');
+            if (!dot) return;
+
+            switch(status) {
+                case 'online':
+                    dot.style.background = '#22c55e';
+                    dot.style.boxShadow = '0 0 5px rgba(34, 197, 94, 0.4)';
+                    if (container) container.style.opacity = '0.6';
+                    break;
+                case 'unstable':
+                    dot.style.background = '#f59e0b';
+                    dot.style.boxShadow = '0 0 5px rgba(245, 158, 11, 0.4)';
+                    if (container) container.style.opacity = '1';
+                    break;
+                case 'offline':
+                    dot.style.background = '#ef4444';
+                    dot.style.boxShadow = '0 0 8px rgba(239, 68, 68, 0.6)';
+                    if (container) container.style.opacity = '1';
+                    break;
             }
         },
 

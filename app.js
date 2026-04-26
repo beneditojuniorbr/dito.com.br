@@ -6687,7 +6687,7 @@
             if (numPrice > 0) {
                 if (container) container.style.display = 'flex';
                 if (elPrice) elPrice.innerText = `R$ ${numPrice.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-                if (elFee) elFee.innerText = `- R$ ${fee.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+                if (elFee) elFee.innerText = `R$ ${fee.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
                 if (elNet) elNet.innerText = `R$ ${net.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
             } else {
                 if (container) container.style.display = 'none';

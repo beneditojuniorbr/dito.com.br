@@ -6668,10 +6668,13 @@
             if (!bar) return;
 
             const step = this.currentProductStep || 1;
-            const pct = (step / 5) * 100;
+            // Se o usuário está no passo 2, ele CONCLUIU 1 etapa.
+            const completed = step - 1;
+            const total = 5;
+            const pct = (completed / total) * 100;
             
             bar.style.width = `${pct}%`;
-            if (text) text.innerText = `${step} de 5 etapas para concluir`;
+            if (text) text.innerText = `${completed} de ${total} etapas concluídas`;
             if (pctText) pctText.innerText = `${Math.round(pct)}%`;
         },
 

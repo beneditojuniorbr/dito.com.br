@@ -795,64 +795,6 @@
             }
         },
 
-        async verifyPaymentDirectly(paymentId) {
-            this.showLoading(true, "Estamos buscando seu pagamento...");
-            
-            try {
-                const key = this.getUserKey();
-                
-                // 1. BUSCA INTELIGENTE: Procura QUALQUER pagamento aprovado deste usuário nos últimos 20 minutos
-                const twentyMinsAgo = new Date(Date.now() - 20 * 60 * 1000).toISOString();
-                
-                // Busca pagamentos onde o status é aprovado, recente, e o username no metadata bate com o atual
-                const { data: recentPayments, error: searchError } = await supabase
-                    .from('dito_payments')
-                    .select('*')
-                    .eq('status', 'approved')
-                    .gte('created_at', twentyMinsAgo)
-                    .filter('metadata->>username', 'ilike', this.currentUser.username)
-                    .order('created_at', { ascending: false });
-
-                // Se achar um pagamento aprovado recente, libera na hora!
-                if (recentPayments && recentPayments.length > 0) {
-                    console.log("💎 [PAGAMENTO] Encontramos um pagamento aprovado recente! Liberando...");
-                    this.finalizeSuccessfulPurchase();
-                    return;
-                }
-
-                // 2. Se não achou no banco, tenta forçar um check na ponte do Mercado Pago para o ID específico
-                if (paymentId) {
-                    const resp = await fetch(`${SUPABASE_URL}/functions/v1/mercado-pago-bridge`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                        },
-                        body: JSON.stringify({ action: 'check-status', payment_id: paymentId })
-                    });
-                    
-                    const check = await resp.json();
-                    if (check.status === 'approved' || check.payment_status === 'approved') {
-                        this.showNotification("Confirmado pelo Mercado Pago! ✨", "success");
-                        const productFromMeta = check.metadata ? check.metadata.product : null;
-                        this.finalizeSuccessfulPurchase(productFromMeta);
-                    } else {
-                        this.showLoading(false);
-                        const isAdm = this.currentUser && this.currentUser.username === 'Ditão';
-                        const admBtn = isAdm ? `<br><br><button onclick="app.finalizeSuccessfulPurchase()" style="background:#000; color:#fff; border:none; padding:8px 15px; border-radius:10px; font-size:10px; cursor:pointer; font-weight:900;">FORÇAR LIBERAÇÃO AGORA (DITÃO)</button>` : '';
-                        this.showNotification(`Pagamento ainda não identificado. Se você já pagou, aguarde 30 segundos e clique novamente.${admBtn}`, "info");
-                    }
-                } else {
-                    this.showLoading(false);
-                    this.showNotification("Aguardando confirmação do banco...", "info");
-                }
-            } catch (e) {
-                console.error("🚨 [Verify Error]:", e);
-                this.showLoading(false);
-                this.showNotification("Erro na consulta. Tente novamente em alguns instantes.", "error");
-            }
-        },
-
         async processPaymentCheckout() {
             // 1. Se for convidado, valida e cria a conta DURANTE o checkout
             if (this.currentUser && this.currentUser.isGuest) {
@@ -933,45 +875,6 @@
                     }
                 })
                 .subscribe();
-        },
-
-        startPaymentPolling(paymentId) {
-            if (this.paymentPollingInterval) clearInterval(this.paymentPollingInterval);
-            console.log(`🕒 [Dito] Vigilante de Pagamento Ativo: ${paymentId}`);
-            
-            const initialCount = this.purchasedProducts.length;
-            
-            this.paymentPollingInterval = setInterval(async () => {
-                try {
-                    // 1. CHECA O STATUS DO PAGAMENTO NO BANCO (Fallback se o Realtime falhar)
-                    if (paymentId) {
-                        const { data } = await supabase
-                            .from('dito_payments')
-                            .select('status')
-                            .eq('id', paymentId)
-                            .maybeSingle();
-
-                        if (data && data.status === 'approved') {
-                            console.log("✅ [Pagamento] Confirmado via Tabela!");
-                            clearInterval(this.paymentPollingInterval);
-                            this.finalizeSuccessfulPurchase();
-                            return;
-                        }
-                    }
-
-                    // 2. CHECK DE SEGURANÇA NA CONTA DO USUÁRIO
-                    if (supabase && this.currentUser && !this.currentUser.isGuest) {
-                        await this.fetchUserCloudState();
-                        if (this.purchasedProducts.length > initialCount) {
-                            console.log("✅ [Pagamento] Confirmado via Entrega!");
-                            clearInterval(this.paymentPollingInterval);
-                            this.finalizeSuccessfulPurchase();
-                        }
-                    }
-                } catch (e) {}
-            }, 5000); 
-
-            setTimeout(() => clearInterval(this.paymentPollingInterval), 10 * 60 * 1000);
         },
 
         finalizeSuccessfulPurchase(productData = null) {
@@ -1163,6 +1066,25 @@
             try {
                 if (!isSilent) this.showLoading(true, 'Verificando com o banco...');
                 
+                // 1. BUSCA INTELIGENTE: Procura QUALQUER pagamento aprovado deste usuário nos últimos 20 minutos
+                const key = this.getUserKey();
+                const twentyMinsAgo = new Date(Date.now() - 20 * 60 * 1000).toISOString();
+                
+                const { data: recentPayments } = await supabase
+                    .from('dito_payments')
+                    .select('*')
+                    .eq('status', 'approved')
+                    .gte('created_at', twentyMinsAgo)
+                    .filter('metadata->>username', 'ilike', this.currentUser.username)
+                    .order('created_at', { ascending: false });
+
+                if (recentPayments && recentPayments.length > 0) {
+                    console.log("💎 [PAGAMENTO] Pagamento aprovado detectado via busca direta!");
+                    this.finalizeSuccessfulPurchase();
+                    return;
+                }
+
+                // 2. Se não achou no banco, tenta via BRIDGE (Mercado Pago)
                 let response;
                 let attempts = 0;
                 const maxAttempts = 3;
@@ -1206,7 +1128,9 @@
                     this.finalizeSuccessfulPurchase();
                 } else if (!isSilent) {
                     this.showLoading(false);
-                    this.showNotification('Pagamento ainda não detectado. Tente em instantes.', 'info');
+                    const isAdm = this.currentUser && (this.currentUser.username === 'Ditão' || this.currentUser.username === 'janavan');
+                    const admBtn = isAdm ? `<br><br><button onclick="app.finalizeSuccessfulPurchase()" style="background:#000; color:#fff; border:none; padding:10px 20px; border-radius:12px; font-size:12px; cursor:pointer; font-weight:950; margin-top:10px;">FORÇAR LIBERAÇÃO AGORA (ADM)</button>` : '';
+                    this.showNotification(`Pagamento ainda não identificado. Se você já pagou, aguarde 30 segundos e clique novamente.${admBtn}`, 'info');
                 }
             } catch (e) {
                 console.error("❌ [Vigilante] Erro na verificação:", e);

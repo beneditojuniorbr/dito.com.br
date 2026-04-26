@@ -1305,7 +1305,7 @@ input[type=range].coin-slider::-webkit-slider-thumb {
     background: #fff;
     border-radius: 12px;
     position: relative;
-    border: 2px solid transparent;
+    border: 1px solid transparent; /* Bordas degradê agora com 1px */
     background-image: linear-gradient(#fff, #fff), linear-gradient(45deg, #ff005c, #7000ff);
     background-origin: border-box;
     background-clip: padding-box, border-box;
@@ -1314,10 +1314,4 @@ input[type=range].coin-slider::-webkit-slider-thumb {
     flex-direction: column;
     box-shadow: 0 4px 20px rgba(0,0,0,0.03);
     overflow: hidden;
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
-}
-
-.mercado-card-premium:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(255, 0, 92, 0.12);
 }

@@ -1163,12 +1163,40 @@
             try {
                 if (!isSilent) this.showLoading(true, 'Verificando com o banco...');
                 
-                const response = await fetch(`${SUPABASE_URL}/functions/v1/mercado-pago-bridge?action=check-status&id=${paymentId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                let response;
+                let attempts = 0;
+                const maxAttempts = 3;
+
+                while (attempts < maxAttempts) {
+                    try {
+                        response = await fetch(`${SUPABASE_URL}/functions/v1/mercado-pago-bridge`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                            },
+                            body: JSON.stringify({
+                                action: 'check-status',
+                                id: paymentId
+                            })
+                        });
+
+                        if (response.status === 503) {
+                            attempts++;
+                            if (attempts < maxAttempts) {
+                                await new Promise(r => setTimeout(r, 1000 * attempts));
+                                continue;
+                            }
+                        }
+                        break;
+                    } catch (err) {
+                        attempts++;
+                        if (attempts >= maxAttempts) throw err;
+                        await new Promise(r => setTimeout(r, 1000 * attempts));
                     }
-                });
+                }
+
+                if (!response.ok) throw new Error(`Erro ${response.status}`);
                 
                 const data = await response.json();
                 

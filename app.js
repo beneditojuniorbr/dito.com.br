@@ -1927,6 +1927,13 @@
                 const canCheck = isToday && !item.checked && hasSaleToday;
                 const showsLocked = isToday && !item.checked && !hasSaleToday;
 
+                // Calcula recompensa progressiva: (checkins já feitos + 1) * 10
+                const checkinsDone = checklist.filter(c => c.checked).length;
+                const potentialReward = (checkinsDone + 1) * 10;
+                // Para exibir o valor fixo de cada dia se a pessoa fizesse na ordem (sugestão visual)
+                // Mas a regra diz "no próximo", então depende de quantos ela já fez.
+                // Vou mostrar o valor que ela ganharia SE fizesse hoje.
+                
                 return `
                 <div style="scroll-snap-align: start; min-width: 70px; display: flex; flex-direction: column; align-items: center; text-align: center; justify-content: space-between; padding: 12px 6px; border-radius: 12px; border: ${isToday ? '1.5px solid transparent' : '1px solid #f0f0f0'}; background: ${isToday ? 'linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #ff005c 0%, #0487ff 100%) border-box' : '#fff'}; transition: 0.3s; box-shadow: ${isToday ? '0 4px 15px rgba(255, 0, 92, 0.1)' : '0 4px 10px rgba(0,0,0,0.02)'};">
                     <p style="font-weight: 950; font-size: 11px; margin-bottom: 4px; color: ${past && !item.checked ? '#ccc' : '#000'};">${item.dayName}</p>
@@ -1938,17 +1945,17 @@
                     ${item.checked ? `
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
                             <span style="font-size: 8px; font-weight: 950; color: #10b981; text-transform: uppercase;">Concluído</span>
-                            <span style="font-size: 9px; font-weight: 950; color: #000;">+75</span>
+                            <span style="font-size: 9px; font-weight: 950; color: #000;">+${item.rewardGiven || potentialReward}</span>
                         </div>
                     ` : (past ? `
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 2px; opacity: 0.6;">
                             <span style="font-size: 8px; font-weight: 950; color: #ef4444; text-transform: uppercase;">Perdeu</span>
-                            <span style="font-size: 9px; font-weight: 950; color: #999;">-75</span>
+                            <span style="font-size: 9px; font-weight: 950; color: #999;">-</span>
                         </div>
                     ` : (isToday ? `
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
                             <div style="display: flex; align-items: center; gap: 2px; color: #000; font-size: 10px; font-weight: 950; margin-bottom: 4px;">
-                                <i data-lucide="ticket" style="width: 10px; color: #ff005c;"></i> +75
+                                <i data-lucide="ticket" style="width: 10px; color: #ff005c;"></i> +${potentialReward}
                             </div>
                             <button onclick="app.claimDailyCheckin(${i})" style="background: #fbbf24; color: #000; border: none; border-radius: 20px; padding: 6px 14px; font-size: 10px; font-weight: 950; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                                  Receber
@@ -1957,7 +1964,7 @@
                     ` : `
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 2px; opacity: 0.8;">
                              <span style="font-size: 8px; font-weight: 950; color: #999; text-transform: uppercase;">Aguarde</span>
-                             <span style="font-size: 9px; font-weight: 950; color: #000;">+75</span>
+                             <span style="font-size: 9px; font-weight: 950; color: #000;">+${(checkinsDone + (i - today) + 1) * 10}</span>
                         </div>
                     `))}
                 </div>
@@ -2344,11 +2351,15 @@
             let checklist = JSON.parse(localStorage.getItem(storageKey) || '[]');
             
             if (checklist[dayIndex] && !checklist[dayIndex].checked) {
+                // Calcula recompensa baseada em quantos dias já foram marcados nesta semana
+                const checkinsDone = checklist.filter(c => c.checked).length;
+                const REWARD = (checkinsDone + 1) * 10;
+                
                 checklist[dayIndex].checked = true;
+                checklist[dayIndex].rewardGiven = REWARD; // Salva quanto ganhou para o render
                 localStorage.setItem(storageKey, JSON.stringify(checklist));
                 
                 let currentCoins = parseInt(localStorage.getItem(`dito_coins_${key}`) || '0');
-                const REWARD = 75;
                 currentCoins += REWARD;
                 localStorage.setItem(`dito_coins_${key}`, currentCoins.toString());
 

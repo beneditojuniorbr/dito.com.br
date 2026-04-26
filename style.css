@@ -788,6 +788,12 @@ input::placeholder, textarea::placeholder {
         border-bottom: 1px solid #f0f0f0;
     }
 
+    .welcome-nav-bar {
+        left: 80px !important;
+        width: calc(100% - 80px) !important;
+    }
+
+
     .sidebar-logo {
         display: flex;
         justify-content: center;

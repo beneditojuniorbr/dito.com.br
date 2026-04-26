@@ -262,11 +262,11 @@
                     </button>
                 </div>
 
-                <button onclick="app.navigate('cadastro', 'right'); app.toggleWelcomeMenu();" style="width: 100%; padding: 20px; background: #000; border: none; text-align: left; font-size: 15px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 14px; cursor: pointer; border-radius: 20px; margin-bottom: 14px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
+                <button onclick="app.navigate('cadastro', 'right'); app.toggleWelcomeMenu();" style="width: 100%; padding: 20px; background: #000; border: none; text-align: left; font-size: 15px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 14px; cursor: pointer; border-radius: 50px; margin-bottom: 14px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
                     <i data-lucide="user-plus" style="width: 22px;"></i> Criar Conta
                 </button>
                 
-                <button onclick="app.navigate('login', 'right'); app.toggleWelcomeMenu();" style="width: 100%; padding: 20px; background: #fff; border: 1.5px solid #f0f0f0; text-align: left; font-size: 15px; font-weight: 800; color: #000; display: flex; align-items: center; gap: 14px; cursor: pointer; border-radius: 20px;">
+                <button onclick="app.navigate('login', 'right'); app.toggleWelcomeMenu();" style="width: 100%; padding: 20px; background: #fff; border: 1.5px solid #000; text-align: left; font-size: 15px; font-weight: 800; color: #000; display: flex; align-items: center; gap: 14px; cursor: pointer; border-radius: 50px;">
                     <i data-lucide="log-in" style="width: 22px;"></i> Entrar na Conta
                 </button>
 
@@ -305,21 +305,22 @@
                     <img src="D.png" alt="Dito Logo" style="width: 100px; height: 100px; margin: 0 auto 10px; display: block; object-fit: contain;">
                 </div>
 
-                <div style="display: flex; gap: 12px; width: 100%; padding: 0 20px;">
-                    <button class="btn" style="flex: 1; height: 64px; border-radius: 50px; font-size: 11px; font-weight: 900; background: #000; color: #fff; border: none; box-shadow: 0 20px 40px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; gap: 6px;" onclick="app.navigate('cadastro', 'right')">
-                        <i data-lucide="user-plus" style="width: 16px;"></i> Cadastre-se
+                <div style="display: flex; flex-direction: column; gap: 16px; width: 100%; padding: 0 20px;">
+                    <button class="btn" style="height: 60px; border-radius: 50px; font-size: 15px; font-weight: 900; background: #000; color: #fff; border: none; box-shadow: 0 20px 40px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="app.navigate('cadastro', 'right')">
+                        <i data-lucide="user-plus" style="width: 18px;"></i> Cadastre-se
                     </button>
-                    <button class="btn" style="flex: 1; height: 64px; border-radius: 50px; font-size: 11px; font-weight: 900; background: #fff; color: #000; border: 1px solid #eee; display: flex; align-items: center; justify-content: center; gap: 6px;" onclick="app.navigate('login', 'right')">
-                        <i data-lucide="log-in" style="width: 16px;"></i> Entrar
+                    <button class="btn" style="height: 60px; border-radius: 50px; font-size: 15px; font-weight: 900; background: #fff; color: #000; border: 1px solid #000; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="app.navigate('login', 'right')">
+                        <i data-lucide="log-in" style="width: 18px;"></i> Entrar
                     </button>
                 </div>
             </div>
 
             <!-- Download Button -->
             <div style="margin-top: 40px;">
-                <button class="clickable" onclick="installPWA()" style="background: transparent; border: none; font-size: 12px; font-weight: 800; color: #000; display: flex; align-items: center; gap: 8px; margin: 0 auto;">
+                <button class="clickable" onclick="installPWA()" style="background: transparent; border: none; font-size: 12px; font-weight: 800; color: #000; display: flex; align-items: center; gap: 10px; margin: 0 auto;">
                     <i data-lucide="download" style="width: 16px; color: #000;"></i>
                     Baixar App Dito
+                    <img src="D2.png" alt="Dito" style="width: 24px; height: 24px; border-radius: 6px; object-fit: cover;">
                 </button>
             </div>
 
@@ -361,7 +362,7 @@
                         </div>
                         <div>
                             <h4 style="font-weight: 950; font-size: 16px; color: #000; margin-bottom: 4px; letter-spacing: -0.5px;">Plataforma Todos em Um</h4>
-                            <p style="font-size: 13px; color: #666; font-weight: 500; line-height: 1.5;">Hospede seus cursos, venda ebooks ou faça mentorias ao vivo. Escolha seu modelo e lucre mais.</p>
+                            <p style="font-size: 13px; color: #666; font-weight: 500; line-height: 1.5;">Hospede seus ebooks, venda seus cursos e faça mentorias ou faça tudo isso em um só.</p>
                         </div>
                     </div>
                 </div>
@@ -399,41 +400,40 @@
                     <p style="font-size: 13px; font-weight: 700; color: #999;">Acesse seu painel agora.</p>
                 </div>
                 
-                <div style="width: 100%; max-width: 360px;">
-                    <div class="form-group" style="margin-bottom: 20px;">
-                        <div style="position: relative;">
-                            <i data-lucide="user" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); width: 20px;"></i>
-                            <input type="text" id="username" placeholder="Nome de usuário" style="padding: 18px 18px 18px 54px; border-radius: 50px; background: var(--surface); border: 1px solid var(--border); width: 100%;">
-                        </div>
+                <div style="width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 16px;">
+                    <!-- Username -->
+                    <div style="position: relative;">
+                        <i data-lucide="user" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); width: 20px;"></i>
+                        <input type="text" id="username" placeholder="Nome de usuário" style="padding: 18px 18px 18px 54px; border-radius: 50px; background: var(--surface); border: 1px solid var(--border); width: 100%;">
                     </div>
                     
-                    <div class="form-group" style="margin-bottom: 30px;">
-                        <div style="position: relative;">
-                            <i data-lucide="key" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); width: 20px;"></i>
-                            <input type="password" id="password" placeholder="Senha" style="padding: 18px 18px 18px 54px; border-radius: 50px; background: var(--surface); border: 1px solid var(--border); width: 100%;">
-                            <i data-lucide="eye-off" id="toggle-password" onclick="app.togglePassword()" style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); width: 20px; cursor: pointer;"></i>
-                        </div>
+                    <!-- Password -->
+                    <div style="position: relative;">
+                        <i data-lucide="key" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); width: 20px;"></i>
+                        <input type="password" id="password" placeholder="Senha" style="padding: 18px 18px 18px 54px; border-radius: 50px; background: var(--surface); border: 1px solid var(--border); width: 100%;">
+                        <i data-lucide="eye-off" id="toggle-password" onclick="app.togglePassword()" style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); width: 20px; cursor: pointer;"></i>
                     </div>
                     
+                    <!-- Buttons -->
                     <button class="btn btn-primary" style="height: 60px; border-radius: 50px; width: 100%; font-size: 18px;" onclick="app.login()">
                         <i data-lucide="log-in" style="width: 20px;"></i> Entrar
                     </button>
                     
-                    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 24px; width: 100%;">
-                        <button class="clickable" style="background: transparent; border: none; font-size: 13px; font-weight: 800; color: #ff005c;" onclick="app.navigate('cadastro')">
-                            Não tem conta? Cadastre-se
-                        </button>
-                        <button class="btn btn-secondary" style="height: 56px; border-radius: 50px; font-size: 14px; width: 100%; border: 1px solid #eee;" onclick="app.login(true)">
-                            <i data-lucide="ghost" style="width: 20px;"></i> Entrar como convidado
-                        </button>
-                    </div>
+                    <button class="btn" style="height: 60px; border-radius: 50px; font-size: 14px; width: 100%; background: #fff; color: #000; border: 1px solid #000; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="app.navigate('cadastro')">
+                        <i data-lucide="user-plus" style="width: 16px;"></i> Cadastre-se
+                    </button>
+                    
+                    <button class="btn btn-secondary" style="height: 60px; border-radius: 50px; font-size: 14px; width: 100%; border: 1px solid #000; margin-top: 0;" onclick="app.login(true)">
+                        <i data-lucide="ghost" style="width: 20px;"></i> Entrar como convidado
+                    </button>
                 </div>
             </div>
             
             <div style="margin-top: 40px; padding-top: 24px; border-top: 1px solid #f9f9f9;">
-                <button class="clickable" onclick="installPWA()" style="background: transparent; border: none; font-size: 11px; font-weight: 800; color: #ccc; display: flex; align-items: center; gap: 8px; margin: 0 auto;">
+                <button class="clickable" onclick="installPWA()" style="background: transparent; border: none; font-size: 11px; font-weight: 800; color: #ccc; display: flex; align-items: center; gap: 10px; margin: 0 auto;">
                     <i data-lucide="download" style="width: 14px;"></i>
                     Baixar App Dito
+                    <img src="D2.png" alt="Dito" style="width: 20px; height: 20px; border-radius: 5px; object-fit: cover; opacity: 0.8;">
                 </button>
             </div>
         </div>

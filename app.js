@@ -2213,10 +2213,10 @@
             const sales = JSON.parse(localStorage.getItem(`dito_real_sales_history_${key}`) || '[]');
             const hasSaleToday = sales.some(s => new Date(s.date).toDateString() === today);
             
-            // Alerta para Missão Diária (100 cupons)
+            // Alerta para Missão Diária (27 cupons)
             const dailyClaimed = localStorage.getItem(`dito_claimed_daily_${key}_${today}`) === 'true';
             if (hasSaleToday && !dailyClaimed) {
-                this.showNotification('Missão Diária Concluída! Resgate seus 100 cupons.', 'success');
+                this.showNotification('Missão Diária Concluída! Resgate seus 27 cupons.', 'success');
             }
         },
 
@@ -2242,14 +2242,14 @@
                 { 
                     id: 'sale', title: 'Mestre das Vendas', icon: 'shopping-cart',
                     stages: [
-                        { goal: 1, reward: 1000 }, { goal: 5, reward: 5000 }, { goal: 10, reward: 10000 }, { goal: 25, reward: 25000 }, { goal: 50, reward: 50000 }
+                        { goal: 1, reward: 100 }, { goal: 5, reward: 500 }, { goal: 10, reward: 1000 }, { goal: 25, reward: 2500 }, { goal: 50, reward: 5000 }
                     ],
                     currentVal: salesHistory.length
                 },
                 { 
                     id: 'fans', title: 'Influenciador', icon: 'heart',
                     stages: [
-                        { goal: 10, reward: 300 }, { goal: 30, reward: 900 }, { goal: 50, reward: 1500 }, { goal: 75, reward: 2250 }, { goal: 100, reward: 3000 }, { goal: 250, reward: 7500 }
+                        { goal: 3, reward: 27 }, { goal: 10, reward: 100 }, { goal: 30, reward: 300 }, { goal: 50, reward: 500 }, { goal: 100, reward: 1000 }
                     ],
                     currentVal: fansCount
                 }

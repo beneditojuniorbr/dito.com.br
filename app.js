@@ -8432,7 +8432,7 @@
             <button onclick="app.toggleLiveSignal('${target.id}', 'on'); app.startLiveCamera()" style="width: 100%; padding: 12px; background: transparent; border: none; text-align: left; font-size: 12px; font-weight: 800; color: #000; display: flex; align-items: center; gap: 8px; cursor: pointer; border-radius: 12px; transition: 0.2s;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='transparent'">
                 <i data-lucide="refresh-cw" style="width: 16px; color: #000;"></i> Reiniciar
             </button>
-            <button onclick="app.accessLiveDirectly('${target.id}')" style="width: 100%; padding: 12px; background: #000; border: none; text-align: center; font-size: 11px; font-weight: 900; color: #fff; cursor: pointer; border-radius: 50px; margin-top: 5px;">
+            <button onclick="app.enterMentorshipRoom('${target.id}')" style="width: 100%; padding: 12px; background: #000; border: none; text-align: center; font-size: 11px; font-weight: 900; color: #fff; cursor: pointer; border-radius: 50px; margin-top: 5px;">
                 ENTRAR NA SALA
             </button>
             <button onclick="app.endLiveAndMarket('${target.id}')" style="width: 100%; padding: 12px; background: #fff; border: 1.5px solid #000; text-align: center; font-size: 11px; font-weight: 900; color: #000; cursor: pointer; border-radius: 50px; margin-top: 5px;">

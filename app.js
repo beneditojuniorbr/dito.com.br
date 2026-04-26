@@ -547,7 +547,7 @@
                 this.updateLastSeen(); // Atualiza imediatamente ao carregar
 
                 // RESTAURAÇÃO DE ESTADO (F5 Seguro com Proteção Anti-Crash)
-                const allowedViews = ['dashboard', 'mercado', 'sociedade', 'hall', 'perfil', 'vendas', 'sacar', 'admin-contas', 'admin-produtos', 'produtos', 'meus-cursos', 'missoes', 'centro-notificacoes', 'criar-produto', 'links'];
+                const allowedViews = ['dashboard', 'mercado', 'sociedade', 'hall', 'perfil', 'vendas', 'sacar', 'admin-contas', 'admin-produtos', 'admin-saques', 'admin-painel-unificado', 'produtos', 'meus-cursos', 'missoes', 'centro-notificacoes', 'criar-produto', 'links'];
                 let lastView = localStorage.getItem('dito_last_view') || 'dashboard';
                 
                 // Se a view salva for lixo ou de outro app (ex: 'av'), volta pro dashboard

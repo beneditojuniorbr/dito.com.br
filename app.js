@@ -7934,7 +7934,7 @@
             extraContainer.id = 'live-extra-content';
             extraContainer.style.cssText = 'padding: 0 32px 32px;';
             
-            const isOwner = this.currentUser && this.currentUser.username === p.seller;
+            // isOwner já foi declarado no início da função
             
             if (isOwner) {
                 extraContainer.innerHTML = `

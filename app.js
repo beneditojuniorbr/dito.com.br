@@ -457,13 +457,18 @@
                 this.checkLiveAdminStatus();
                 this.initGlobalActivityMonitor();
                 
-                // Polling de segurança
-                setInterval(() => {
-                    this.fetchNetworkUsers();
-                    this.fetchNetworkProducts();
-                    this.fetchUserCloudState(); 
-                    this.updateLastSeen();      
-                    this.checkNetworkHealth();
+                // Polling de segurança otimizado (Sequencial para evitar flooding)
+                setInterval(async () => {
+                    if (!navigator.onLine) return;
+                    try {
+                        await this.fetchNetworkUsers();
+                        await this.fetchNetworkProducts();
+                        await this.fetchUserCloudState(); 
+                        this.updateLastSeen();      
+                        this.checkNetworkHealth();
+                    } catch (e) {
+                        console.warn("⚠️ [Sync] Falha no ciclo de polling:", e.message);
+                    }
                 }, 30000);
 
                 // Inicia Canais Realtime (Supabase)
@@ -2961,6 +2966,9 @@
         },
 
         async fetchNetworkProducts(force = false) {
+            if (!supabase || this.isFetchingProducts) return;
+            this.isFetchingProducts = true;
+            
             // 1. Efeito Visual
             const mContainer = document.getElementById('market-actual-content');
             const rIcon = document.getElementById('market-refresh-icon');
@@ -2979,7 +2987,6 @@
                 }, 50);
             }
 
-            if (!supabase) return;
             try {
                 // 2. BUSCA NO SUPABASE (Produtos + Avaliações)
                 const [pRes, rRes] = await Promise.all([
@@ -2994,21 +3001,18 @@
                 if (data && !error) {
                     // Hash ultra-leve para comparação
                     const currentHash = data.map(p => `${p.id}-${p.created_at}`).join('|');
-                    // 3. FONTE DE VERDADE: CLOUD (Sem cache para fluidez total)
+                    // 3. FONTE DE VERDADE: CLOUD
                     const synchronized = data.map(net => {
                         const contentData = net.content ? (typeof net.content === 'string' ? JSON.parse(net.content) : net.content) : null;
                         return { ...net, id: String(net.id), price: Number(net.price), content: contentData };
                     });
 
-                    // 3. FONTE DE VERDADE: CLOUD (Sem cache para fluidez total)
                     this.products = synchronized;
                     
-                    // Renderiza se estivermos no mercado
                     if (this.currentView === 'mercado' && this.marketView === 'home') {
                         this.renderMarketHome();
                     }
                     
-                    // Se estivermos na live, atualiza o produto selecionado para pegar novos links (Câmera do Mentor)
                     if (this.currentView === 'mercado' && this.marketView === 'live-room' && this.selectedProduct) {
                         const updated = synchronized.find(p => String(p.id) === String(this.selectedProduct.id));
                         if (updated) {
@@ -3016,13 +3020,14 @@
                             this.renderMarketLiveRoom(document.getElementById('market-container'));
                         }
                     }
-
                     this.safeLocalStorageSet('dito_last_p_hash', currentHash);
                 }
                 this.handleNetworkSuccess();
             } catch (err) {
                 this.handleNetworkFailure(err);
                 console.warn("⚠️ [REDE] Falha ao sincronizar mercado com a nuvem:", err);
+            } finally {
+                this.isFetchingProducts = false;
             }
         },
 
@@ -9276,7 +9281,8 @@
     };
 
     app.fetchUserCloudState = async function() {
-        if (!supabase || !this.currentUser) return;
+        if (!supabase || !this.currentUser || this.isFetchingCloudState) return;
+        this.isFetchingCloudState = true;
         const key = this.getUserKey();
         try {
             // Pegamos tudo com '*' para evitar erros de coluna inexistente (400 Bad Request)
@@ -9327,6 +9333,8 @@
             }
         } catch (e) {
             console.error("Erro ao sincronizar estado da conta:", e);
+        } finally {
+            this.isFetchingCloudState = false;
         }
     };
 

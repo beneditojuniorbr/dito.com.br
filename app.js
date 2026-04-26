@@ -6485,40 +6485,47 @@
             const img = this.selectedProductImage;
 
             // 0. Image Updates
+            const vitrineCard = document.getElementById('preview-vitrine-card');
             const vitrineImg = document.getElementById('preview-vitrine-image');
-            if (vitrineImg) {
+            const vitrineSales = document.getElementById('preview-vitrine-sales');
+            
+            if (vitrineImg && vitrineCard) {
                 if (type === 'Mentoria') {
-                    vitrineImg.style.height = '200px'; // Recuo para a bola caber bem
+                    // Estilo Mentoria (Circular no Meio)
+                    vitrineImg.style.aspectRatio = 'auto';
+                    vitrineImg.style.height = '180px';
                     vitrineImg.style.background = 'transparent';
+                    vitrineImg.style.borderBottom = 'none';
+                    vitrineImg.style.padding = '12px';
                     vitrineImg.innerHTML = `
-                        <div style="position: relative; width: 120px; height: 120px; margin: 0 auto;">
-                            <div class="live-pulse-border" style="position: absolute; inset: -4px; border-radius: 50%; border: 2.5px solid #ff005c; opacity: 0.8;"></div>
-                            <div style="width: 100%; height: 100%; border-radius: 50%; background-image: url('${img || ''}'); background-size: cover; background-position: center; background-color: #f9f9f9; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; position: relative; z-index: 2;">
-                                ${!img ? '<i data-lucide="image" style="width: 32px; color: #eee;"></i>' : ''}
-                            </div>
-                            <div style="position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); background: #ff005c; color: #fff; font-size: 9px; font-weight: 950; padding: 3px 12px; border-radius: 20px; text-transform: uppercase; white-space: nowrap; z-index: 10; box-shadow: 0 4px 12px rgba(255, 0, 92, 0.3);">
-                                Ao Vivo
+                        <div style="aspect-ratio: 1; width: 100%; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #ff005c, #7000ff); display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 4px 15px rgba(255,0,92,0.3);">
+                            <span style="position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); background: #ff005c; color: white; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 6px; border: 2px solid #fff; letter-spacing: 1px; z-index: 2; white-space: nowrap;">AO VIVO</span>
+                            <div style="width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: #fff; border: 2px solid #fff; display: flex; align-items: center; justify-content: center; background-size: cover; background-position: center; background-image: url('${img || ''}')">
+                                ${!img ? '<i data-lucide="users" style="width: 32px; color: #eee;"></i>' : ''}
                             </div>
                         </div>
                     `;
-                    if (window.lucide) lucide.createIcons();
+                    if (vitrineSales) vitrineSales.innerText = 'Transmitindo';
                 } else {
-                    vitrineImg.style.height = '280px';
+                    // Estilo Padrão (Capa Inteira)
+                    vitrineImg.style.aspectRatio = '1';
+                    vitrineImg.style.height = 'auto';
+                    vitrineImg.style.padding = '0';
+                    vitrineImg.style.borderBottom = '2px solid #f2f2f2';
                     vitrineImg.style.backgroundImage = img ? `url(${img})` : 'none';
                     vitrineImg.style.backgroundSize = 'cover';
                     vitrineImg.style.backgroundPosition = 'center';
                     vitrineImg.style.backgroundColor = '#f9f9f9';
-                    vitrineImg.innerHTML = !img ? '<i data-lucide="image" style="width: 40px; color: #eee;"></i>' : '';
-                    if (window.lucide) lucide.createIcons();
+                    vitrineImg.innerHTML = !img ? `<i data-lucide="${type === 'Curso' ? 'play-circle' : 'book-open'}" style="width: 40px; color: #eee;"></i>` : '';
+                    if (vitrineSales) vitrineSales.innerText = '0 v.';
                 }
+                if (window.lucide) lucide.createIcons();
             }
 
             // 1. Vitrine Updates
             const vitrineName = document.getElementById('preview-vitrine-name');
-            const vitrineCategory = document.getElementById('preview-vitrine-category');
             const vitrinePrice = document.getElementById('preview-vitrine-price');
             if (vitrineName) vitrineName.innerText = name;
-            if (vitrineCategory) vitrineCategory.innerText = category;
             if (vitrinePrice) vitrinePrice.innerText = formattedPrice;
 
             // 2. Checkout Updates

@@ -1329,22 +1329,25 @@
                         <!-- 1. VITRINE PREVIEW -->
                         <div style="text-align: center;">
                             <span style="font-size: 10px; font-weight: 900; color: #ccc; text-transform: uppercase; display: block; margin-bottom: 20px;">1. Na Vitrine (Mercado)</span>
-                            <div style="width: 165px; margin: 0 auto; background: #fff; border-radius: 6px; border: 2px solid #f2f2f2; cursor: pointer; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.03); overflow: hidden; text-align: left;">
-                                <div id="preview-vitrine-image" style="width: 100%; aspect-ratio: 1; background: #f9f9f9; display: flex; align-items: center; justify-content: center; background-size: cover; background-position: center;">
+                            <div id="preview-vitrine-card" class="mercado-card-premium" style="width: 165px; margin: 0 auto; background: #fff; border-radius: 12px; border: 2px solid #f2f2f2; cursor: pointer; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.03); overflow: hidden; text-align: left;">
+                                <div id="preview-vitrine-image" style="width: 100%; aspect-ratio: 1; background: #f9f9f9; display: flex; align-items: center; justify-content: center; background-size: cover; background-position: center; border-bottom: 2px solid #f2f2f2;">
                                     <i data-lucide="image" style="width: 30px; color: #eee;"></i>
                                 </div>
                                 <div style="padding: 10px; display: flex; flex-direction: column; gap: 4px; flex-grow: 1;">
                                     <h4 id="preview-vitrine-name" style="font-weight: 900; font-size: 11px; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0;">Nome do Produto</h4>
-                                    <div style="display: flex; gap: 2px;">
-                                        <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
-                                        <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
-                                        <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
-                                        <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
-                                        <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
+                                    <div style="display: flex; align-items: center; gap: 4px;">
+                                        <div style="display: flex; gap: 2px;">
+                                            <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
+                                            <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
+                                            <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
+                                            <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
+                                            <i data-lucide="star" style="width: 7px; color: #facc15; fill: #facc15;"></i>
+                                        </div>
+                                        <span style="font-size: 7px; font-weight: 900; color: #bbb;">0</span>
                                     </div>
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
                                         <span id="preview-vitrine-price" style="font-weight: 900; font-size: 14px; color: #ff005c;">R$ 0,00</span>
-                                        <span style="font-size: 8px; font-weight: 800; color: #ccc;">0 v.</span>
+                                        <span id="preview-vitrine-sales" style="font-size: 8px; font-weight: 800; color: #ccc;">0 v.</span>
                                     </div>
                                 </div>
                             </div>

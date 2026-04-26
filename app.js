@@ -7914,34 +7914,50 @@
                 `;
             } else {
                 playerContainer.innerHTML = `
-                    <div style="text-align: center; color: #666; padding: 40px 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; background: #fdfdfd;">
-                        <style>
-                            .live-pulse {
-                                animation: pulse-red 2s infinite;
-                            }
-                            @keyframes pulse-red {
-                                0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 0, 92, 0.7); }
-                                70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(255, 0, 92, 0); }
-                                100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 0, 92, 0); }
-                            }
-                        </style>
-                        <div class="live-pulse" style="width: 12px; height: 12px; background: #ff005c; border-radius: 50%; margin-bottom: 20px;"></div>
+                        <div class="live-pulse" style="width: 12px; height: 12px; background: #000; border-radius: 50%; margin-bottom: 20px;"></div>
                         <i data-lucide="video-off" style="width: 48px; margin-bottom: 16px; color: #eee;"></i>
                         <p style="font-size: 15px; font-weight: 950; color: #000; letter-spacing: -0.5px; margin-bottom: 4px;">Aguardando o Mentor iniciar...</p>
                         <p style="font-size: 12px; color: #999; font-weight: 500;">A transmissão começará automaticamente à medida que o sinal for detectado.</p>
                         ${this.currentUser && this.currentUser.username === p.seller ? `
-                            <div style="margin-top: 24px; display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 240px;">
-                                <button onclick="app.isLocalProtocol() ? app.showRemoteCameraHelp('${p.id}') : app.startLiveCamera()" style="background: #ff005c; color: #fff; border: none; padding: 14px; border-radius: 16px; font-weight: 900; font-size: 11px; cursor: pointer; box-shadow: 0 10px 20px rgba(255,0,92,0.2);">
-                                    <i data-lucide="camera" style="width: 14px; margin-right: 4px;"></i> ${app.isLocalProtocol() ? 'CONECTAR CÂMERA DO CELULAR' : 'INICIAR CÂMERA (NATIVO)'}
-                                </button>
-                                <button onclick="app.updateLiveLink('${p.id}')" style="background: #000; color: #fff; border: none; padding: 14px; border-radius: 16px; font-weight: 900; font-size: 11px; cursor: pointer;">
-                                    USAR LINK EXTERNO (YOUTUBE)
+                            <div style="margin-top: 24px; display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; max-width: 240px;">
+                                <button onclick="app.isLocalProtocol() ? app.showRemoteCameraHelp('${p.id}') : app.startLiveCamera()" style="background: #000; color: #fff; border: none; padding: 16px 32px; border-radius: 50px; font-weight: 900; font-size: 12px; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.1); width: 100%; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    <i data-lucide="video" style="width: 16px; margin-right: 8px; vertical-align: middle;"></i> Iniciar Câmera
                                 </button>
                             </div>
                         ` : ''}
                     </div>
                 `;
             }
+
+            // Área Extra para Mentor (Descrição e Links de Venda)
+            const extraContainer = document.createElement('div');
+            extraContainer.id = 'live-extra-content';
+            extraContainer.style.cssText = 'padding: 0 32px 32px;';
+            
+            const isOwner = this.currentUser && this.currentUser.username === p.seller;
+            
+            if (isOwner) {
+                extraContainer.innerHTML = `
+                    <div style="background: #fafafa; border: 1.5px dashed #eee; border-radius: 24px; padding: 20px; margin-top: 20px;">
+                        <h4 style="font-size: 11px; font-weight: 950; color: #000; text-transform: uppercase; margin-bottom: 12px;">HUB DO MENTOR: EXTRAS</h4>
+                        <textarea id="live-mentor-desc" placeholder="Adicione uma descrição extra ou avisos aqui..." style="width: 100%; height: 80px; background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 12px; font-size: 12px; font-weight: 700; outline: none; margin-bottom: 12px; resize: none;">${p.extra_desc || ''}</textarea>
+                        <input type="text" id="live-mentor-link" placeholder="Link de um produto ou oferta (ex: https://...)" value="${p.extra_link || ''}" style="width: 100%; height: 45px; background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 0 12px; font-size: 12px; font-weight: 800; outline: none; margin-bottom: 12px;">
+                        <button onclick="app.saveMentorshipExtras('${p.id}')" style="width: 100%; height: 45px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 900; font-size: 11px; cursor: pointer;">SALVAR EXTRAS</button>
+                    </div>
+                `;
+            } else if (p.extra_desc || p.extra_link) {
+                extraContainer.innerHTML = `
+                    <div style="background: #fdf2f8; border-radius: 24px; padding: 20px; margin-top: 20px; border: 1px solid #fce7f3;">
+                        ${p.extra_desc ? `<p style="font-size: 13px; color: #333; font-weight: 700; line-height: 1.6; margin-bottom: 16px;">${p.extra_desc}</p>` : ''}
+                        ${p.extra_link ? `
+                            <a href="${p.extra_link}" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 50px; background: #ff005c; color: #fff; text-decoration: none; border-radius: 50px; font-weight: 950; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 10px 20px rgba(255,0,92,0.2);">
+                                <i data-lucide="external-link" style="width: 14px;"></i> ACESSAR OFERTA ESPECIAL
+                            </a>
+                        ` : ''}
+                    </div>
+                `;
+            }
+            container.appendChild(extraContainer);
 
             // CONTROLES DE TRANSMISSÃO CENTRALIZADOS NO HUB FLUTUANTE
             const controls = document.createElement('div');
@@ -8454,6 +8470,42 @@
                 if (window.lucide) lucide.createIcons();
             }
         }, 150);
+    };
+
+    app.saveMentorshipExtras = async function(id) {
+        const desc = document.getElementById('live-mentor-desc')?.value;
+        const link = document.getElementById('live-mentor-link')?.value;
+        
+        this.showLoading(true, "Salvando extras...");
+        
+        try {
+            if (supabase) {
+                const { error } = await supabase
+                    .from('dito_market_products')
+                    .update({ 
+                        extra_desc: desc,
+                        extra_link: link
+                    })
+                    .eq('id', id);
+                
+                if (error) throw error;
+            }
+            
+            // Atualiza localmente
+            const p = this.products.find(prod => String(prod.id) === String(id));
+            if (p) {
+                p.extra_desc = desc;
+                p.extra_link = link;
+            }
+            
+            this.showNotification("Extras salvos com sucesso!", "success");
+            this.renderMarketLiveRoom(document.getElementById('market-actual-content'));
+        } catch (e) {
+            console.error(e);
+            this.showNotification("Erro ao salvar extras.", "error");
+        } finally {
+            this.showLoading(false);
+        }
     };
 
     app.toggleLiveManagementPopup = function() {

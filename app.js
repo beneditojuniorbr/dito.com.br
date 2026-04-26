@@ -4416,7 +4416,7 @@
                 // Controle dos Botões Flutuantes (Missões e Chat)
                 const fixedActions = document.getElementById('global-fixed-actions');
                 if (fixedActions) {
-                    const hideViews = ['welcome', 'login', 'cadastro', 'checkout-direto', 'produto-novo'];
+                    const hideViews = ['welcome', 'login', 'cadastro', 'checkout-direto', 'criar-produto'];
                     if (hideViews.includes(view) || (view === 'mercado' && this.marketView === 'checkout')) {
                         fixedActions.style.display = 'none';
                     } else {
@@ -4455,7 +4455,7 @@
                 this.checkLiveAdminStatus();
 
                 // Oculta botões flutuantes em telas públicas (landing, login, cadastro) ou criação de produto
-                const isPublicPage = (view === 'welcome' || view === 'login' || view === 'cadastro' || view === 'produto-novo');
+                const isPublicPage = (view === 'welcome' || view === 'login' || view === 'cadastro' || view === 'criar-produto');
                 const missionsAction = document.getElementById('global-fixed-actions');
                 if (missionsAction) missionsAction.style.display = (isPublicPage || (view === 'mercado' && this.marketView === 'checkout')) ? 'none' : 'flex';
 

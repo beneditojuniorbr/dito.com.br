@@ -1667,10 +1667,10 @@
                 return;
             }
             
-            const isOwner = this.currentUser && (p.seller === this.currentUser.username || p.author === this.currentUser.username);
+            const isOwnerJoin = this.currentUser && (p.seller === this.currentUser.username || p.author === this.currentUser.username);
             const hasPurchased = this.purchasedProducts && this.purchasedProducts.some(pp => String(pp.id) === String(p.id));
 
-            if (!isOwner && !hasPurchased) {
+            if (!isOwnerJoin && !hasPurchased) {
                 this.showLoading(false);
                 this.selectedProduct = p;
                 this.setMarketView('live-room'); // Vai mostrar a tela de "Comprar Ingresso"
@@ -3267,8 +3267,8 @@
             // Customizar Botões de Ação
             const actionsContainer = document.getElementById('product-actions');
             if (actionsContainer) {
-                const isOwner = this.currentUser && (p.seller === this.currentUser.username || p.author === this.currentUser.username);
-                const hasAccess = isOwner || (this.purchasedProducts && this.purchasedProducts.some(pp => String(pp.id) === String(p.id)));
+                const isOwnerMarket = this.currentUser && (p.seller === this.currentUser.username || p.author === this.currentUser.username);
+                const hasAccess = isOwnerMarket || (this.purchasedProducts && this.purchasedProducts.some(pp => String(pp.id) === String(p.id)));
                 const remaining = p.hasLimit ? (p.stockLimit - (p.sales || 0)) : 999;
                 const isSoldOut = p.hasLimit && remaining <= 0;
 
@@ -3964,8 +3964,8 @@
             
             if (!product) {
                 const globalP = this.products.find(p => p.id === id);
-                const isOwner = globalP && (globalP.seller === this.currentUser?.username || globalP.author === this.currentUser?.username);
-                if (isOwner) product = globalP;
+                const isOwnerCourse = globalP && (globalP.seller === this.currentUser?.username || globalP.author === this.currentUser?.username);
+                if (isOwnerCourse) product = globalP;
             }
 
             this.activeCourse = product;

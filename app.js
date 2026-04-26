@@ -2056,7 +2056,7 @@
             const key = this.getUserKey();
             const today = new Date().toDateString();
             
-            // Definição do desafio: Fazer uma venda = 100 cupons
+            // Definição do desafio: Fazer uma venda = 20 cupons
             const salesHistory = JSON.parse(localStorage.getItem(`dito_real_sales_history_${key}`) || '[]');
             const hasSaleToday = salesHistory.some(s => new Date(s.date).toDateString() === today);
             
@@ -2077,7 +2077,7 @@
                         ${isClaimed ? 
                             `<div style="background: #f0fdf4; color: #16a34a; padding: 12px; border-radius: 14px; font-size: 11px; font-weight: 950; text-align: center;">CONCLUÍDO</div>` :
                             (hasSaleToday ? 
-                                `<button onclick="app.claimDailyChallenge('sale_100', 100)" style="width: 100%; background: #000; color: #fff; border: none; padding: 12px; border-radius: 14px; font-size: 11px; font-weight: 950; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">RESGATAR +100</button>` :
+                                `<button onclick="app.claimDailyChallenge('sale_20', 20)" style="width: 100%; background: #000; color: #fff; border: none; padding: 12px; border-radius: 14px; font-size: 11px; font-weight: 950; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">RESGATAR +20</button>` :
                                 `<button onclick="app.showNotification('Faça uma venda para liberar!', 'info')" style="width: 100%; background: #f5f5f5; color: #ccc; border: none; padding: 12px; border-radius: 14px; font-size: 11px; font-weight: 950; cursor: not-allowed;">BLOQUEADO</button>`
                             )
                         }

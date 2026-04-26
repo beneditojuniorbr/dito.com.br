@@ -1203,12 +1203,12 @@
                     <div style="display: flex; flex-direction: column; gap: 28px;">
                         <div>
                             <label style="display: block; font-size: 11px; font-weight: 850; color: #777; margin-bottom: 0; margin-left: 10px; text-transform: uppercase; line-height: 1;">Nome do produto</label>
-                            <input type="text" id="prod-name" placeholder="Ex: Do Zero ao Avançado" style="width: 100%; margin-top: 0; padding: 2px 10px 0; background: transparent; border: none; border-bottom: 2px solid #eee; border-radius: 0; font-weight: 800; font-size: 15px; outline: none; transition: 0.3s; line-height: 0.8; height: 28px;">
+                            <input type="text" id="prod-name" placeholder="" style="width: 100%; margin-top: 0; padding: 2px 10px 0; background: transparent; border: none; border-bottom: 2px solid #eee; border-radius: 0; font-weight: 800; font-size: 15px; outline: none; transition: 0.3s; line-height: 0.8; height: 28px;">
                         </div>
 
                         <div>
                             <label style="display: block; font-size: 11px; font-weight: 850; color: #777; margin-bottom: 0; margin-left: 10px; text-transform: uppercase; line-height: 1;">Descrição detalhada</label>
-                            <textarea id="prod-desc" oninput="this.style.height = '0px'; this.style.height = this.scrollHeight + 'px';" placeholder="O que seu produto entrega?" style="width: 100%; min-height: 0; margin-top: 0; padding: 2px 10px 0; background: transparent; border: none; border-bottom: 2px solid #eee; border-radius: 0; font-weight: 700; font-size: 15px; outline: none; resize: none; overflow: hidden; line-height: 1.2; height: 18px;"></textarea>
+                            <textarea id="prod-desc" oninput="this.style.height = '0px'; this.style.height = this.scrollHeight + 'px';" placeholder="" style="width: 100%; min-height: 0; margin-top: 0; padding: 2px 10px 0; background: transparent; border: none; border-bottom: 2px solid #eee; border-radius: 0; font-weight: 700; font-size: 15px; outline: none; resize: none; overflow: hidden; line-height: 1.2; height: 18px;"></textarea>
                         </div>
 
                         <div>
@@ -1232,7 +1232,7 @@
                         <label style="display: block; font-size: 11px; font-weight: 850; color: #777; margin-bottom: 0; margin-left: 10px; text-transform: uppercase;">Valor do Investimento</label>
                         <div style="position: relative; height: 32px; margin-top: 8px;">
                             <span style="position: absolute; left: 10px; top: 4px; font-weight: 900; font-size: 14px; color: #000;">R$</span>
-                            <input type="number" id="prod-price" oninput="app.calculateNetProfit(this.value); app.updateProductPreview();" placeholder="0,00" style="width: 100%; height: 32px; padding: 2px 10px 0 40px; background: transparent; border: none; border-bottom: 2px solid #eee; border-radius: 0; font-weight: 900; font-size: 18px; outline: none; line-height: 0.8;">
+                            <input type="number" id="prod-price" oninput="app.calculateNetProfit(this.value); app.updateProductPreview();" placeholder="" style="width: 100%; height: 32px; padding: 2px 10px 0 40px; background: transparent; border: none; border-bottom: 2px solid #eee; border-radius: 0; font-weight: 900; font-size: 18px; outline: none; line-height: 0.8;">
                         </div>
                         <div id="profit-calc-breakdown" style="margin-top: 16px; padding: 16px; background: #fafafa; border-radius: 16px; display: none; flex-direction: column; gap: 8px;">
                             <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: #999;">
@@ -1277,14 +1277,14 @@
                             </div>
                             <div id="prod-limit-container" style="display: none; padding: 20px 20px 0;">
                                 <label style="display: block; font-size: 11px; font-weight: 850; color: #777; margin-bottom: 4px; text-transform: uppercase;">Estoque total</label>
-                                <input type="number" id="prod-stock-limit" placeholder="Ex: 50" style="width: 100%; height: 32px; padding: 2px 10px 0; background: transparent; border: none; border-bottom: 2px solid #eee; border-radius: 0; font-weight: 800; font-size: 14px; outline: none;">
+                                <input type="number" id="prod-stock-limit" placeholder="" style="width: 100%; height: 32px; padding: 2px 10px 0; background: transparent; border: none; border-bottom: 2px solid #eee; border-radius: 0; font-weight: 800; font-size: 14px; outline: none;">
                             </div>
                         </div>
                     </div>
 
-                    <div style="display: flex; gap: 12px; margin-top: 20px;">
+                    <div style="display: flex; gap: 12px; margin-top: 24px; padding-bottom: 20px;">
                         <button onclick="app.setProductCreateStep(2)" style="width: 80px; height: 56px; background: #fff; border: 1.5px solid #eee; border-radius: 50px; cursor: pointer; display: flex; align-items: center; justify-content: center;"><i data-lucide="chevron-left" style="width: 20px;"></i></button>
-                        <button onclick="app.setProductCreateStep(4)" style="flex: 1; height: 56px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 950; font-size: 14px; text-transform: uppercase; cursor: pointer;">Finalizar Conteúdo</button>
+                        <button onclick="app.setProductCreateStep(4)" style="flex: 1; height: 56px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 950; font-size: 14px; text-transform: uppercase; cursor: pointer; letter-spacing: 0.5px;">Próximo Passo</button>
                     </div>
                 </div>
 

@@ -1132,17 +1132,17 @@
 
     <template id="template-criar-produto">
         <div style="padding: 24px;">
-            <div onclick="app.navigate('dashboard', 'left')" style="width: 44px; height: 44px; background: #f5f5f5; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-bottom: 24px; transition: 0.3s;">
+            <div onclick="app.handleProductCreateBack()" style="width: 44px; height: 44px; background: #f5f5f5; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-bottom: 24px; transition: 0.3s;">
                 <i data-lucide="arrow-left" style="width: 20px; color: #000;"></i>
             </div>
 
             <div id="create-product-progress-container" style="margin-bottom: 40px; padding: 0 10px; display: none;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                    <span id="product-progress-step-text" style="font-size: 11px; font-weight: 950; color: #000; text-transform: uppercase; letter-spacing: 0.5px;">1 de 4 etapas para concluir</span>
-                    <span id="product-progress-percentage" style="font-size: 11px; font-weight: 950; color: #000;">25%</span>
+                    <span id="product-progress-step-text" style="font-size: 11px; font-weight: 950; color: #000; text-transform: uppercase; letter-spacing: 0.5px;">1 de 5 etapas para concluir</span>
+                    <span id="product-progress-percentage" style="font-size: 11px; font-weight: 950; color: #000;">20%</span>
                 </div>
                 <div style="width: 100%; height: 6px; background: #f5f5f5; border-radius: 50px; overflow: hidden;">
-                    <div id="product-progress-bar" style="width: 25%; height: 100%; background: #000; transition: 0.8s cubic-bezier(0.19, 1, 0.22, 1);"></div>
+                    <div id="product-progress-bar" style="width: 20%; height: 100%; background: #000; transition: 0.8s cubic-bezier(0.19, 1, 0.22, 1);"></div>
                 </div>
             </div>
 
@@ -1304,30 +1304,24 @@
                     <div id="mentoria-fields" style="display: none; flex-direction: column; gap: 28px;">
                         <div>
                             <label style="display: block; font-size: 11px; font-weight: 850; color: #777; margin-bottom: 4px; margin-left: 10px; text-transform: uppercase;">Data de Início</label>
-                            <input type="date" id="prod-date" style="width: 100%; height: 50px; padding: 0 10px; background: transparent; border: none; border-bottom: 2px solid #eee; border-radius: 0; font-weight: 800; font-size: 14px; outline: none;">
-                        </div>
-                    </div>
-
-                    <div style="display: flex; gap: 12px; margin-top: 20px;">
+                            <input type="date" id="prod-date" style="width: 100%; height: 50px; padding: 0 10px; background: transparent; border                    <div style="display: flex; gap: 12px; margin-top: 20px;">
                         <button onclick="app.setProductCreateStep(3)" style="width: 80px; height: 56px; background: #fff; border: 1.5px solid #eee; border-radius: 50px; cursor: pointer; display: flex; align-items: center; justify-content: center;"><i data-lucide="chevron-left" style="width: 20px;"></i></button>
-                        <button onclick="app.saveProduct()" class="btn-enviar-produto" style="flex: 1; height: 64px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 950; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">Publicar Produto</button>
+                        <button onclick="app.setProductCreateStep(5)" style="flex: 1; height: 56px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 950; font-size: 14px; text-transform: uppercase; cursor: pointer;">Ver Prévia Final</button>
                     </div>
                 </div>
-            </div>
 
-                <!-- Seção de Preview em Tempo Real -->
-                <div style="margin-top: 60px; border-top: 2px dashed #eee; padding-top: 40px;">
-                    <header style="margin-bottom: 32px; text-align: center;">
-                        <h4 style="font-size: 18px; font-weight: 950; color: #000; letter-spacing: -1px;">Visualização em Tempo Real</h4>
+                <!-- STEP 5: PREVIEW FINAL -->
+                <div id="product-step-5" style="display: none; flex-direction: column; gap: 40px;">
+                    <header style="text-align: center; margin-bottom: 8px;">
+                        <h4 style="font-size: 20px; font-weight: 950; color: #000; letter-spacing: -1px;">Tudo pronto? Confira sua obra.</h4>
                         <p style="font-size: 11px; font-weight: 800; color: #999; text-transform: uppercase; margin-top: 4px;">Veja como seu produto aparecerá para o mundo</p>
                     </header>
 
                     <div style="display: flex; flex-direction: column; gap: 48px;">
-                        
                         <!-- 1. VITRINE PREVIEW -->
                         <div style="text-align: center;">
                             <span style="font-size: 10px; font-weight: 900; color: #ccc; text-transform: uppercase; display: block; margin-bottom: 20px;">1. Na Vitrine (Mercado)</span>
-                            <div style="width: 165px; margin: 0 auto; background: #fff; border-radius: 6px; border: 1px solid #f2f2f2; cursor: pointer; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.03); overflow: hidden; text-align: left;">
+                            <div style="width: 165px; margin: 0 auto; background: #fff; border-radius: 6px; border: 2px solid #f2f2f2; cursor: pointer; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.03); overflow: hidden; text-align: left;">
                                 <div id="preview-vitrine-image" style="width: 100%; aspect-ratio: 1; background: #f9f9f9; display: flex; align-items: center; justify-content: center; background-size: cover; background-position: center;">
                                     <i data-lucide="image" style="width: 30px; color: #eee;"></i>
                                 </div>
@@ -1393,10 +1387,13 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
 
+                    <div style="display: flex; gap: 12px; margin-top: 40px; padding: 0 10px;">
+                        <button onclick="app.setProductCreateStep(4)" style="width: 80px; height: 64px; background: #fff; border: 1.5px solid #eee; border-radius: 50px; cursor: pointer; display: flex; align-items: center; justify-content: center;"><i data-lucide="chevron-left" style="width: 20px;"></i></button>
+                        <button onclick="app.saveProduct()" class="btn-enviar-produto" style="flex: 1; height: 64px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 950; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; box-shadow: 0 20px 40px rgba(0,0,0,0.15);">Publicar Agora</button>
                     </div>
                 </div>
-            </div>
             </div>
         </div>
     </template>

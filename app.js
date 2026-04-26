@@ -6633,13 +6633,14 @@
             const step2 = document.getElementById('product-step-2');
             const step3 = document.getElementById('product-step-3');
             const step4 = document.getElementById('product-step-4');
+            const step5 = document.getElementById('product-step-5');
             const progressContainer = document.getElementById('create-product-progress-container');
             const form = document.getElementById('create-product-form');
             
             if (!step1) return;
 
             // Esconder tudo
-            [step1, step2, step3, step4].forEach(s => { if(s) s.style.display = 'none'; });
+            [step1, step2, step3, step4, step5].forEach(s => { if(s) s.style.display = 'none'; });
             
             if (step === 1) {
                 step1.style.display = 'block';
@@ -6652,6 +6653,7 @@
                 if (step === 2 && step2) step2.style.display = 'flex';
                 if (step === 3 && step3) step3.style.display = 'flex';
                 if (step === 4 && step4) step4.style.display = 'flex';
+                if (step === 5 && step5) step5.style.display = 'flex';
             }
 
             this.updateProductProgress();
@@ -6666,11 +6668,20 @@
             if (!bar) return;
 
             const step = this.currentProductStep || 1;
-            const pct = (step / 4) * 100;
+            const pct = (step / 5) * 100;
             
             bar.style.width = `${pct}%`;
-            if (text) text.innerText = `${step} de 4 etapas para concluir`;
+            if (text) text.innerText = `${step} de 5 etapas para concluir`;
             if (pctText) pctText.innerText = `${Math.round(pct)}%`;
+        },
+
+        handleProductCreateBack() {
+            const step = this.currentProductStep || 1;
+            if (step > 1) {
+                this.setProductCreateStep(step - 1);
+            } else {
+                this.navigate('dashboard', 'left');
+            }
         },
 
         selectProductType(type, btn) {

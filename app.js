@@ -3536,6 +3536,8 @@
                 if (!this.purchasedProducts.find(p => p.id === product.id)) {
                     this.purchasedProducts.push({ 
                         ...product, 
+                        name: product.name || 'Produto Adquirido',
+                        type: product.type || 'Acesso',
                         purchased_at: Date.now() 
                     });
                 }
@@ -8991,10 +8993,16 @@
 
                 // 3. Sincroniza Compras/Acessos
                 if (data.purchases) {
-                    const cloudPurchases = typeof data.purchases === 'string' ? JSON.parse(data.purchases) : data.purchases;
+                    let cloudPurchases = typeof data.purchases === 'string' ? JSON.parse(data.purchases) : data.purchases;
                     
                     if (Array.isArray(cloudPurchases) && cloudPurchases.length > 0) {
-                        this.purchasedProducts = cloudPurchases;
+                        // Sanitiza para evitar 'undefined' no nome ou tipo
+                        this.purchasedProducts = cloudPurchases.map(p => ({
+                            ...p,
+                            name: p.name || 'Produto Adquirido',
+                            type: p.type || 'Acesso'
+                        }));
+                        
                         localStorage.setItem(`dito_purchased_products_${key}`, JSON.stringify(this.purchasedProducts));
                         
                         // Atualiza a tela se o usuário estiver nos cursos

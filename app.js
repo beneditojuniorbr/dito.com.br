@@ -8039,7 +8039,7 @@
                     `;
                     
                     return `
-                    <div onclick="app.viewProduct('${p.id}')" style="width: 165px; min-width: 165px; background: #fff; border-radius: 6px; border: 1px solid #f2f2f2; cursor: pointer; scroll-snap-align: start; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.03); overflow: hidden; transition: 0.3s; position: relative;">
+                    <div onclick="app.viewProduct('${p.id}')" class="card-loja" style="width: 165px; min-width: 165px; scroll-snap-align: start; display: flex; flex-direction: column; position: relative;">
                         ${isMentoria ? `
                             <div style="padding: 12px; display: flex; flex-direction: column; align-items: center;">
                                 ${imgContainer}
@@ -8089,7 +8089,7 @@
                 `;
 
                 return `
-                <div onclick="app.viewProduct('${p.id}')" style="background: #fff; border-radius: 6px; border: 1px solid #f2f2f2; cursor: pointer; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.03); overflow: hidden; transition: 0.3s; position: relative;">
+                <div onclick="app.viewProduct('${p.id}')" class="card-loja" style="display: flex; flex-direction: column; position: relative;">
                     ${isMentoria ? `
                         <div style="padding: 12px; display: flex; flex-direction: column; align-items: center;">
                             ${imgContainer}

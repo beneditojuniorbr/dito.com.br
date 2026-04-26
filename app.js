@@ -2913,16 +2913,20 @@
                 const key = this.getUserKey();
                 const payload = {
                     username: user.username,
-                    password: user.password || "dito123", // Fallback para contas sem senha (ex: convites)
+                    password: user.password || "dito123",
                     email: user.email || "",
                     gender: user.gender || "none",
                     name: user.name || user.username,
                     bio: user.bio || "Membro Dito Network",
                     sales: Number(user.sales || 0),
                     fans: Number(user.fans || 0),
-                    balance: Number(localStorage.getItem(`user_balance_vanilla_${key}`) || user.balance || 0),
+                    balance: Number(user.balance || 0),
+                    pending_balance: Number(user.pending_balance || 0),
                     coins: Number(localStorage.getItem(`dito_coins_${key}`) || 0),
                     purchases: JSON.stringify(this.purchasedProducts),
+                    withdrawPixKey: user.withdrawPixKey || "",
+                    withdrawCardNumber: user.withdrawCardNumber || "",
+                    withdrawCardName: user.withdrawCardName || "",
                     avatar: user.avatar || "",
                     last_seen: new Date().toISOString()
                 };
@@ -6895,12 +6899,15 @@
             this.showNotification('Dados de recebimento salvos com sucesso!', 'success');
         },
 
-        handleWithdraw() {
+        async handleWithdraw() {
             const amountInp = document.getElementById('withdraw-amount');
+            if (!amountInp) return;
             const amount = parseFloat(amountInp.value) || 0;
 
-            const key = this.getUserKey();
-            const currentBalance = parseFloat(localStorage.getItem(`user_balance_vanilla_${key}`) || '0');
+            if (!this.currentUser) return;
+            
+            // Fonte de verdade: Cloud balance
+            const currentBalance = parseFloat(this.currentUser.balance || 0);
             
             if (amount <= 0) {
                 this.showNotification('Digite um valor válido para saque.', 'error');
@@ -6912,24 +6919,54 @@
                 return;
             }
 
-            if (!this.currentUser.withdrawPixKey && !this.currentUser.withdrawCardNumber) {
-                this.showNotification('Cadastre seus dados de recebimento antes de sacar.', 'error');
+            // Chave PIX é obrigatória para o saque
+            const pixKey = this.currentUser.withdrawPixKey || (document.getElementById('withdraw-pix-key')?.value.trim());
+            if (!pixKey) {
+                this.showNotification('Cadastre sua chave PIX antes de sacar.', 'error');
                 return;
             }
 
-            if (confirm(`Confirmar saque de R$ ${amount.toFixed(2)}?`)) {
-                // Deduz do saldo
-                const newBalance = currentBalance - amount;
-                localStorage.setItem(`user_balance_vanilla_${key}`, newBalance.toFixed(2));
-                
-                // Atualiza na Rede
-                this.currentUser.balance = newBalance;
-                this.syncUserToNetwork(this.currentUser);
+            if (!confirm(`Confirmar pedido de saque de R$ ${amount.toFixed(2)} para a chave: ${pixKey}?`)) return;
 
-                this.showNotification('Solicitação de saque enviada! 🚀', 'success');
+            this.showLoading(true, "Enviando pedido de saque...");
+
+            try {
+                // 1. REGISTRA A SOLICITAÇÃO NO BANCO (dito_withdrawals)
+                const { error: withdrawError } = await supabase.from('dito_withdrawals').insert([{
+                    username: this.currentUser.username,
+                    amount: amount,
+                    pix_key: pixKey,
+                    status: 'pending',
+                    created_at: new Date().toISOString()
+                }]);
+
+                if (withdrawError) throw withdrawError;
+
+                // 2. DEDUZ DO SALDO NO BANCO
+                const newBalance = (currentBalance - amount).toFixed(2);
+                const { error: balanceError } = await supabase.from('dito_users')
+                    .update({ balance: newBalance })
+                    .eq('username', this.currentUser.username);
+
+                if (balanceError) throw balanceError;
+
+                // 3. ATUALIZA ESTADO LOCAL
+                this.currentUser.balance = parseFloat(newBalance);
+                const key = this.getUserKey();
+                localStorage.setItem(`user_balance_vanilla_${key}`, newBalance);
+                localStorage.setItem('current_user_vanilla', JSON.stringify(this.currentUser));
+
+                this.showLoading(false);
+                this.showNotification('Pedido enviado! ✅ O valor cairá em sua conta em breve.', 'success');
+                
                 amountInp.value = '';
                 this.updateWithdrawUI();
                 this.updateBalanceUI();
+                
+            } catch (e) {
+                console.error("❌ [Saque] Erro Crítico:", e);
+                this.showLoading(false);
+                this.showNotification('Erro ao processar saque. Tente novamente em alguns instantes.', 'error');
             }
         },
 

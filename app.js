@@ -6006,6 +6006,11 @@
             updateEl(el);
             updateEl(dashEl);
             this.updateCoinsUI();
+            
+            // Se estiver na tela de saque, atualiza lá também em tempo real
+            if (this.currentView === 'sacar') {
+                this.updateWithdrawUI();
+            }
 
             // Atualiza o nome da saudação
             const nameEl = document.getElementById('user-greeting-name');
@@ -6824,27 +6829,22 @@
         updateWithdrawUI() {
             if (!this.currentUser) return;
             const balanceEl = document.getElementById('withdraw-balance');
+            const pendingContainer = document.getElementById('withdraw-balance-pending-container');
+            const pendingVal = document.getElementById('withdraw-balance-pending-val');
             const pixInp = document.getElementById('withdraw-pix-key');
             const cardNumInp = document.getElementById('withdraw-card-number');
             const cardNameInp = document.getElementById('withdraw-card-name');
 
-            // Atualiza Saldo na Tela
-            const key = this.getUserKey();
-            const baseBalance = parseFloat(localStorage.getItem(`user_balance_vanilla_${key}`) || '0');
-            const realSales = JSON.parse(localStorage.getItem(`dito_real_sales_history_${key}`) || '[]');
-            const salesTotal = realSales.reduce((acc, s) => acc + (s.value || 0), 0);
-            
-            const pendingBase = parseFloat(localStorage.getItem(`user_pending_vanilla_${key}`) || '0');
-            const total = baseBalance + salesTotal;
+            // Fonte Única de Verdade (CurrentUser synced with Cloud)
+            const total = parseFloat(this.currentUser.balance || 0);
+            const pendingTotal = parseFloat(this.currentUser.pending_balance || 0);
 
             if (balanceEl) balanceEl.innerText = `R$ ${total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
 
-            // Atualiza Saldo Pendente
-            const pendingContainer = document.getElementById('withdraw-balance-pending-container');
-            const pendingVal = document.getElementById('withdraw-balance-pending-val');
+            // Atualiza Saldo Pendente (Garantia)
             if (pendingContainer && pendingVal) {
-                pendingVal.innerText = pendingBase.toLocaleString('pt-BR', {minimumFractionDigits: 2});
-                pendingContainer.style.display = pendingBase > 0 ? 'inline-block' : 'none';
+                pendingVal.innerText = pendingTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                pendingContainer.style.display = pendingTotal > 0 ? 'inline-block' : 'none';
             }
 
             // Preenche dados salvos

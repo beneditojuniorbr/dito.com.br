@@ -7843,10 +7843,10 @@
             const temp = document.getElementById('template-live-room');
             if (!temp) return;
             
-            const isOwner = this.currentUser && (p.seller === this.currentUser.username || p.author === this.currentUser.username);
+            const isOwnerLive = this.currentUser && (p.seller === this.currentUser.username || p.author === this.currentUser.username);
             const hasPurchased = this.purchasedProducts && this.purchasedProducts.some(pp => String(pp.id) === String(p.id));
 
-            if (!isOwner && !hasPurchased) {
+            if (!isOwnerLive && !hasPurchased) {
                 container.innerHTML = `
                     <div style="padding: 80px 32px; text-align: center; background: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;">
                         <div style="width: 80px; height: 80px; background: #fdf2f8; border-radius: 30px; display: flex; align-items: center; justify-content: center; margin-bottom: 32px;">
@@ -7934,9 +7934,7 @@
             extraContainer.id = 'live-extra-content';
             extraContainer.style.cssText = 'padding: 0 32px 32px;';
             
-            // isOwner já foi declarado no início da função
-            
-            if (isOwner) {
+            if (isOwnerLive) {
                 extraContainer.innerHTML = `
                     <div style="background: #fafafa; border: 1.5px dashed #eee; border-radius: 24px; padding: 20px; margin-top: 20px;">
                         <h4 style="font-size: 11px; font-weight: 950; color: #000; text-transform: uppercase; margin-bottom: 12px;">HUB DO MENTOR: EXTRAS</h4>

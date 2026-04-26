@@ -5572,31 +5572,35 @@
                     return;
                 }
 
-                list.style.gap = '8px';
                 list.innerHTML = withdrawals.map(w => `
-                    <div style="padding: 12px 16px; border: 1px solid #f2f2f2; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: ${w.status === 'pending' ? '#fff' : '#fcfcfc'};">
-                        <div style="flex: 1; min-width: 0;">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <h4 style="font-weight: 950; font-size: 14px; color: #000; margin: 0;">@${w.username}</h4>
-                                <span style="font-size: 13px; font-weight: 950; color: #ff005c;">R$ ${parseFloat(w.amount).toFixed(2)}</span>
+                    <div style="padding: 24px; border: 1px solid #f0f0f0; border-radius: 24px; display: flex; flex-direction: column; gap: 12px; background: ${w.status === 'pending' ? '#fff' : '#f9f9f9'};">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div>
+                                <h4 style="font-weight: 950; font-size: 16px; color: #000;">@${w.username}</h4>
+                                <span style="font-size: 10px; font-weight: 800; color: #999; text-transform: uppercase;">${new Date(w.created_at).toLocaleString()}</span>
                             </div>
-                            <p style="font-size: 10px; font-weight: 800; color: #999; margin: 2px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">PIX: ${w.pix_key}</p>
+                            <span style="padding: 4px 12px; border-radius: 50px; font-size: 10px; font-weight: 900; background: ${w.status === 'pending' ? '#ffd700' : (w.status === 'approved' ? '#22c55e' : '#ef4444')}; color: ${w.status === 'pending' ? '#000' : '#fff'}; text-transform: uppercase;">
+                                ${w.status}
+                            </span>
                         </div>
-                        
-                        <div style="display: flex; gap: 8px; align-items: center;">
-                            ${w.status === 'pending' ? `
-                                <button onclick="app.processAdminWithdrawal('${w.id}', 'approved')" style="width: 36px; height: 36px; background: #000; color: #fff; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;" title="Aprovar">
-                                    <i data-lucide="check" style="width: 18px;"></i>
-                                </button>
-                                <button onclick="app.processAdminWithdrawal('${w.id}', 'declined')" style="width: 36px; height: 36px; background: #fee2e2; color: #ef4444; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;" title="Recusar">
-                                    <i data-lucide="x" style="width: 18px;"></i>
-                                </button>
-                            ` : `
-                                <div style="width: 36px; height: 36px; border-radius: 50%; background: ${w.status === 'approved' ? '#f0fdf4' : '#fff1f2'}; display: flex; align-items: center; justify-content: center;">
-                                    <i data-lucide="${w.status === 'approved' ? 'check' : 'x'}" style="width: 16px; color: ${w.status === 'approved' ? '#22c55e' : '#ef4444'};"></i>
-                                </div>
-                            `}
+
+                        <div style="background: #f8f8f8; padding: 16px; border-radius: 16px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span style="font-size: 11px; font-weight: 800; color: #777;">VALOR:</span>
+                                <span style="font-size: 16px; font-weight: 950; color: #000;">R$ ${parseFloat(w.amount).toFixed(2)}</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                                <span style="font-size: 11px; font-weight: 800; color: #777;">CHAVE PIX:</span>
+                                <span style="font-size: 13px; font-weight: 900; color: #000; word-break: break-all;">${w.pix_key}</span>
+                            </div>
                         </div>
+
+                        ${w.status === 'pending' ? `
+                            <div style="display: flex; gap: 10px; margin-top: 8px;">
+                                <button onclick="app.processAdminWithdrawal('${w.id}', 'approved')" style="flex: 1; height: 44px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 900; font-size: 11px; cursor: pointer; text-transform: uppercase;">Aprovar Saque</button>
+                                <button onclick="app.processAdminWithdrawal('${w.id}', 'declined')" style="width: 100px; height: 44px; background: #fff; color: #ef4444; border: 1.5px solid #ef4444; border-radius: 50px; font-weight: 900; font-size: 11px; cursor: pointer; text-transform: uppercase;">Recusar</button>
+                            </div>
+                        ` : ''}
                     </div>
                 `).join('');
 

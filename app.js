@@ -2698,6 +2698,11 @@
         },
 
         appendWorldMessageToChat(msg) {
+            // --- NOVO: Atualiza Mini Chat da Live Room ---
+            if (msg.receiver === this.activeLiveRoomId) {
+                this.updateLiveMiniChat(msg);
+            }
+
             const container = document.getElementById('world-chat-feed');
             if (!container) return;
             
@@ -2778,6 +2783,47 @@
                 history.push(msg);
                 if (history.length > 100) history.shift(); // Mantém as últimas 100 mensagens
                 localStorage.setItem(key, JSON.stringify(history));
+            }
+        },
+
+        updateLiveMiniChat(msg) {
+            const miniContent = document.getElementById('live-mini-chat-content');
+            if (!miniContent) return;
+
+            const msgDiv = document.createElement('div');
+            msgDiv.style.cssText = 'animation: slideInLeft 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);';
+            
+            const cleanContent = (msg.content || "").replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
+
+            msgDiv.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px;">
+                    <div style="background: rgba(255,255,255,0.2); backdrop-filter: blur(8px); padding: 5px 12px; border-radius: 50px; display: flex; align-items: center; gap: 6px; border: 0.5px solid rgba(255,255,255,0.1);">
+                        <span style="font-size: 10px; font-weight: 950; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">${msg.sender}:</span>
+                        <span style="font-size: 10px; font-weight: 700; color: #fff; opacity: 0.95;">${cleanContent}</span>
+                    </div>
+                </div>
+            `;
+            
+            miniContent.appendChild(msgDiv);
+            
+            while (miniContent.children.length > 4) {
+                miniContent.removeChild(miniContent.firstChild);
+            }
+        },
+
+        async fetchLiveMiniChatMessages(roomId) {
+            if (!supabase) return;
+            const { data, error } = await supabase
+                .from('dito_messages')
+                .select('*')
+                .eq('receiver', roomId)
+                .order('created_at', { ascending: false })
+                .limit(4);
+            
+            if (data && !error) {
+                const miniContent = document.getElementById('live-mini-chat-content');
+                if (miniContent) miniContent.innerHTML = '';
+                data.reverse().forEach(msg => this.updateLiveMiniChat(msg));
             }
         },
 
@@ -7899,6 +7945,10 @@
             document.getElementById('live-host-name').innerText = hostName;
             document.getElementById('live-description').innerText = p.description || "Bem-vindo à transmissão exclusiva.";
 
+            // --- NOVO: MINI CHAT INICIALIZAÇÃO ---
+            this.activeLiveRoomId = `LIVE_${p.id}`;
+            this.fetchLiveMiniChatMessages(this.activeLiveRoomId);
+
             // --- NOVO: DADOS DO MENTOR E ESPECTADORES ---
             const hostUser = (this.networkUsers && this.networkUsers.find(u => u.username === hostName)) || 
                              JSON.parse(localStorage.getItem('dito_usuarios') || '[]').find(u => u.username === hostName);
@@ -9176,10 +9226,11 @@
                     const isForMe = msg.receiver === this.currentUser.username || msg.sender === this.currentUser.username;
                     
                     if (isMyRoom || isSocRoom || isForMe) {
-                        if (isActive) {
-                            this.appendWorldMessageToChat(msg);
-                        } else if (msg.sender !== this.currentUser.username) {
-                            // Se fechei a sala e recebi msg de GLOBAL ou da MINHA LIVE, avisa
+                        // Sempre processa a mensagem para garantir que o Mini Chat e o Histórico atualizem
+                        this.appendWorldMessageToChat(msg);
+                        
+                        if (!isActive && msg.sender !== this.currentUser.username) {
+                            // Se fechei a sala e recebi msg de GLOBAL ou da MINHA LIVE, avisa com a bolinha
                             const dot = document.getElementById('chat-dot');
                             if (dot) dot.style.display = 'block';
                         }

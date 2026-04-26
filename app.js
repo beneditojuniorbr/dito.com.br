@@ -3766,9 +3766,44 @@
                 if (pixActions) pixActions.style.display = 'none';
                 if (ppContainer) {
                     ppContainer.style.display = 'block';
-                    ppContainer.innerHTML = '';
+                    ppContainer.innerHTML = `
+                        <div style="display: flex; flex-direction: column; gap: 16px; padding: 20px; background: #fafafa; border-radius: 24px; border: 1.5px solid #eee;">
+                            <div style="text-align: left;">
+                                <label style="display: block; font-size: 10px; font-weight: 900; color: #999; text-transform: uppercase; margin-bottom: 8px; margin-left: 4px;">Número do Cartão</label>
+                                <div style="position: relative;">
+                                    <input type="text" placeholder="0000 0000 0000 0000" maxlength="19" oninput="this.value = this.value.replace(/\\D/g, '').replace(/(.{4})/g, '$1 ').trim()" style="width: 100%; height: 50px; padding: 0 16px; background: #fff; border: 1.5px solid #eee; border-radius: 12px; font-weight: 800; font-size: 14px; outline: none; transition: 0.3s; color: #000;" onfocus="this.style.borderColor='#000'">
+                                    <i data-lucide="credit-card" style="position: absolute; right: 16px; top: 15px; width: 18px; color: #ccc;"></i>
+                                </div>
+                            </div>
+
+                            <div style="text-align: left;">
+                                <label style="display: block; font-size: 10px; font-weight: 900; color: #999; text-transform: uppercase; margin-bottom: 8px; margin-left: 4px;">Nome no Cartão</label>
+                                <input type="text" placeholder="COMO ESTÁ NO CARTÃO" style="width: 100%; height: 50px; padding: 0 16px; background: #fff; border: 1.5px solid #eee; border-radius: 12px; font-weight: 800; font-size: 14px; outline: none; transition: 0.3s; text-transform: uppercase; color: #000;" onfocus="this.style.borderColor='#000'">
+                            </div>
+
+                            <div style="display: flex; gap: 12px;">
+                                <div style="flex: 1; text-align: left;">
+                                    <label style="display: block; font-size: 10px; font-weight: 900; color: #999; text-transform: uppercase; margin-bottom: 8px; margin-left: 4px;">Validade</label>
+                                    <input type="text" placeholder="MM/AA" maxlength="5" oninput="this.value = this.value.replace(/\\D/g, '').replace(/(.{2})/g, '$1/').replace(/\\/$/, '')" style="width: 100%; height: 50px; padding: 0 16px; background: #fff; border: 1.5px solid #eee; border-radius: 12px; font-weight: 800; font-size: 14px; outline: none; transition: 0.3s; text-align: center; color: #000;" onfocus="this.style.borderColor='#000'">
+                                </div>
+                                <div style="flex: 1; text-align: left;">
+                                    <label style="display: block; font-size: 10px; font-weight: 900; color: #999; text-transform: uppercase; margin-bottom: 8px; margin-left: 4px;">CVV</label>
+                                    <input type="password" placeholder="***" maxlength="3" style="width: 100%; height: 50px; padding: 0 16px; background: #fff; border: 1.5px solid #eee; border-radius: 12px; font-weight: 800; font-size: 14px; outline: none; transition: 0.3s; text-align: center; color: #000;" onfocus="this.style.borderColor='#000'">
+                                </div>
+                            </div>
+
+                            <button onclick="app.finalizeSuccessfulPurchase()" style="width: 100%; height: 60px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 950; font-size: 13px; text-transform: uppercase; cursor: pointer; letter-spacing: 1px; margin-top: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); transition: 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 15px 30px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 25px rgba(0,0,0,0.1)'">
+                                <i data-lucide="shield-check" style="width: 18px; margin-right: 8px; vertical-align: middle;"></i> Pagar Agora
+                            </button>
+                            
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px;">
+                                <i data-lucide="lock" style="width: 10px; color: #22c55e;"></i>
+                                <span style="font-size: 9px; font-weight: 800; color: #bbb; text-transform: uppercase;">Pagamento 100% Seguro e Criptografado</span>
+                            </div>
+                        </div>
+                    `;
                 }
-                if (statusMsg) statusMsg.innerHTML = `<i data-lucide="credit-card" style="width: 32px; color: #0487ff; margin-bottom: 12px;"></i><p style="font-size: 11px; font-weight: 800; color: #999; line-height: 1.4;">Finalize seu pagamento com segurança usando seu cartão via PayPal.</p>`;
+                if (statusMsg) statusMsg.innerHTML = `<i data-lucide="credit-card" style="width: 32px; color: #000; margin-bottom: 12px;"></i><p style="font-size: 11px; font-weight: 800; color: #999; line-height: 1.4;">Finalize seu pagamento com segurança usando seu cartão de crédito.</p>`;
             }
             if (window.lucide) lucide.createIcons();
         },

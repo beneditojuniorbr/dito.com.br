@@ -4006,8 +4006,17 @@
                 contentArea.innerHTML = `<div style="text-align: center;"><i data-lucide="users" style="width: 60px; margin-bottom: 12px;"></i><p style="font-weight: 900; font-size: 14px;">MENTORIA AO VIVO</p><button onclick="app.enterMentorshipRoom('${course.id}')" style="margin-top: 16px; background: #ee4d2d; color: #fff; border: none; padding: 12px 28px; border-radius: 30px; font-weight: 900; font-size: 12px; cursor: pointer; text-transform: uppercase;">Entrar na Sala</button></div>`;
                 controls.style.display = 'none';
             } else {
-                // Course (Video)
-                contentArea.innerHTML = `<div style="position: relative; width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center;"><i data-lucide="play" style="width: 40px; color: #fff; opacity: 0.3;"></i></div>`;
+                // Course (Video) - Usando um vídeo demo premium para dar realismo
+                contentArea.innerHTML = `
+                    <div style="position: relative; width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                        <video id="course-main-video" style="width: 100%; height: 100%; object-fit: cover;" playsinline>
+                            <source src="https://assets.mixkit.co/videos/preview/mixkit-star-field-in-deep-space-9736-large.mp4" type="video/mp4">
+                        </video>
+                        <div id="video-overlay-play" onclick="app.toggleMainVideo()" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); cursor: pointer; transition: 0.3s;">
+                            <i data-lucide="play" style="width: 48px; height: 48px; color: #fff;"></i>
+                        </div>
+                    </div>
+                `;
                 controls.style.display = 'flex';
                 this.setupVideoControls();
             }
@@ -4206,24 +4215,41 @@
             this.showNotification("Sua avaliação foi registrada!", "success");
         },
 
+        toggleMainVideo() {
+            const video = document.getElementById('course-main-video');
+            const btnPlay = document.getElementById('btn-play');
+            const overlay = document.getElementById('video-overlay-play');
+            if (!video) return;
+
+            if (video.paused) {
+                video.play();
+                if (btnPlay) btnPlay.setAttribute('data-lucide', 'pause');
+                if (overlay) overlay.style.display = 'none';
+            } else {
+                video.pause();
+                if (btnPlay) btnPlay.setAttribute('data-lucide', 'play');
+                if (overlay) overlay.style.display = 'flex';
+            }
+            if (window.lucide) lucide.createIcons();
+        },
+
         setupVideoControls() {
-            let isPlaying = false;
-            let speed = 1.0;
             const btnPlay = document.getElementById('btn-play');
             const btnSpeed = document.getElementById('btn-speed');
+            const video = document.getElementById('course-main-video');
 
             if (btnPlay) {
-                btnPlay.onclick = () => {
-                    isPlaying = !isPlaying;
-                    btnPlay.setAttribute('data-lucide', isPlaying ? 'pause' : 'play');
-                    if (window.lucide) lucide.createIcons();
-                };
+                btnPlay.onclick = () => this.toggleMainVideo();
             }
 
             if (btnSpeed) {
                 btnSpeed.onclick = () => {
-                    speed = (speed === 2.0) ? 1.0 : speed + 0.5;
-                    btnSpeed.innerText = speed.toFixed(1) + 'x';
+                    if (!video) return;
+                    const speeds = [1.0, 1.5, 2.0];
+                    const current = video.playbackRate;
+                    const next = speeds[(speeds.indexOf(current) + 1) % speeds.length];
+                    video.playbackRate = next;
+                    btnSpeed.innerText = next.toFixed(1) + 'x';
                 };
             }
         },
@@ -7917,6 +7943,16 @@
                     </div>
                 `;
                 this.startWatchingNativeLive(p.id);
+            } else if (p.sales_link === 'PAUSED') {
+                playerContainer.innerHTML = `
+                    <div style="width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;">
+                        <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+                            <i data-lucide="pause" style="width: 30px; color: #fff; opacity: 0.5;"></i>
+                        </div>
+                        <p style="color: #fff; font-size: 13px; font-weight: 950; letter-spacing: 1px; text-transform: uppercase;">Transmissão Pausada</p>
+                        <p style="color: #666; font-size: 11px; font-weight: 700; margin-top: 4px;">O mentor pausou o sinal. Aguarde um momento.</p>
+                    </div>
+                `;
             } else if (p.sales_link) {
                 let embedUrl = p.sales_link;
                 if (p.sales_link.includes('youtube.com/watch?v=')) {
@@ -8608,7 +8644,21 @@
             if (prod) prod.sales_link = newLink;
 
             this.showNotification(`Sinal ${status === 'on' ? 'ATIVADO' : (status === 'pause' ? 'PAUSADO' : 'ENCERRADO')}! 🚀`, "success");
-            
+
+            // Se for pausa ou desligamento, encerra o stream local do Mentor
+            if (status === 'pause' || status === 'off') {
+                if (this.liveStream) {
+                    this.liveStream.getTracks().forEach(track => track.stop());
+                    this.liveStream = null;
+                }
+            }
+
+            // Re-renderiza sala se estiver nela
+            if (this.currentView === 'live-room' || this.marketView === 'live-room') {
+                const liveRoomContainer = document.getElementById('market-actual-content') || document.getElementById('app');
+                if (liveRoomContainer) this.renderMarketLiveRoom(liveRoomContainer);
+            }
+
             const popup = document.getElementById('live-management-popup');
             if (popup) popup.style.display = 'none';
             

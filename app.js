@@ -8045,7 +8045,7 @@
                                 ${imgContainer}
                             </div>
                         ` : `
-                        <div style="width: 100%; aspect-ratio: 1; background: #f9f9f9; overflow: hidden; position: relative; border-bottom: 1px solid #f2f2f2;">
+                        <div style="width: 100%; aspect-ratio: 1; background: #f9f9f9; overflow: hidden; position: relative; border-bottom: 2px solid #f2f2f2;">
                             ${p.hasLimit && (p.stockLimit - (p.sales || 0)) <= 10 ? `
                                 <div style="position: absolute; top: 8px; right: 8px; background: #ff005c; color: #fff; font-size: 8px; font-weight: 950; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">ÚLTIMAS ${(p.stockLimit - (p.sales || 0))}</div>
                             ` : ''}
@@ -8095,7 +8095,7 @@
                             ${imgContainer}
                         </div>
                     ` : `
-                        <div style="width: 100%; aspect-ratio: 1; background: #f9f9f9; overflow: hidden; position: relative; border-bottom: 1px solid #f2f2f2;">
+                        <div style="width: 100%; aspect-ratio: 1; background: #f9f9f9; overflow: hidden; position: relative; border-bottom: 2px solid #f2f2f2;">
                             ${p.hasLimit && (p.stockLimit - (p.sales || 0)) <= 15 ? `
                                 <div style="position: absolute; top: 12px; right: 12px; background: #ff005c; color: #fff; font-size: 8px; font-weight: 950; padding: 4px 10px; border-radius: 6px; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">RESTAM ${(p.stockLimit - (p.sales || 0))}</div>
                             ` : ''}

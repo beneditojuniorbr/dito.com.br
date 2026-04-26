@@ -6626,14 +6626,57 @@
             }, 50);
         },
 
+        setProductCreateStep(step) {
+            this.currentProductStep = step;
+            
+            const step1 = document.getElementById('product-step-1');
+            const step2 = document.getElementById('product-step-2');
+            const step3 = document.getElementById('product-step-3');
+            const step4 = document.getElementById('product-step-4');
+            const progressContainer = document.getElementById('create-product-progress-container');
+            const form = document.getElementById('create-product-form');
+            
+            if (!step1) return;
+
+            // Esconder tudo
+            [step1, step2, step3, step4].forEach(s => { if(s) s.style.display = 'none'; });
+            
+            if (step === 1) {
+                step1.style.display = 'block';
+                if (form) form.style.display = 'none';
+                if (progressContainer) progressContainer.style.display = 'none';
+            } else {
+                if (form) form.style.display = 'flex';
+                if (progressContainer) progressContainer.style.display = 'block';
+                
+                if (step === 2 && step2) step2.style.display = 'flex';
+                if (step === 3 && step3) step3.style.display = 'flex';
+                if (step === 4 && step4) step4.style.display = 'flex';
+            }
+
+            this.updateProductProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        },
+
+        updateProductProgress() {
+            const bar = document.getElementById('product-progress-bar');
+            const text = document.getElementById('product-progress-step-text');
+            const pctText = document.getElementById('product-progress-percentage');
+            
+            if (!bar) return;
+
+            const step = this.currentProductStep || 1;
+            const pct = (step / 4) * 100;
+            
+            bar.style.width = `${pct}%`;
+            if (text) text.innerText = `${step} de 4 etapas para concluir`;
+            if (pctText) pctText.innerText = `${Math.round(pct)}%`;
+        },
+
         selectProductType(type, btn) {
             if (type === 'App') {
                 this.showNotification("📱 A criação de Apps está temporariamente bloqueada.", "info");
-                const form = document.getElementById('create-product-form');
-                if (form) form.style.display = 'none';
-                this.selectedProductType = null;
-                // Efeito visual de erro/bloqueio temporário no botão
-                btn.style.transform = 'shake 0.5s'; 
+                this.setProductCreateStep(1);
                 return;
             }
             this.selectedProductType = type;
@@ -6656,38 +6699,21 @@
             const selectedIcon = btn.querySelector('i') || btn.querySelector('svg');
             if (selectedIcon) selectedIcon.style.color = '#000';
 
-            // Show form and conditional fields
-            const form = document.getElementById('create-product-form');
-            if (form) form.style.display = 'flex';
+            // Controla visibilidade dos campos específicos
+            const ebookUpload = document.getElementById('ebook-upload');
+            const cursoUpload = document.getElementById('curso-upload');
+            const mentoriaFields = document.getElementById('mentoria-fields');
 
-            const ebookEl = document.getElementById('ebook-upload');
-            const cursoEl = document.getElementById('curso-upload');
-            const mentoriaLinkEl = document.getElementById('mentoria-link');
-            const mentoriaFieldsEl = document.getElementById('mentoria-fields');
+            if(ebookUpload) ebookUpload.style.display = type === 'Ebook' ? 'block' : 'none';
+            if(cursoUpload) cursoUpload.style.display = type === 'Curso' ? 'flex' : 'none';
+            if(mentoriaFields) mentoriaFields.style.display = type === 'Mentoria' ? 'flex' : 'none';
 
-            if (ebookEl) ebookEl.style.display = (type === 'Ebook') ? 'block' : 'none';
-            if (cursoEl) {
-                cursoEl.style.display = (type === 'Curso') ? 'flex' : 'none';
-                if (type === 'Curso') this.renderCourseStructure();
-            }
-            if (mentoriaLinkEl) mentoriaLinkEl.style.display = (type === 'Mentoria') ? 'block' : 'none';
-            if (mentoriaFieldsEl) mentoriaFieldsEl.style.display = (type === 'Mentoria') ? 'block' : 'none';
+            // Avança para o passo 2 automaticamente após um pequeno delay para feedback visual
+            setTimeout(() => this.setProductCreateStep(2), 400);
             
-            this.selectedProductType = type;
-            this.courseStructure = []; 
-            
-            // Reset filenames
+            // Reset filenames e previews
             document.querySelectorAll('.file-name-display').forEach(el => el.innerText = '');
-            
-            // Reset product image preview
-            this.selectedProductImage = null;
-            const preview = document.getElementById('prod-image-preview');
-            if (preview) {
-                preview.innerHTML = `<i data-lucide="image-plus" style="width: 32px; color: #ccc;"></i><span style="font-size: 9px; font-weight: 900; color: #999; margin-top: 8px;">Upload Imagem</span>`;
-                if (window.lucide) lucide.createIcons();
-            }
-
-            this.updateProductProgress();
+            this.courseStructure = []; 
         },
 
         handleProductImage(input) {

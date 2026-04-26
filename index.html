@@ -1136,91 +1136,99 @@
                 <i data-lucide="arrow-left" style="width: 20px; color: #000;"></i>
             </div>
 
-            <header style="text-align: center; margin-bottom: 30px;">
-                <h3 style="font-size: 28px; font-weight: 950; letter-spacing: -1.5px; color: #000;">Criar produto</h3>
-            </header>
-            
-            <div id="product-type-selection" class="hide-scrollbar" style="display: flex; gap: 20px; margin-bottom: 40px; overflow-x: auto; padding: 10px calc(50% - 42px) 20px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;">
-                <!-- Ebook -->
-                <div style="flex-shrink: 0; scroll-snap-align: center; text-align: center;">
-                    <button onclick="app.selectProductType('Ebook', this)" class="product-type-btn" style="width: 84px; height: 84px; background: #f5f5f5; border: 2px solid transparent; border-radius: 50%; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
-                        <i data-lucide="book-open" style="width: 28px;"></i>
-                    </button>
-                    <span style="font-size: 11px; font-weight: 900; color: #666;">Ebook</span>
+            <div id="create-product-progress-container" style="margin-bottom: 40px; padding: 0 10px; display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <span id="product-progress-step-text" style="font-size: 11px; font-weight: 950; color: #000; text-transform: uppercase; letter-spacing: 0.5px;">1 de 4 etapas para concluir</span>
+                    <span id="product-progress-percentage" style="font-size: 11px; font-weight: 950; color: #000;">25%</span>
                 </div>
-                <!-- Curso -->
-                <div style="flex-shrink: 0; scroll-snap-align: center; text-align: center;">
-                    <button onclick="app.selectProductType('Curso', this)" class="product-type-btn" style="width: 84px; height: 84px; background: #f5f5f5; border: 2px solid transparent; border-radius: 50%; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
-                        <i data-lucide="play-circle" style="width: 28px;"></i>
-                    </button>
-                    <span style="font-size: 11px; font-weight: 900; color: #666;">Curso</span>
-                </div>
-                <!-- Mentoria -->
-                <div style="flex-shrink: 0; scroll-snap-align: center; text-align: center;">
-                    <button onclick="app.selectProductType('Mentoria', this)" class="product-type-btn" style="width: 84px; height: 84px; background: #f5f5f5; border: 2px solid transparent; border-radius: 50%; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
-                        <i data-lucide="users" style="width: 28px;"></i>
-                    </button>
-                    <span style="font-size: 11px; font-weight: 900; color: #666;">Mentoria</span>
-                </div>
-                <!-- App -->
-                <div style="flex-shrink: 0; scroll-snap-align: center; text-align: center; position: relative;">
-                    <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: linear-gradient(90deg, #ff0045 0%, #0094ff 100%); color: #fff; font-size: 8px; font-weight: 950; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; white-space: nowrap; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); z-index: 10;">Em breve</div>
-                    
-                    <button onclick="app.selectProductType('App', this)" class="product-type-btn" style="width: 84px; height: 84px; background: #f5f5f5; border: 2px solid transparent; border-radius: 50%; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
-                        <i data-lucide="layers" style="width: 28px; color: #999;"></i>
-                    </button>
-                    <span style="font-size: 11px; font-weight: 900; color: #999;">App</span>
+                <div style="width: 100%; height: 6px; background: #f5f5f5; border-radius: 50px; overflow: hidden;">
+                    <div id="product-progress-bar" style="width: 25%; height: 100%; background: #000; transition: 0.8s cubic-bezier(0.19, 1, 0.22, 1);"></div>
                 </div>
             </div>
 
-            <div id="create-product-form" style="display: none; flex-direction: column; gap: 28px; max-width: 420px; margin: 0 auto; padding-bottom: 60px;">
-                <!-- Capa do Produto -->
-                <div style="display: flex; flex-direction: column; gap: 20px;">
+            <!-- STEP 1: CATEGORIA -->
+            <div id="product-step-1">
+                <header style="text-align: center; margin-bottom: 40px;">
+                    <h3 style="font-size: 28px; font-weight: 950; letter-spacing: -1.5px; color: #000; margin-bottom: 8px;">O que vamos criar?</h3>
+                    <p style="font-size: 12px; font-weight: 700; color: #999;">Escolha o formato do seu novo produto</p>
+                </header>
+
+                <div id="product-type-selection" class="hide-scrollbar" style="display: flex; gap: 20px; margin-bottom: 40px; overflow-x: auto; padding: 10px calc(50% - 42px) 20px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;">
+                    <!-- Ebook -->
+                    <div style="flex-shrink: 0; scroll-snap-align: center; text-align: center;">
+                        <button onclick="app.selectProductType('Ebook', this)" class="product-type-btn" style="width: 84px; height: 84px; background: #f5f5f5; border: 2px solid transparent; border-radius: 50%; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                            <i data-lucide="book-open" style="width: 28px;"></i>
+                        </button>
+                        <span style="font-size: 11px; font-weight: 900; color: #666;">Ebook</span>
+                    </div>
+                    <!-- Curso -->
+                    <div style="flex-shrink: 0; scroll-snap-align: center; text-align: center;">
+                        <button onclick="app.selectProductType('Curso', this)" class="product-type-btn" style="width: 84px; height: 84px; background: #f5f5f5; border: 2px solid transparent; border-radius: 50%; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                            <i data-lucide="play-circle" style="width: 28px;"></i>
+                        </button>
+                        <span style="font-size: 11px; font-weight: 900; color: #666;">Curso</span>
+                    </div>
+                    <!-- Mentoria -->
+                    <div style="flex-shrink: 0; scroll-snap-align: center; text-align: center;">
+                        <button onclick="app.selectProductType('Mentoria', this)" class="product-type-btn" style="width: 84px; height: 84px; background: #f5f5f5; border: 2px solid transparent; border-radius: 50%; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                            <i data-lucide="users" style="width: 28px;"></i>
+                        </button>
+                        <span style="font-size: 11px; font-weight: 900; color: #666;">Mentoria</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="create-product-form" style="display: none; flex-direction: column; max-width: 420px; margin: 0 auto; padding-bottom: 60px;">
+                
+                <!-- STEP 2: DETALHES BÁSICOS -->
+                <div id="product-step-2" style="display: none; flex-direction: column; gap: 32px;">
                     <div style="text-align: center;">
-                        <label style="display: block; font-size: 11px; font-weight: 950; color: #000; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Imagem do Produto</label>
-                        <p style="font-size: 10px; color: #bbb; margin-bottom: 16px; font-weight: 800;">Limite: 200kb por arquivo</p>
+                        <label style="display: block; font-size: 11px; font-weight: 950; color: #000; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Capa do Produto</label>
+                        <p style="font-size: 10px; color: #bbb; margin-bottom: 16px; font-weight: 800;">Limite: 200kb • PNG ou JPG</p>
                         
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%;">
-                            <div onclick="document.getElementById('prod-image-file').click()" style="width: 140px; height: 140px; background: #fbfbfb; border: 2px dashed #eee; border-radius: 32px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; position: relative; transition: 0.3s;" id="prod-image-preview">
+                            <div onclick="document.getElementById('prod-image-file').click()" style="width: 160px; height: 160px; background: #fbfbfb; border: 2px dashed #eee; border-radius: 32px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; position: relative; transition: 0.3s;" id="prod-image-preview">
                                 <i data-lucide="image-plus" style="width: 32px; color: #ddd;"></i>
                                 <span style="font-size: 9px; font-weight: 900; color: #bbb; margin-top: 8px;">Upload</span>
                             </div>
-                            <div id="product-images-gallery-preview" class="hide-scrollbar" style="display: flex; gap: 8px; overflow-x: auto; width: 100%; padding: 4px; scroll-snap-type: x mandatory;">
-                                <!-- Miniaturas aparecerão aqui -->
-                            </div>
+                            <div id="product-images-gallery-preview" class="hide-scrollbar" style="display: flex; gap: 8px; overflow-x: auto; width: 100%; padding: 4px; scroll-snap-type: x mandatory;"></div>
                         </div>
-                        
                         <input type="file" id="prod-image-file" accept="image/*" multiple style="display: none;" onchange="app.handleProductImage(this)">
                     </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 28px;">
+                        <div>
+                            <label style="display: block; font-size: 11px; font-weight: 850; color: #777; margin-bottom: 0; margin-left: 10px; text-transform: uppercase; line-height: 1;">Nome do produto</label>
+                            <input type="text" id="prod-name" placeholder="Ex: Do Zero ao Avançado" style="width: 100%; margin-top: 0; padding: 2px 10px 0; background: transparent; border: none; border-bottom: 2px solid #eee; border-radius: 0; font-weight: 800; font-size: 15px; outline: none; transition: 0.3s; line-height: 0.8; height: 28px;">
+                        </div>
+
+                        <div>
+                            <label style="display: block; font-size: 11px; font-weight: 850; color: #777; margin-bottom: 0; margin-left: 10px; text-transform: uppercase; line-height: 1;">Descrição detalhada</label>
+                            <textarea id="prod-desc" oninput="this.style.height = '0px'; this.style.height = this.scrollHeight + 'px';" placeholder="O que seu produto entrega?" style="width: 100%; min-height: 0; margin-top: 0; padding: 2px 10px 0; background: transparent; border: none; border-bottom: 2px solid #eee; border-radius: 0; font-weight: 700; font-size: 15px; outline: none; resize: none; overflow: hidden; line-height: 1.2; height: 18px;"></textarea>
+                        </div>
+
+                        <div>
+                            <label style="display: block; font-size: 11px; font-weight: 850; color: #777; margin-bottom: 0; margin-left: 10px; text-transform: uppercase;">Categoria</label>
+                            <select id="prod-category" style="width: 100%; margin-top: 0; padding: 2px 10px 0; background: transparent; border: none; border-bottom: 2px solid #eee; border-radius: 0; font-weight: 800; font-size: 14px; outline: none; appearance: none; cursor: pointer; line-height: 0.8; height: 32px;">
+                                <option value="" disabled selected>Selecione uma categoria</option>
+                                <option value="Dinheiro">Dinheiro & Negócios</option>
+                                <option value="Saúde">Saúde & Bem-estar</option>
+                                <option value="Relacionamento">Relacionamentos</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button onclick="app.setProductCreateStep(3)" style="width: 100%; height: 56px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 950; font-size: 14px; text-transform: uppercase; cursor: pointer; margin-top: 20px;">Próximo Passo</button>
                 </div>
 
-                <div style="display: flex; flex-direction: column; gap: 28px;">
+                <!-- STEP 3: PREÇO E CONFIGS -->
+                <div id="product-step-3" style="display: none; flex-direction: column; gap: 32px;">
                     <div>
-                        <label style="display: block; font-size: 11px; font-weight: 850; color: #777; margin-bottom: 0; margin-left: 10px; text-transform: uppercase; line-height: 1;">Nome do produto</label>
-                        <input type="text" id="prod-name" oninput="app.updateProductProgress()" placeholder="" style="width: 100%; margin-top: 0; padding: 2px 10px 0; background: transparent; border: none; border-bottom: 2px solid #eee; border-radius: 0; font-weight: 800; font-size: 15px; outline: none; transition: 0.3s; line-height: 0.8; height: 20px;">
-                    </div>
-
-                    <div>
-                        <label style="display: block; font-size: 11px; font-weight: 850; color: #777; margin-bottom: 0; margin-left: 10px; text-transform: uppercase; line-height: 1;">Descrição detalhada</label>
-                        <textarea id="prod-desc" oninput="this.style.height = '0px'; this.style.height = this.scrollHeight + 'px'; app.updateProductProgress();" placeholder="" style="width: 100%; min-height: 0; margin-top: 0; padding: 2px 10px 0; background: transparent; border: none; border-bottom: 2px solid #eee; border-radius: 0; font-weight: 700; font-size: 15px; outline: none; resize: none; overflow: hidden; line-height: 0.8; height: 18px;"></textarea>
-                    </div>
-
-                    <div>
-                        <label style="display: block; font-size: 11px; font-weight: 850; color: #777; margin-bottom: 0; margin-left: 10px; text-transform: uppercase;">Categoria</label>
-                        <select id="prod-category" onchange="app.updateProductProgress()" style="width: 100%; margin-top: 0; padding: 2px 10px 0; background: transparent; border: none; border-bottom: 2px solid #eee; border-radius: 0; font-weight: 800; font-size: 14px; outline: none; appearance: none; cursor: pointer; line-height: 0.8; height: 32px;">
-                            <option value="" disabled selected>Selecione uma categoria</option>
-                            <option value="Dinheiro">Dinheiro & Negócios</option>
-                            <option value="Saúde">Saúde & Bem-estar</option>
-                            <option value="Relacionamento">Relacionamentos</option>
-                            <option value="Outro">Outro</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label style="display: block; font-size: 11px; font-weight: 850; color: #777; margin-bottom: 0; margin-left: 10px; text-transform: uppercase;">Preço sugerido</label>
-                        <div style="position: relative; height: 32px; margin-top: 0;">
+                        <label style="display: block; font-size: 11px; font-weight: 850; color: #777; margin-bottom: 0; margin-left: 10px; text-transform: uppercase;">Valor do Investimento</label>
+                        <div style="position: relative; height: 32px; margin-top: 8px;">
                             <span style="position: absolute; left: 10px; top: 4px; font-weight: 900; font-size: 14px; color: #000;">R$</span>
-                            <input type="number" id="prod-price" oninput="app.calculateNetProfit(this.value); app.updateProductProgress(); app.updateProductPreview();" placeholder="" style="width: 100%; height: 32px; padding: 2px 10px 0 40px; background: transparent; border: none; border-bottom: 2px solid #eee; border-radius: 0; font-weight: 900; font-size: 16px; outline: none; line-height: 0.8;">
+                            <input type="number" id="prod-price" oninput="app.calculateNetProfit(this.value); app.updateProductPreview();" placeholder="0,00" style="width: 100%; height: 32px; padding: 2px 10px 0 40px; background: transparent; border: none; border-bottom: 2px solid #eee; border-radius: 0; font-weight: 900; font-size: 18px; outline: none; line-height: 0.8;">
                         </div>
                         <div id="profit-calc-breakdown" style="margin-top: 16px; padding: 16px; background: #fafafa; border-radius: 16px; display: none; flex-direction: column; gap: 8px;">
                             <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: #999;">
@@ -1238,75 +1246,74 @@
                         </div>
                     </div>
 
-                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px;">
-                        <span style="font-size: 11px; font-weight: 850; color: #777; text-transform: uppercase;">Visível no Mercado</span>
-                        <label class="switch">
-                            <input type="checkbox" id="prod-visible" checked>
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-
-                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px;">
-                        <div style="display: flex; flex-direction: column;">
-                            <span style="font-size: 11px; font-weight: 850; color: #000; text-transform: uppercase;">Garantia de 7 dias</span>
-                            <span style="font-size: 9px; color: #bbb; font-weight: 800; text-transform: uppercase;">Desligado = Saque imediato</span>
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px;">
+                            <span style="font-size: 11px; font-weight: 850; color: #777; text-transform: uppercase;">Visível no Mercado</span>
+                            <label class="switch"><input type="checkbox" id="prod-visible" checked><span class="slider round"></span></label>
                         </div>
-                        <label class="switch">
-                            <input type="checkbox" id="prod-guarantee">
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
 
-                    <!-- LIMITE DE QUANTIDADE (NOVO) -->
-                    <div style="border-top: 1px dashed #eee; padding-top: 28px; margin-top: 8px;">
-                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px; margin-bottom: 20px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px;">
                             <div style="display: flex; flex-direction: column;">
-                                <span style="font-size: 11px; font-weight: 850; color: #000; text-transform: uppercase;">Limitar Quantidade</span>
-                                <span style="font-size: 9px; color: #bbb; font-weight: 800; text-transform: uppercase;">Ebooks, Vagas ou Ingressos</span>
+                                <span style="font-size: 11px; font-weight: 850; color: #000; text-transform: uppercase;">Garantia de 7 dias</span>
+                                <span style="font-size: 9px; color: #bbb; font-weight: 800; text-transform: uppercase;">Desligado = Saque imediato</span>
                             </div>
-                            <label class="switch">
-                                <input type="checkbox" id="prod-has-limit" onchange="document.getElementById('prod-limit-container').style.display = this.checked ? 'block' : 'none'">
-                                <span class="slider round"></span>
-                            </label>
+                            <label class="switch"><input type="checkbox" id="prod-guarantee"><span class="slider round"></span></label>
                         </div>
-                        
-                        <div id="prod-limit-container" style="display: none; padding: 0 20px;">
-                            <label style="display: block; font-size: 11px; font-weight: 850; color: #777; margin-bottom: 0; margin-left: 10px; text-transform: uppercase;">Quantidade disponível</label>
-                            <input type="number" id="prod-stock-limit" placeholder="Ex: 50" style="width: 100%; height: 32px; padding: 2px 10px 0; background: transparent; border: none; border-bottom: 2px solid #eee; border-radius: 0; font-weight: 800; font-size: 14px; outline: none;">
+
+                        <div style="border-top: 1px dashed #eee; padding-top: 24px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px;">
+                                <div style="display: flex; flex-direction: column;">
+                                    <span style="font-size: 11px; font-weight: 850; color: #000; text-transform: uppercase;">Limitar Quantidade</span>
+                                    <span style="font-size: 9px; color: #bbb; font-weight: 800;">Ideal para vagas ou mentorias</span>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="prod-has-limit" onchange="document.getElementById('prod-limit-container').style.display = this.checked ? 'block' : 'none'">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                            <div id="prod-limit-container" style="display: none; padding: 20px 20px 0;">
+                                <label style="display: block; font-size: 11px; font-weight: 850; color: #777; margin-bottom: 4px; text-transform: uppercase;">Estoque total</label>
+                                <input type="number" id="prod-stock-limit" placeholder="Ex: 50" style="width: 100%; height: 32px; padding: 2px 10px 0; background: transparent; border: none; border-bottom: 2px solid #eee; border-radius: 0; font-weight: 800; font-size: 14px; outline: none;">
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div id="ebook-upload" style="display: none; margin-top: 8px;">
-                    <label style="display: block; font-size: 11px; font-weight: 850; color: #777; margin-bottom: 4px; margin-left: 10px; text-transform: uppercase;">Arquivo do Ebook (PDF)</label>
-                    <div style="position: relative; width: 100%; padding: 40px; border: 2px dashed #eee; border-radius: 40px; text-align: center; background: #fafafa; cursor: pointer;" onmouseover="this.style.borderColor='#ddd'" onmouseout="this.style.borderColor='#eee'">
-                        <i data-lucide="upload-cloud" style="width: 28px; color: #ccc; margin-bottom: 12px;"></i>
-                        <p style="font-size: 11px; font-weight: 900; color: #000;">Clique para carregar o arquivo</p>
-                        <input type="file" id="ebook-file" accept=".pdf" onchange="app.handleFileUpload(this, 'ebook-filename')" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;">
+                    <div style="display: flex; gap: 12px; margin-top: 20px;">
+                        <button onclick="app.setProductCreateStep(2)" style="width: 80px; height: 56px; background: #fff; border: 1.5px solid #eee; border-radius: 50px; cursor: pointer; display: flex; align-items: center; justify-content: center;"><i data-lucide="chevron-left" style="width: 20px;"></i></button>
+                        <button onclick="app.setProductCreateStep(4)" style="flex: 1; height: 56px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 950; font-size: 14px; text-transform: uppercase; cursor: pointer;">Finalizar Conteúdo</button>
                     </div>
-                    <span id="ebook-filename" class="file-name-display" style="display: block; margin-top: 12px; text-align: center; font-size: 11px; font-weight: 800; color: #22c55e;"></span>
                 </div>
 
-                <div id="curso-upload" style="display: none; flex-direction: column; gap: 28px; margin-top: 8px;">
-                    <div style="display: flex; justify-content: center; padding: 0 10px;">
-                        <button onclick="app.addCourseModule()" style="background: #000; color: #fff; border: none; padding: 12px 32px; border-radius: 50px; font-size: 11px; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
-                            <i data-lucide="plus-circle" style="width: 16px;"></i> Novo Módulo
-                        </button>
-                    </div>
-                    <div id="course-modules-list" style="display: flex; flex-direction: column; gap: 20px;"></div>
-                </div>
-
-                <div id="mentoria-fields" style="display: none; flex-direction: column; gap: 28px; margin-top: 8px;">
-                    <div>
-                        <label style="display: block; font-size: 11px; font-weight: 850; color: #777; margin-bottom: 4px; margin-left: 10px; text-transform: uppercase;">Agenda de Início</label>
-                        <input type="date" id="prod-date" oninput="app.updateProductProgress()" style="width: 100%; height: 50px; padding: 0 10px; background: transparent; border: none; border-bottom: 2px solid #eee; border-radius: 0; font-weight: 800; font-size: 14px; outline: none;">
+                <!-- STEP 4: CONTEÚDO FINAL -->
+                <div id="product-step-4" style="display: none; flex-direction: column; gap: 32px;">
+                    <div id="ebook-upload" style="display: none;">
+                        <label style="display: block; font-size: 11px; font-weight: 850; color: #777; margin-bottom: 4px; margin-left: 10px; text-transform: uppercase;">Arquivo do Ebook (PDF)</label>
+                        <div style="position: relative; width: 100%; padding: 40px; border: 2px dashed #eee; border-radius: 40px; text-align: center; background: #fafafa; cursor: pointer;">
+                            <i data-lucide="upload-cloud" style="width: 28px; color: #ccc; margin-bottom: 12px;"></i>
+                            <p style="font-size: 11px; font-weight: 900; color: #000;">Clique para carregar o arquivo</p>
+                            <input type="file" id="ebook-file" accept=".pdf" onchange="app.handleFileUpload(this, 'ebook-filename')" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;">
+                        </div>
+                        <span id="ebook-filename" class="file-name-display" style="display: block; margin-top: 12px; text-align: center; font-size: 11px; font-weight: 800; color: #22c55e;"></span>
                     </div>
 
-                </div>
+                    <div id="curso-upload" style="display: none; flex-direction: column; gap: 28px;">
+                        <div style="display: flex; justify-content: center;"><button onclick="app.addCourseModule()" style="background: #000; color: #fff; border: none; padding: 12px 32px; border-radius: 50px; font-size: 11px; font-weight: 950; cursor: pointer; display: flex; align-items: center; gap: 8px;"><i data-lucide="plus-circle" style="width: 16px;"></i> Novo Módulo</button></div>
+                        <div id="course-modules-list" style="display: flex; flex-direction: column; gap: 20px;"></div>
+                    </div>
 
-                <div style="margin-top: 20px;">
-                    <button onclick="app.saveProduct()" class="btn-enviar-produto" style="width: 100%; height: 64px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 950; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">Enviar</button>
+                    <div id="mentoria-fields" style="display: none; flex-direction: column; gap: 28px;">
+                        <div>
+                            <label style="display: block; font-size: 11px; font-weight: 850; color: #777; margin-bottom: 4px; margin-left: 10px; text-transform: uppercase;">Data de Início</label>
+                            <input type="date" id="prod-date" style="width: 100%; height: 50px; padding: 0 10px; background: transparent; border: none; border-bottom: 2px solid #eee; border-radius: 0; font-weight: 800; font-size: 14px; outline: none;">
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; margin-top: 20px;">
+                        <button onclick="app.setProductCreateStep(3)" style="width: 80px; height: 56px; background: #fff; border: 1.5px solid #eee; border-radius: 50px; cursor: pointer; display: flex; align-items: center; justify-content: center;"><i data-lucide="chevron-left" style="width: 20px;"></i></button>
+                        <button onclick="app.saveProduct()" class="btn-enviar-produto" style="flex: 1; height: 64px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 950; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">Publicar Produto</button>
+                    </div>
                 </div>
+            </div>
 
                 <!-- Seção de Preview em Tempo Real -->
                 <div style="margin-top: 60px; border-top: 2px dashed #eee; padding-top: 40px;">

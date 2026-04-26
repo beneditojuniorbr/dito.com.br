@@ -455,6 +455,7 @@
                 this.fetchUserCloudState(); // Sincronia de conta global (Saldo/Compras)
 
                 this.checkLiveAdminStatus();
+                this.initGlobalActivityMonitor();
                 
                 // Polling de segurança
                 setInterval(() => {
@@ -7297,46 +7298,56 @@
         },
 
         showNotification(msg, type = 'default') {
-            return; // Notificações desativadas por solicitação do usuário
             const container = document.getElementById('notification-container');
             if (!container) {
                 const newContainer = document.createElement('div');
                 newContainer.id = 'notification-container';
-                newContainer.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; pointer-events: none;';
+                // Posicionamento no centro-topo, mas com cara de cápsula flutuante
+                newContainer.style.cssText = 'position: fixed; top: 30px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 12px; width: auto; min-width: 200px; max-width: 90vw; pointer-events: none;';
                 document.body.appendChild(newContainer);
             }
 
             const toast = document.createElement('div');
-            let bg = '#000';
-            if (type === 'success') bg = '#10b981';
-            if (type === 'error') bg = '#ef4444';
-            if (type === 'info') bg = '#0487ff';
+            let bg = 'rgba(0, 0, 0, 0.85)';
+            let iconColor = '#fff';
+            
+            if (type === 'success') { bg = 'rgba(16, 185, 129, 0.95)'; }
+            if (type === 'error') { bg = 'rgba(239, 68, 68, 0.95)'; }
+            if (type === 'info') { bg = 'rgba(4, 135, 255, 0.95)'; }
+            if (type === 'sale') { bg = 'rgba(0, 0, 0, 0.9)'; iconColor = '#ffd700'; } // Cor Especial para Venda (Ouro)
 
             toast.style.cssText = `
                 background: ${bg};
+                backdrop-filter: blur(15px);
+                -webkit-backdrop-filter: blur(15px);
                 color: #fff;
-                padding: 16px 24px;
-                border-radius: 20px;
+                padding: 12px 24px;
+                border-radius: 100px;
                 font-size: 13px;
-                font-weight: 900;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                font-weight: 950;
+                letter-spacing: -0.3px;
+                box-shadow: 0 15px 40px rgba(0,0,0,0.25);
                 display: flex;
                 align-items: center;
+                justify-content: center;
                 gap: 12px;
-                animation: slideDownFade 0.4s ease-out;
+                border: 1px solid rgba(255,255,255,0.1);
+                animation: capsulePop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
                 pointer-events: auto;
+                white-space: nowrap;
             `;
 
             const iconMap = {
                 'success': 'check-circle',
                 'error': 'alert-circle',
                 'info': 'info',
+                'sale': 'trending-up',
                 'default': 'bell'
             };
 
             toast.innerHTML = `
-                <i data-lucide="${iconMap[type] || 'bell'}" style="width: 18px;"></i>
-                <span>${msg}</span>
+                <i data-lucide="${iconMap[type] || 'bell'}" style="width: 16px; color: ${iconColor};"></i>
+                <span style="font-family: 'Inter', sans-serif;">${msg}</span>
             `;
 
             document.getElementById('notification-container').appendChild(toast);
@@ -8775,7 +8786,52 @@
             })
             .subscribe((status) => {
                 console.log("📡 [Chat] Status da conexão Realtime:", status);
-            });
+        });
+    };
+
+    app.initGlobalActivityMonitor = function() {
+        if (!supabase) return;
+        console.log("📡 [Monitor] Radar de Atividades Ativado");
+
+        // 1. Monitor de Vendas (Sucesso Global)
+        supabase
+            .channel('global-sales')
+            .on('postgres_changes', { 
+                event: 'INSERT', 
+                schema: 'public', 
+                table: 'dito_payments', 
+                filter: 'status=eq.approved' 
+            }, payload => {
+                const item = payload.new.metadata?.product || "Um produto";
+                this.showNotification(`🚀 NOVA VENDA: ${item}`, 'sale');
+            })
+            .subscribe();
+
+        // 2. Monitor de Novos Membros
+        supabase
+            .channel('global-users')
+            .on('postgres_changes', { 
+                event: 'INSERT', 
+                schema: 'public', 
+                table: 'dito_users' 
+            }, payload => {
+                if (payload.new.username !== 'Ditão' && payload.new.username !== 'Visitante') {
+                    this.showNotification(`✨ @${payload.new.username} acabou de entrar na rede!`, 'info');
+                }
+            })
+            .subscribe();
+
+        // 3. Monitor de Novos Produtos
+        supabase
+            .channel('global-products')
+            .on('postgres_changes', { 
+                event: 'INSERT', 
+                schema: 'public', 
+                table: 'dito_market_products' 
+            }, payload => {
+                this.showNotification(`📦 NOVIDADE: ${payload.new.name} disponível no Mercado!`, 'success');
+            })
+            .subscribe();
     };
 
     app.processIncomingNotification = function(notif) {

@@ -2912,7 +2912,9 @@
             if (!supabase) return;
             try {
                 const key = this.getUserKey();
-                const payload = {
+                
+                // 1. PAYLOAD BÁSICO (Colunas que sempre existem)
+                const basicPayload = {
                     username: user.username,
                     password: user.password || "dito123",
                     email: user.email || "",
@@ -2922,32 +2924,36 @@
                     sales: Number(user.sales || 0),
                     fans: Number(user.fans || 0),
                     balance: Number(user.balance || 0),
-                    pending_balance: Number(user.pending_balance || 0),
                     coins: Number(localStorage.getItem(`dito_coins_${key}`) || 0),
                     purchases: JSON.stringify(this.purchasedProducts),
-                    withdrawPixKey: user.withdrawPixKey || "",
-                    withdrawCardNumber: user.withdrawCardNumber || "",
-                    withdrawCardName: user.withdrawCardName || "",
                     avatar: user.avatar || "",
                     last_seen: new Date().toISOString()
                 };
-                
-                const { error } = await supabase.from('dito_users').upsert([payload], { onConflict: 'username' });
+
+                // 2. PAYLOAD ESTENDIDO (Com novas colunas de saque)
+                const fullPayload = {
+                    ...basicPayload,
+                    pending_balance: Number(user.pending_balance || 0),
+                    withdrawPixKey: user.withdrawPixKey || "",
+                    withdrawCardNumber: user.withdrawCardNumber || "",
+                    withdrawCardName: user.withdrawCardName || ""
+                };
+
+                // Tenta salvar tudo
+                const { error } = await supabase.from('dito_users').upsert([fullPayload], { onConflict: 'username' });
                 
                 if (error) {
-                    console.warn("⚠️ [Network] Erro Sync:", error.message);
-                    if (error.message.includes('column "email" does not exist')) {
-                        this.showNotification('Erro de Banco: E-mail não suportado no Supabase.', 'error');
+                    // Se o erro for de coluna inexistente, tenta o básico para não quebrar o app
+                    if (error.message.includes('column') && (error.message.includes('does not exist') || error.code === '42703')) {
+                        console.warn("⚠️ [Sync] Colunas financeiras ausentes no Supabase. Sincronizando apenas dados básicos.");
+                        const { error: basicError } = await supabase.from('dito_users').upsert([basicPayload], { onConflict: 'username' });
+                        if (basicError) throw basicError;
+                    } else {
+                        throw error;
                     }
-                    if (error.message.includes('column "gender" does not exist')) {
-                        this.showNotification('Erro de Banco: A coluna "gender" não existe no Supabase', 'error');
-                    }
-                } else {
-                    console.log("🚀 Sincronizado com sucesso!");
-                    this.updateBalanceUI();
                 }
             } catch (e) {
-                console.warn("⚠️ [Network] Erro crítico sync:");
+                console.error("❌ [Network Sync Error]:", e);
             }
         },
 
@@ -6967,7 +6973,13 @@
             } catch (e) {
                 console.error("❌ [Saque] Erro Crítico:", e);
                 this.showLoading(false);
-                this.showNotification('Erro ao processar saque. Tente novamente em alguns instantes.', 'error');
+                
+                let msg = 'Erro ao processar saque. Tente novamente.';
+                if (e.message?.includes('relation "dito_withdrawals" does not exist')) {
+                    msg = 'Erro de Banco: Tabela de saques ausente. Verifique o SQL Editor.';
+                }
+                
+                this.showNotification(msg, 'error');
             }
         },
 

@@ -4571,7 +4571,7 @@
                 const header = document.getElementById('global-header');
                 const downloadLink = document.getElementById('download-app-link');
                 const floatingActions = document.getElementById('global-fixed-actions');
-                const isAuthPage = view === 'welcome' || view === 'login' || view === 'cadastro';
+                const isAuthPage = view === 'welcome' || view === 'login' || view === 'cadastro' || view === 'criar-produto';
                 const isCheckoutPage = view === 'checkout-direto';
                 
                 if (floatingActions) {
@@ -4690,8 +4690,10 @@
             // Sincroniza visibilidade de botões flutuantes
             const fixedActions = document.getElementById('global-fixed-actions');
             if (fixedActions) {
-                if (view === 'checkout') fixedActions.style.display = 'none';
-                else if (this.currentView !== 'login' && this.currentView !== 'cadastro' && this.currentView !== 'checkout-direto') {
+                const hideViews = ['login', 'cadastro', 'checkout-direto', 'criar-produto'];
+                if (view === 'checkout' || hideViews.includes(this.currentView)) {
+                    fixedActions.style.display = 'none';
+                } else {
                     fixedActions.style.display = 'flex';
                 }
             }

@@ -1498,10 +1498,9 @@
             
             const msg = {
                 sender: this.currentUser.username,
-                receiver: this.activeChatUser,
+                room_id: this.activeChatUser,
                 content: text,
-                created_at: new Date().toISOString(),
-                is_read: false
+                created_at: new Date().toISOString()
             };
             
             this.appendMessageToChat(msg);
@@ -1513,10 +1512,10 @@
             this.markLastInteraction(this.activeChatUser);
             
             if(supabase) {
-                const { error } = await supabase.from('dito_messages').insert([msg]);
+                const { error } = await supabase.from('dito_world_chat').insert([msg]);
                 if(error) {
                     console.error("❌ [Chat] Erro ao enviar:", error.message);
-                    if (error.message.includes('relation "dito_messages" does not exist')) {
+                    if (error.message.includes('relation "dito_world_chat" does not exist')) {
                         this.showNotification('Erro Fatal: Tabela de mensagens não existe no Supabase. Rode o SQL!', 'error');
                     } else {
                         this.showNotification('Erro ao enviar mensagem: ' + error.message, 'error');
@@ -1561,9 +1560,9 @@
 
             try {
                 // 2. BUSCA NO SUPABASE PARA ATUALIZAR
-                const { data, error } = await supabase.from('dito_messages')
+                const { data, error } = await supabase.from('dito_world_chat')
                     .select('*')
-                    .or(`and(sender.eq.${this.currentUser.username},receiver.eq.${this.activeChatUser}),and(sender.eq.${this.activeChatUser},receiver.eq.${this.currentUser.username})`)
+                    .or(`and(sender.eq.${this.currentUser.username},room_id.eq.${this.activeChatUser}),and(sender.eq.${this.activeChatUser},room_id.eq.${this.currentUser.username})`)
                     .order('created_at', { ascending: true })
                     .limit(100);
                     
@@ -1576,13 +1575,6 @@
                     
                     // 3. ATUALIZA O CACHE LOCAL COM OS DADOS REAIS DO SERVIDOR
                     localStorage.setItem(cacheKey, JSON.stringify(data));
-                    
-                    // 4. MARCA COMO LIDO NO SERVIDOR
-                    await supabase.from('dito_messages')
-                        .update({ is_read: true })
-                        .eq('receiver', this.currentUser.username)
-                        .eq('sender', this.activeChatUser)
-                        .eq('is_read', false);
                 }
             } catch(e) {
                 console.warn("Erro ao buscar histórico:", e);
@@ -1591,7 +1583,7 @@
 
         saveMessageToLocal(msg) {
             if (!this.currentUser) return;
-            const otherUser = msg.sender === this.currentUser.username ? msg.receiver : msg.sender;
+            const otherUser = msg.sender === this.currentUser.username ? msg.room_id : msg.sender;
             const cacheKey = `chat_history_${this.currentUser.username}_${otherUser}`;
             const history = JSON.parse(localStorage.getItem(cacheKey) || '[]');
             
@@ -2576,9 +2568,9 @@
 
             // Notifica os usuários via Chat
             if (supabase) {
-                await supabase.from('dito_messages').insert([{
+                await supabase.from('dito_world_chat').insert([{
                     sender: 'Dito System',
-                    receiver: 'GLOBAL',
+                    room_id: 'GLOBAL',
                     content: `📢 [ESTÚDIO] Status: ${status}`
                 }]);
             }
@@ -2664,14 +2656,13 @@
             
             const msg = {
                 sender: this.currentUser.username,
-                receiver: receiver,
+                room_id: receiver,
                 content: content,
-                created_at: new Date().toISOString(),
-                is_read: false
+                created_at: new Date().toISOString()
             };
             
             if(supabase) {
-                const { error } = await supabase.from('dito_messages').insert([msg]);
+                const { error } = await supabase.from('dito_world_chat').insert([msg]);
                 if(error) console.error("❌ [World Chat] Erro ao enviar:", error.message);
             }
 
@@ -2699,7 +2690,8 @@
 
         appendWorldMessageToChat(msg) {
             // --- NOVO: Atualiza Mini Chat da Live Room ---
-            if (msg.receiver === this.activeLiveRoomId) {
+            const targetRoom = msg.room_id || msg.receiver;
+            if (targetRoom === this.activeLiveRoomId) {
                 this.updateLiveMiniChat(msg);
             }
 
@@ -2714,18 +2706,19 @@
             let channelColor = '#000000'; // Global (Preto Sólido)
             let prefix = '[Mundo]';
             
-            const isSpecificSoc = msg.receiver && msg.receiver.startsWith('SOC_');
+            const msgRoom = msg.room_id || msg.receiver || 'GLOBAL';
+            const isSpecificSoc = msgRoom && msgRoom.startsWith('SOC_');
             
-            if (isSpecificSoc && msg.receiver !== 'SOC_GLOBAL') {
+            if (isSpecificSoc && msgRoom !== 'SOC_GLOBAL') {
                 channelColor = '#0057ff'; // Sociedade Específica (Azul vibrante)
-                const socId = msg.receiver.replace('SOC_', '');
+                const socId = msgRoom.replace('SOC_', '');
                 prefix = `[Sociedade #${socId.substring(0,4)}]`;
-            } else if (msg.receiver === 'SOC_GLOBAL') {
+            } else if (msgRoom === 'SOC_GLOBAL') {
                 channelColor = '#008f11'; // Sociedade Geral (Verde Escuro)
                 prefix = '[Sociedade]';
-            } else if (msg.receiver !== 'GLOBAL') {
+            } else if (msgRoom !== 'GLOBAL') {
                 channelColor = '#c70097'; // Privado/Sussurro (Rosa Escuro para fundo branco)
-                prefix = `[Sussurro de ${msg.receiver === this.currentUser?.username ? 'você' : msg.receiver}]`;
+                prefix = `[Sussurro de ${msgRoom === this.currentUser?.username ? 'você' : msgRoom}]`;
             }
             
             const isMe = msg.sender === this.currentUser?.username;
@@ -2814,9 +2807,9 @@
         async fetchLiveMiniChatMessages(roomId) {
             if (!supabase) return;
             const { data, error } = await supabase
-                .from('dito_messages')
+                .from('dito_world_chat')
                 .select('*')
-                .eq('receiver', roomId)
+                .eq('room_id', roomId)
                 .order('created_at', { ascending: false })
                 .limit(4);
             
@@ -2854,9 +2847,9 @@
                 // Remove caracteres incompatíveis com colunas Supabase (hifens, pontos, etc.)
                 const currentRoom = rawRoom.replace(/[^a-zA-Z0-9_]/g, '_');
                 
-                const { data, error } = await supabase.from('dito_messages')
+                const { data, error } = await supabase.from('dito_world_chat')
                     .select('*')
-                    .eq('receiver', currentRoom)
+                    .eq('room_id', currentRoom)
                     .order('created_at', { ascending: false })
                     .limit(50);
                     
@@ -9208,7 +9201,7 @@
             .on('postgres_changes', { 
                 event: 'INSERT', 
                 schema: 'public', 
-                table: 'dito_messages' 
+                table: 'dito_world_chat' 
             }, (payload) => {
                 const msg = payload.new;
                 
@@ -9221,9 +9214,9 @@
                     const isSocDetail = this.currentView === 'sociedade-detalhe';
                     const socRoom = isSocDetail ? `SOC_${this.currentSocietyId}` : 'SOC_GLOBAL';
                     
-                    const isMyRoom = msg.receiver === room;
-                    const isSocRoom = msg.receiver === socRoom;
-                    const isForMe = msg.receiver === this.currentUser.username || msg.sender === this.currentUser.username;
+                    const isMyRoom = msg.room_id === room;
+                    const isSocRoom = msg.room_id === socRoom;
+                    const isForMe = msg.room_id === this.currentUser.username || msg.sender === this.currentUser.username;
                     
                     if (isMyRoom || isSocRoom || isForMe) {
                         // Sempre processa a mensagem para garantir que o Mini Chat e o Histórico atualizem
@@ -9238,7 +9231,7 @@
                 }
                 
                 // 2. Não processa notificação de chat direto se não for pra mim (Ou se for Global)
-                if (msg.receiver !== this.currentUser.username || msg.receiver === 'GLOBAL' || msg.receiver === 'SOC_GLOBAL') return;
+                if (msg.room_id !== this.currentUser.username || msg.room_id === 'GLOBAL' || msg.room_id === 'SOC_GLOBAL') return;
 
                 console.log('📨 Nova mensagem recebida:', msg);
                 

@@ -1741,7 +1741,7 @@
             this.mentorChannel = supabase.channel(channelName, { config: { broadcast: { ack: true } } });
             this.peerConnections = this.peerConnections || {}; 
 
-            }, 5000);
+
 
             this.mentorChannel
                 .on('broadcast', { event: 'request-stream' }, async ({ payload }) => {

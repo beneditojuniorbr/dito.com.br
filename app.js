@@ -4029,18 +4029,50 @@
             this.showNotification("Código Pix copiado!", "success");
         },
 
-        processPayment() {
-            // Segurança Extra: Apenas ADMs podem pular o pagamento real de Pix para testes
-            if (!this.currentUser || (this.currentUser.username !== 'Ditão' && this.currentUser.username !== 'benedito_pro')) {
-                this.showNotification("Aguardando confirmação real do Pix...", "error");
+        async processPayment() {
+            // Segurança Extra: Apenas ADMs podem pular o pagamento real de Pix para testes rápidos
+            if (this.currentUser && (this.currentUser.username === 'Ditão' || this.currentUser.username === 'benedito_pro')) {
+                this.showLoading(true, "Verificando pagamento Pix (Modo ADM)...");
+                setTimeout(() => {
+                    this.showLoading(false);
+                    this.unlockPurchasedProducts();
+                }, 1500);
                 return;
             }
 
-            this.showLoading(true, "Verificando pagamento Pix (Modo ADM)...");
-            setTimeout(() => {
+            if (!supabase) {
+                this.showNotification("Conexão com o banco falhou.", "error");
+                return;
+            }
+
+            this.showLoading(true, "Consultando o banco central...");
+            
+            try {
+                const productWithLink = this.cart.find(p => p.sales_link);
+                const productId = productWithLink ? productWithLink.id : 'global';
+                const userId = this.currentUser?.username || 'visitante';
+
+                // Consulta a tabela dito_purchases que é populada pelo Webhook
+                const { data, error } = await supabase
+                    .from('dito_purchases')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .eq('product_id', productId)
+                    .eq('status', 'approved');
+                
                 this.showLoading(false);
-                this.unlockPurchasedProducts();
-            }, 1500);
+
+                if (data && data.length > 0) {
+                    this.showNotification("Pagamento Aprovado! Liberando acesso...", "success");
+                    this.unlockPurchasedProducts();
+                } else {
+                    this.showNotification("Ainda não identificado. Se você já pagou, aguarde 30 segundos e verifique novamente.", "error");
+                }
+            } catch (err) {
+                this.showLoading(false);
+                console.error("Erro ao verificar pagamento:", err);
+                this.showNotification("Ainda não identificado. Se você já pagou, aguarde 30 segundos e verifique novamente.", "error");
+            }
         },
 
         renderPurchasedProducts() {

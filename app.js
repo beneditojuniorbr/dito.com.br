@@ -8005,27 +8005,42 @@
             const relatedLink = document.getElementById('live-related-link');
             const relatedName = document.getElementById('live-related-name');
 
-            if (relatedContainer && (p.mentoria_link || p.mentoria_image)) {
-                relatedContainer.style.display = 'flex';
-                const finalImage = p.mentoria_image || p.image || p.image_url;
-                if (relatedImg && finalImage) {
-                    relatedImg.style.backgroundImage = `url(${this.rGetPImage(finalImage)})`;
+            const isOwner = this.currentUser && (this.currentUser.username === p.seller || this.currentUser.username === p.author);
+            const hasProduct = !!(p.mentoria_link || p.mentoria_image);
+
+            if (relatedContainer) {
+                if (hasProduct || isOwner) {
+                    relatedContainer.style.display = 'flex';
+                    const finalImage = p.mentoria_image || p.image || p.image_url;
+                    
+                    if (relatedImg) {
+                        if (hasProduct && finalImage) {
+                            relatedImg.style.backgroundImage = `url(${this.rGetPImage(finalImage)})`;
+                        } else {
+                            relatedImg.style.backgroundImage = 'none';
+                            relatedImg.style.backgroundColor = '#f9f9f9';
+                            relatedImg.innerHTML = '<i data-lucide="package" style="width: 24px; color: #ddd;"></i>';
+                        }
+                    }
+
+                    if (relatedName) {
+                        relatedName.innerText = hasProduct ? (p.mentoria_name || "Recomendado pelo Mentor") : "Sua Vitrine está vazia";
+                    }
+
+                    if (relatedLink) {
+                        relatedLink.href = p.mentoria_link || '#';
+                        relatedLink.innerHTML = hasProduct ? `ADQUIRIR AGORA <i data-lucide="external-link" style="width: 12px;"></i>` : `AGUARDANDO PRODUTO...`;
+                        relatedLink.style.display = 'inline-flex';
+                        relatedLink.style.opacity = hasProduct ? '1' : '0.3';
+                        relatedLink.style.pointerEvents = hasProduct ? 'all' : 'none';
+                    }
+                } else {
+                    relatedContainer.style.display = 'none';
                 }
-                if (relatedName) {
-                    relatedName.innerText = p.mentoria_name || "Recomendado pelo Mentor";
-                }
-                if (relatedLink) {
-                    relatedLink.href = p.mentoria_link || '#';
-                    relatedLink.style.display = p.mentoria_link ? 'inline-flex' : 'none';
-                }
-                console.log("✅ Vitrine carregada:", p.mentoria_link);
-            } else if (relatedContainer) {
-                relatedContainer.style.display = 'none';
             }
 
             // --- CONTROLES DO MENTOR ---
             const mentorControls = document.getElementById('mentor-live-controls');
-            const isOwner = this.currentUser && (this.currentUser.username === p.seller || this.currentUser.username === p.author);
             if (mentorControls) {
                 mentorControls.style.display = isOwner ? 'block' : 'none';
             }

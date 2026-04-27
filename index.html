@@ -472,17 +472,17 @@
     </template>
 
     <template id="template-dashboard">
-        <div class="dashboard animate-fade" style="position: relative; overflow: hidden; padding-top: 10px;">
+        <div class="dashboard animate-fade" style="position: relative; overflow-x: hidden; padding-top: 10px;">
             <!-- Bolinhas de Fundo Decorativas -->
             <div style="position: absolute; bottom: 20%; left: -30px; width: 120px; height: 120px; background: rgba(255, 0, 69, 0.04); border-radius: 50%; pointer-events: none; z-index: 0;"></div>
 
-            <div style="background: #fff; padding: 32px 30px 0; display: flex; flex-direction: column; align-items: flex-start; gap: 4px;">
+            <div style="background: #fff; padding: 32px 0 0; display: flex; flex-direction: column; align-items: flex-start; gap: 4px;">
                 <p style="color: #999; font-size: 15px; font-weight: 800; margin-bottom: 0;">Oii, <span id="user-greeting-name" style="color: #000;">benedito</span></p>
                 <div id="network-status-indicator" style="font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;"></div>
             </div>
 
             <!-- Minimalist Balance Section -->
-            <section style="background: #fff; color: #000; padding: 8px 30px 32px; margin-bottom: 0; text-align: left;">
+            <section style="background: #fff; color: #000; padding: 8px 0 32px; margin-bottom: 0; text-align: left;">
                 <p style="font-size: 9px; font-weight: 800; color: #bbb; margin-bottom: 4px; text-transform: none;">Saldo disponível</p>
                 <div style="display: flex; align-items: center; justify-content: flex-start; gap: 12px; margin-bottom: 4px; position: relative;">
                     <h2 id="label-balance" style="font-size: 32px; font-weight: 950; letter-spacing: -1px; margin: 0;">R$ 0,00</h2>
@@ -497,9 +497,9 @@
             </section>
 
             <!-- Quick Actions Scroll -->
-            <div id="quick-actions-scroll" class="hide-scrollbar" style="display: flex; gap: 16px; overflow-x: auto; padding: 10px 0 30px; margin-bottom: 24px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;">
+            <div id="quick-actions-scroll" class="hide-scrollbar" style="display: flex; gap: 16px; overflow-x: auto; padding: 10px 30px 30px; margin: 0 -30px 24px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;">
                 
-                <div class="clickable" style="scroll-snap-align: start; flex-shrink: 0; text-align: center; position: relative; margin-left: 30px;" onclick="app.navigate('criar-produto', 'right'); app.initCreateProduct();">
+                <div class="clickable" style="scroll-snap-align: start; flex-shrink: 0; text-align: center; position: relative;" onclick="app.navigate('criar-produto', 'right'); app.initCreateProduct();">
                     <div id="create-product-dot" style="position: absolute; top: 0; right: 8px; width: 12px; height: 12px; background: #ffd600; border: 2px solid #fff; z-index: 10; display: none;"></div>
                     <div class="action-circle" style="margin: 0 auto 12px;">
                         <i data-lucide="plus" style="width: 22px;"></i>
@@ -571,12 +571,12 @@
 
             <!-- SEÇÃO DE EVENTOS DITO (FAIXA ULTRA SLIM) -->
             <div style="margin-bottom: 32px;">
-                <h3 style="font-size: 16px; font-weight: 950; margin: 0 30px 12px; letter-spacing: -0.5px;">Eventos</h3>
+                <h3 style="font-size: 16px; font-weight: 950; margin: 0 0 12px; letter-spacing: -0.5px;">Eventos</h3>
                 
-                <div id="eventos-carousel" class="hide-scrollbar" style="display: flex; gap: 12px; overflow-x: auto; padding: 0 0 8px; scroll-snap-type: x mandatory; scroll-behavior: smooth;">
+                <div id="eventos-carousel" class="hide-scrollbar" style="display: flex; gap: 12px; overflow-x: auto; padding: 0 30px 8px; margin: 0 -30px; scroll-snap-type: x mandatory; scroll-behavior: smooth;">
                     
                     <!-- EVENTO RELÂMPAGO -->
-                    <div style="min-width: 280px; margin-left: 30px; background: #fff; border: 1px solid #f0f0f0; border-radius: 24px; padding: 20px; scroll-snap-align: start; color: #000; position: relative; overflow: hidden; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; min-height: 100px;">
+                    <div style="min-width: 280px; background: #fff; border: 1px solid #f0f0f0; border-radius: 24px; padding: 20px; scroll-snap-align: start; color: #000; position: relative; overflow: hidden; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; min-height: 100px;">
                         <h4 style="font-size: 16px; font-weight: 950; line-height: 1.1; margin-bottom: 12px; color: #000;">Missão Veloz: 1 Venda em 1h</h4>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <p style="font-size: 12px; font-weight: 800; opacity: 0.7; margin: 0; color: #000;">Ganhe +15 Cupons</p>

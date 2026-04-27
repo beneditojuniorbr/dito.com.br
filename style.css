@@ -454,7 +454,7 @@ input::placeholder, textarea::placeholder {
 
 /* Dashboard Styles */
 .dashboard {
-    padding: 30px;
+    padding: 0 30px;
     background: #ffffff;
 }
 

@@ -3159,15 +3159,17 @@
             if (!supabase) return;
             try {
                 // Se as colunas não existem, salvamos dentro do JSON 'content'
-                const contentObj = typeof product.content === 'string' ? JSON.parse(product.content || '[]') : (product.content || []);
+                let contentObj = typeof product.content === 'string' ? JSON.parse(product.content || '[]') : (product.content || []);
                 
-                // Garantimos que o content seja um objeto se quisermos salvar chaves nomeadas
-                // Se for um array (legado), convertemos ou apenas adicionamos as chaves se for objeto
-                const metadata = Array.isArray(contentObj) ? { items: contentObj } : contentObj;
+                // Garantimos que o content seja um objeto
+                let metadata = Array.isArray(contentObj) ? { items: contentObj } : contentObj;
                 
                 metadata.mentoria_link = product.mentoria_link;
                 metadata.mentoria_name = product.mentoria_name;
                 metadata.mentoria_image = product.mentoria_image;
+
+                // ATUALIZAÇÃO LOCAL: Salva o objeto processado de volta no produto para uso imediato
+                product.content = metadata;
 
                 const { error } = await supabase.from('dito_market_products').upsert({
                     id: product.id,
@@ -8189,13 +8191,16 @@
             p.mentoria_link = newLink;
             p.mentoria_name = prompt("🏷️ Digite o nome chamativo para este produto:", p.mentoria_name || "PRODUTO EM DESTAQUE") || "PRODUTO EM DESTAQUE";
             
-            // Sincroniza com a rede
+            // Sincroniza e garante atualização do objeto selecionado
+            this.selectedProduct = p;
             await this.syncProductToNetwork(p);
             
             this.showNotification("Vitrine atualizada para todos os participantes! 🎯", "success");
             
             // Atualiza localmente
-            this.renderMarketLiveRoom(document.getElementById('market-container'));
+            setTimeout(() => {
+                this.renderMarketLiveRoom(document.getElementById('market-container'));
+            }, 100);
         },
 
         async updateLiveLink(productId) {

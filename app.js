@@ -8153,8 +8153,8 @@
                         playerContainer.innerHTML = `
                             <div style="width: 100%; height: 100%; background: #000; position: relative; overflow: hidden;">
                                 <video id="live-mentor-local-preview" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover; background: #000;"></video>
-                                <div style="position: absolute; top: 10px; left: 10px; background: rgba(255,204,0,0.8); color: #000; padding: 2px 6px; border-radius: 4px; font-size: 7px; font-weight: 900; letter-spacing: 0.5px; display: flex; align-items: center; gap: 4px;">
-                                    <div style="width: 4px; height: 4px; background: #000; border-radius: 50%; animation: pulse 1s infinite;"></div> TRANSMITINDO AO VIVO
+                                <div style="position: absolute; top: 8px; left: 8px; background: rgba(255,204,0,0.7); color: #000; padding: 1.5px 4px; border-radius: 4px; font-size: 5px; font-weight: 900; letter-spacing: 0.5px; display: flex; align-items: center; gap: 3px;">
+                                    <div style="width: 3px; height: 3px; background: #000; border-radius: 50%; animation: pulse 1s infinite;"></div> TRANSMITINDO AO VIVO
                                 </div>
                             </div>
                         `;

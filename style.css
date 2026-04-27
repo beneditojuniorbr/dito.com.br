@@ -751,38 +751,33 @@ input::placeholder, textarea::placeholder {
     }
 
     .app-container {
-        width: calc(100% - 80px); /* Ocupa o resto da tela */
-        max-width: none;
-        margin: 0 0 0 80px; 
-        padding-bottom: 40px;
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding-bottom: 80px;
         background: transparent;
     }
 
-    /* Ocultar Navegação Mobile */
-    #global-nav { display: none !important; }
-
-    /* Exibir Sidebar Minimalista */
-    .desktop-sidebar {
-        display: flex;
-        flex-direction: column;
-        align-items: center; /* Centraliza no eixo X */
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 80px;
-        height: 100vh;
-        background: #fff;
-        border-right: 1px solid #f0f0f0;
-        padding: 32px 0;
-        z-index: 1000;
-        box-shadow: 10px 0 30px rgba(0,0,0,0.02);
+    /* Ocultar Navegação Mobile - AGORA ATIVA NO DESKTOP TAMBÉM */
+    #global-nav { 
+        display: flex !important; 
+        max-width: 500px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        border-radius: 24px 24px 0 0 !important;
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.1) !important;
+        border: 1px solid #f0f0f0;
+        border-bottom: none;
     }
+
+    /* Ocultar Sidebar Minimalista */
+    .desktop-sidebar { display: none !important; }
 
     /* Expansão do Header no PC */
     #global-header {
-        left: 80px !important; 
+        left: 0 !important; 
         transform: none !important;
-        width: calc(100% - 80px) !important;
+        width: 100% !important;
         max-width: none !important;
         padding: 0 40px !important;
         border-bottom: 1px solid #f0f0f0;

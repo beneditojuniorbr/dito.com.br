@@ -793,15 +793,16 @@ input::placeholder, textarea::placeholder {
         right: 0 !important;
         top: 0 !important;
         width: 100% !important;
-        z-index: 1001 !important;
+        z-index: 10000 !important;
         border-radius: 0 !important;
         background: #fff !important;
-        box-shadow: none !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03) !important;
         border-bottom: 1px solid #f0f0f0;
         height: 70px !important;
         display: flex !important;
         align-items: center;
     }
+
 
 
     .welcome-nav-bar > div {

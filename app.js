@@ -1705,12 +1705,19 @@
                 // UI do Mentor (limpa, sem overlays)
                 playerContainer.innerHTML = `
                     <div style="position: relative; width: 100%; height: 100%; background: #000; border-radius: 0; overflow: hidden;">
-                        <video id="live-mentor-video" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover;"></video>
+                        <video id="live-mentor-video" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover; background: #000;"></video>
                     </div>
                 `;
 
-                const video = document.getElementById('live-mentor-video');
-                video.srcObject = stream;
+                // Pequena pausa para garantir o DOM
+                setTimeout(() => {
+                    const video = document.getElementById('live-mentor-video');
+                    if (video) {
+                        video.srcObject = stream;
+                    } else {
+                        console.error("❌ Falha crítica: Elemento de vídeo não encontrado após render.");
+                    }
+                }, 100);
                 
                 if (window.lucide) lucide.createIcons();
 
@@ -1734,13 +1741,6 @@
             this.mentorChannel = supabase.channel(channelName, { config: { broadcast: { ack: true } } });
             this.peerConnections = this.peerConnections || {}; 
 
-            // Heartbeat para avisar que o mentor esta online
-            this.heartbeatInterval = setInterval(() => {
-                this.mentorChannel.send({
-                    type: 'broadcast',
-                    event: 'mentor-presence',
-                    payload: { mentorId: this.currentUser.username, status: 'active' }
-                });
             }, 5000);
 
             this.mentorChannel
@@ -1800,7 +1800,22 @@
                         if (pc) await pc.addIceCandidate(new RTCIceCandidate(payload.candidate));
                     }
                 })
-                .subscribe();
+                .subscribe((status) => {
+                    if (status === 'SUBSCRIBED') {
+                        console.log("📡 [Dito Native] Canal de Transmissão pronto via WebSockets.");
+                        
+                        // Inicia heartbeat apenas após estar inscrito
+                        this.heartbeatInterval = setInterval(() => {
+                            if (this.mentorChannel) {
+                                this.mentorChannel.send({
+                                    type: 'broadcast',
+                                    event: 'mentor-presence',
+                                    payload: { mentorId: this.currentUser.username, status: 'active' }
+                                });
+                            }
+                        }, 5000);
+                    }
+                });
         },
 
         updateViewerCount() {

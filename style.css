@@ -264,25 +264,30 @@ input::placeholder, textarea::placeholder {
 
     /* Landing Page 50% Maior no Desktop */
     .welcome-content-wrapper {
-        max-width: 600px !important;
-        padding-top: 100px !important;
+        max-width: 900px !important;
+        padding-top: 140px !important;
     }
     .welcome-content-wrapper h1 {
-        font-size: 48px !important;
+        font-size: 72px !important;
+        line-height: 1.0;
     }
     .welcome-content-wrapper p {
-        font-size: 24px !important;
+        font-size: 32px !important;
+        margin-bottom: 72px !important;
     }
     .welcome-buttons-container {
-        gap: 24px !important;
+        gap: 32px !important;
+        flex-direction: row !important;
+        justify-content: center !important;
     }
     .btn-capsule {
-        height: 90px !important;
-        font-size: 22px !important;
+        height: 110px !important;
+        width: 320px !important;
+        font-size: 28px !important;
         border-radius: 100px !important;
     }
     .btn-capsule i {
-        width: 26px !important;
+        width: 32px !important;
     }
 
     .landing-features-section {
@@ -560,14 +565,21 @@ input::placeholder, textarea::placeholder {
 }
 
 .action-circle {
-    width: 60px;
-    height: 60px;
+    width: 64px;
+    height: 64px;
     background: var(--surface);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    border: 1px solid #f0f0f0; /* Borda cinza claro solicitada pelo usuário */
+    transition: var(--transition);
+}
+
+.action-circle:hover {
+    border-color: #ddd;
+    transform: scale(1.05);
 }
 
 .action-item span {

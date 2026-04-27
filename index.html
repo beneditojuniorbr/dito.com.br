@@ -487,26 +487,25 @@
             </section>
 
             <!-- Quick Actions Scroll -->
-            <section class="hide-scrollbar" style="display: flex; gap: 32px; overflow-x: auto; padding: 10px 24px 30px; margin-bottom: 24px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scroll-padding-left: 24px;">
-
-
+            <div id="quick-actions-scroll" style="display: flex; gap: 24px; overflow-x: auto; padding: 4px 24px 20px; scroll-snap-type: x mandatory; -ms-overflow-style: none; scrollbar-width: none;">
+                
                 <div class="clickable" style="scroll-snap-align: start; flex-shrink: 0; text-align: center; position: relative;" onclick="app.navigate('criar-produto', 'right'); app.initCreateProduct();">
-                    <div id="create-product-dot" style="position: absolute; top: 0; right: 8px; width: 12px; height: 12px; background: #ffd600; border-radius: 50%; border: 2px solid #fff; z-index: 10; display: none;"></div>
-                    <div style="width: 64px; height: 64px; background: var(--surface); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                    <div id="create-product-dot" style="position: absolute; top: 0; right: 8px; width: 12px; height: 12px; background: #ffd600; border: 2px solid #fff; z-index: 10; display: none;"></div>
+                    <div class="action-circle" style="margin: 0 auto 12px;">
                         <i data-lucide="plus" style="width: 22px;"></i>
                     </div>
                     <span style="font-size: 10px; font-weight: 900; color: var(--text-secondary); letter-spacing: -0.2px; white-space: nowrap;">Criar produto</span>
                 </div>
 
                 <div class="clickable" style="scroll-snap-align: start; flex-shrink: 0; text-align: center;" onclick="app.navigate('vendas', 'right')">
-                    <div style="width: 64px; height: 64px; background: var(--surface); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                    <div class="action-circle" style="margin: 0 auto 12px;">
                         <i data-lucide="trending-up" style="width: 22px;"></i>
                     </div>
                     <span style="font-size: 10px; font-weight: 900; color: var(--text-secondary); letter-spacing: -0.2px;">Vendas</span>
                 </div>
 
                 <div class="clickable" style="scroll-snap-align: start; flex-shrink: 0; text-align: center;" onclick="app.navigate('missoes', 'right')">
-                    <div style="width: 64px; height: 64px; background: var(--surface); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; position: relative;">
+                    <div class="action-circle" style="margin: 0 auto 12px; position: relative;">
                         <i data-lucide="scroll" style="width: 22px;"></i>
                         <div id="mission-dot-scroll" style="display: none; position: absolute; top: 0; right: 0; width: 12px; height: 12px; background: #ffd600; border: 2px solid #fff; border-radius: 50%;"></div>
                     </div>
@@ -514,35 +513,35 @@
                 </div>
 
                 <div class="clickable" style="scroll-snap-align: start; flex-shrink: 0; text-align: center;" onclick="app.navigate('produtos', 'right')">
-                    <div style="width: 64px; height: 64px; background: var(--surface); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                    <div class="action-circle" style="margin: 0 auto 12px;">
                         <i data-lucide="package" style="width: 22px;"></i>
                     </div>
                     <span style="font-size: 10px; font-weight: 900; color: var(--text-secondary); letter-spacing: -0.2px; white-space: nowrap;">Meus produtos</span>
                 </div>
 
                 <div class="clickable" style="scroll-snap-align: start; flex-shrink: 0; text-align: center;" onclick="app.navigate('links', 'right')">
-                    <div style="width: 64px; height: 64px; background: var(--surface); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                    <div class="action-circle" style="margin: 0 auto 12px;">
                         <i data-lucide="link" style="width: 22px;"></i>
                     </div>
                     <span style="font-size: 10px; font-weight: 900; color: var(--text-secondary); letter-spacing: -0.2px;">Links</span>
                 </div>
 
                 <div onclick="app.navigate('sociedade', 'right')" class="clickable" style="scroll-snap-align: start; flex-shrink: 0; text-align: center;">
-                    <div style="width: 64px; height: 64px; background: var(--surface); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                    <div class="action-circle" style="margin: 0 auto 12px;">
                         <i data-lucide="users" style="width: 22px;"></i>
                     </div>
                     <span style="font-size: 10px; font-weight: 900; color: var(--text-secondary); letter-spacing: -0.2px; white-space: nowrap;">Sociedade</span>
                 </div>
 
                 <div onclick="app.navigate('meus-cursos', 'right')" class="clickable" style="scroll-snap-align: start; flex-shrink: 0; text-align: center;">
-                    <div style="width: 64px; height: 64px; background: var(--surface); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                    <div class="action-circle" style="margin: 0 auto 12px;">
                         <i data-lucide="shopping-bag" style="width: 22px;"></i>
                     </div>
                     <span style="font-size: 10px; font-weight: 900; color: var(--text-secondary); letter-spacing: -0.2px; white-space: nowrap;">Minhas compras</span>
                 </div>
 
                 <div onclick="app.navigate('hall', 'right')" class="clickable" style="scroll-snap-align: start; flex-shrink: 0; text-align: center;">
-                    <div style="width: 64px; height: 64px; background: var(--surface); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; position: relative;">
+                    <div class="action-circle" style="margin: 0 auto 12px; position: relative;">
                         <i data-lucide="star" style="width: 22px;"></i>
                         <span id="dot-hall" style="display: none; position: absolute; top: -2px; right: -2px; width: 16px; height: 16px; background: #ef4444; border-radius: 50%; border: 2px solid #fff; shadow: 0 4px 10px rgba(0,0,0,0.1);"></span>
                     </div>
@@ -550,16 +549,21 @@
                 </div>
 
                 <div class="clickable" style="scroll-snap-align: start; flex-shrink: 0; text-align: center;" onclick="app.launchVictoryConfetti()">
-                    <div style="width: 64px; height: 64px; background: var(--surface); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                    <div class="action-circle" style="margin: 0 auto 12px;">
                         <i data-lucide="party-popper" style="width: 22px;"></i>
                     </div>
                     <span style="font-size: 10px; font-weight: 900; color: var(--text-secondary); letter-spacing: -0.2px; white-space: nowrap;">Festa!</span>
                 </div>
 
-            </section>
+            </div>
 
+            <!-- Botão de Suporte (Chat) -->
+            <div style="position: fixed; bottom: 90px; right: 24px; z-index: 100;">
+                <div class="action-circle" style="width: 56px; height: 56px; background: #000; color: #fff; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2);" onclick="app.toggleChatDrawer()">
+                    <i data-lucide="message-circle" style="width: 24px;"></i>
+                </div>
+            </div>
 
-            <!-- SEÇÃO DE EVENTOS DITO (FAIXA ULTRA SLIM) -->
             <!-- SEÇÃO DE EVENTOS DITO (FAIXA ULTRA SLIM) -->
             <div style="margin-bottom: 32px;">
                 <h3 style="font-size: 16px; font-weight: 950; margin: 0 24px 12px; letter-spacing: -0.5px;">Eventos</h3>
@@ -2058,7 +2062,10 @@
 
     <!-- Mini Chat Drawer (Bottom Sheet) para Live -->
     <div id="live-mini-chat-drawer" style="position: fixed; left: 0; right: 0; bottom: 0; height: 65vh; background: #fff; z-index: 10001; transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1); transform: translateY(100%); border-radius: 32px 32px 0 0; box-shadow: 0 -10px 40px rgba(0,0,0,0.1); display: flex; flex-direction: column; max-width: 500px; margin: 0 auto; overflow: hidden;">
-        <div style="padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f5f5f5; background: #fff;">
+        <!-- Handle do Bottom Sheet -->
+        <div style="width: 40px; height: 4px; background: #e0e0e0; border-radius: 2px; margin: 12px auto 0; flex-shrink: 0;"></div>
+        
+        <div style="padding: 20px 24px 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f5f5f5; background: #fff;">
             <div style="display: flex; align-items: center; gap: 12px;">
                 <div style="width: 10px; height: 10px; background: #ffcc00; border-radius: 50%; animation: pulse 1s infinite;"></div>
                 <h3 style="font-weight: 950; font-size: 18px; letter-spacing: -0.5px; color: #000;">Chat</h3>

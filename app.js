@@ -3623,17 +3623,17 @@
                 const { error } = await supabase
                     .from('dito_product_ratings')
                     .upsert({
+                        id: `${productId}_${this.currentUser.username}`, // ID Composto para evitar erro 400 de conflito
                         product_id: String(productId),
                         username: this.currentUser.username,
                         score: newScore
-                    }, { onConflict: 'product_id,username' });
+                    }, { onConflict: 'id' });
 
                 if (!error) {
                     this.showNotification(newScore === 0 ? 'Avaliação removida.' : 'Avaliado com sucesso!', 'success');
                     this.fetchAndRenderProductRating(productId);
                 } else {
                     console.error("Erro ao avaliar produto (PostgREST):", error);
-                    // Reverte se der erro
                     this.fetchAndRenderProductRating(productId);
                 }
             } catch (e) {
@@ -4728,7 +4728,7 @@
                 // Oculta botões flutuantes em telas públicas (landing, login, cadastro) ou criação de produto
                 const isPublicPage = (view === 'welcome' || view === 'login' || view === 'cadastro' || view === 'criar-produto');
                 const missionsAction = document.getElementById('global-fixed-actions');
-                if (missionsAction) missionsAction.style.display = (isPublicPage || (view === 'mercado' && this.marketView === 'checkout')) ? 'none' : 'flex';
+                if (missionsAction) missionsAction.style.display = 'none'; // Removido conforme solicitado (movido para o scroll)
 
                 // Controle do Botão de Gerenciar Transmissão (Lado Direito)
                 const liveAction = document.getElementById('global-fixed-actions-right');
@@ -8660,7 +8660,7 @@
                     `;
                     
                     return `
-                    <div onclick="app.viewProduct('${p.id}')" class="mercado-card-premium" style="width: 165px; min-width: 165px; scroll-snap-align: start;">
+                    <div onclick="app.${isMentoria ? 'enterMentorshipRoom' : 'viewProduct'}('${p.id}')" class="mercado-card-premium" style="width: 165px; min-width: 165px; scroll-snap-align: start;">
                         ${isMentoria ? `
                             <div style="padding: 12px; display: flex; flex-direction: column; align-items: center;">
                                 ${imgContainer}
@@ -8710,7 +8710,7 @@
                 `;
 
                 return `
-                <div onclick="app.viewProduct('${p.id}')" class="mercado-card-premium">
+                <div onclick="app.${isMentoria ? 'enterMentorshipRoom' : 'viewProduct'}('${p.id}')" class="mercado-card-premium">
                     ${isMentoria ? `
                         <div style="padding: 12px; display: flex; flex-direction: column; align-items: center;">
                             ${imgContainer}

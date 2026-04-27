@@ -8157,11 +8157,11 @@
                     playerContainer.innerHTML = `
                         <div style="width: 100%; height: 100%; background: #000; position: relative; overflow: hidden;">
                             <video id="live-native-video" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover; background: #000;"></video>
-                            <div id="live-native-overlay" style="position: absolute; inset: 0; background: rgba(0,0,0,0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; backdrop-filter: blur(5px);">
-                                <div class="live-pulse" style="width: 16px; height: 16px; background: #ff005c; border-radius: 50%; margin-bottom: 12px;"></div>
-                                <p id="live-native-status" style="color: #fff; font-size: 11px; font-weight: 950; text-transform: uppercase; letter-spacing: 1px;">Sincronizando com o Mentor...</p>
-                                <button id="btn-unmute-live" onclick="app.unmuteNativeLive()" style="display: none; margin-top: 16px; background: #ff005c; color: #fff; border: none; padding: 12px 24px; border-radius: 50px; font-weight: 950; font-size: 11px; cursor: pointer;">
-                                    <i data-lucide="volume-2" style="width: 16px; margin-right: 6px;"></i> OUVIR MENTOR
+                            <div id="live-native-overlay" style="position: absolute; inset: 0; background: rgba(0,0,0,0.6); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; backdrop-filter: blur(8px);">
+                                <div class="live-pulse" style="width: 12px; height: 12px; background: #ffcc00; border-radius: 50%; margin-bottom: 20px; box-shadow: 0 0 15px rgba(255,204,0,0.5);"></div>
+                                <i data-lucide="refresh-cw" class="spin-slow" style="width: 24px; color: #fff; opacity: 0.8;"></i>
+                                <button id="btn-unmute-live" onclick="app.unmuteNativeLive()" style="display: none; margin-top: 24px; background: #fff; color: #000; border: none; padding: 12px 24px; border-radius: 50px; font-weight: 950; font-size: 11px; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
+                                    <i data-lucide="volume-2" style="width: 16px; margin-right: 6px; vertical-align: middle;"></i> OUVIR MENTOR
                                 </button>
                             </div>
                         </div>

@@ -7969,6 +7969,42 @@
             document.getElementById('live-host-name').innerText = hostName;
             document.getElementById('live-description').innerText = p.description || "Bem-vindo à transmissão exclusiva.";
 
+            // --- NOVO: PRODUTOS RELACIONADOS DA MENTORIA ---
+            const relatedContainer = document.getElementById('live-related-products');
+            const relatedImg = document.getElementById('live-related-img');
+            const relatedLink = document.getElementById('live-related-link');
+
+            if (relatedContainer && (p.mentoria_link || p.mentoria_image)) {
+                relatedContainer.style.display = 'flex';
+                if (relatedImg) {
+                    relatedImg.style.backgroundImage = `url(${p.mentoria_image || 'https://via.placeholder.com/50'})`;
+                }
+                if (relatedLink) {
+                    relatedLink.href = p.mentoria_link || '#';
+                    relatedLink.style.display = p.mentoria_link ? 'flex' : 'none';
+                }
+            } else if (relatedContainer) {
+                relatedContainer.style.display = 'none';
+            }
+
+            // --- NOVO: PRODUTOS RELACIONADOS DA MENTORIA ---
+            const relatedContainer = document.getElementById('live-related-products');
+            const relatedImg = document.getElementById('live-related-img');
+            const relatedLink = document.getElementById('live-related-link');
+
+            if (relatedContainer && (p.mentoria_link || p.mentoria_image)) {
+                relatedContainer.style.display = 'flex';
+                if (relatedImg) {
+                    relatedImg.style.backgroundImage = `url(${p.mentoria_image || 'https://via.placeholder.com/50'})`;
+                }
+                if (relatedLink) {
+                    relatedLink.href = p.mentoria_link || '#';
+                    relatedLink.style.display = p.mentoria_link ? 'flex' : 'none';
+                }
+            } else if (relatedContainer) {
+                relatedContainer.style.display = 'none';
+            }
+
             // --- NOVO: MINI CHAT INICIALIZAÇÃO ---
             this.activeLiveRoomId = `LIVE_${p.id}`;
             this.fetchLiveMiniChatMessages(this.activeLiveRoomId);
@@ -8059,33 +8095,7 @@
                 `;
             }
 
-            // Área Extra para Mentor (Descrição e Links de Venda)
-            const extraContainer = document.createElement('div');
-            extraContainer.id = 'live-extra-content';
-            extraContainer.style.cssText = 'padding: 0 32px 32px;';
-            
-            if (isOwnerLive) {
-                extraContainer.innerHTML = `
-                    <div style="background: #fafafa; border: 1.5px dashed #eee; border-radius: 24px; padding: 20px; margin-top: 20px;">
-                        <h4 style="font-size: 11px; font-weight: 950; color: #000; text-transform: uppercase; margin-bottom: 12px;">HUB DO MENTOR: EXTRAS</h4>
-                        <textarea id="live-mentor-desc" placeholder="Adicione uma descrição extra ou avisos aqui..." style="width: 100%; height: 80px; background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 12px; font-size: 12px; font-weight: 700; outline: none; margin-bottom: 12px; resize: none;">${p.extra_desc || ''}</textarea>
-                        <input type="text" id="live-mentor-link" placeholder="Link de um produto ou oferta (ex: https://...)" value="${p.extra_link || ''}" style="width: 100%; height: 45px; background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 0 12px; font-size: 12px; font-weight: 800; outline: none; margin-bottom: 12px;">
-                        <button onclick="app.saveMentorshipExtras('${p.id}')" style="width: 100%; height: 45px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 900; font-size: 11px; cursor: pointer;">SALVAR EXTRAS</button>
-                    </div>
-                `;
-            } else if (p.extra_desc || p.extra_link) {
-                extraContainer.innerHTML = `
-                    <div style="background: #fdf2f8; border-radius: 24px; padding: 20px; margin-top: 20px; border: 1px solid #fce7f3;">
-                        ${p.extra_desc ? `<p style="font-size: 13px; color: #333; font-weight: 700; line-height: 1.6; margin-bottom: 16px;">${p.extra_desc}</p>` : ''}
-                        ${p.extra_link ? `
-                            <a href="${p.extra_link}" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 50px; background: #ff005c; color: #fff; text-decoration: none; border-radius: 50px; font-weight: 950; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 10px 20px rgba(255,0,92,0.2);">
-                                <i data-lucide="external-link" style="width: 14px;"></i> ACESSAR OFERTA ESPECIAL
-                            </a>
-                        ` : ''}
-                    </div>
-                `;
-            }
-            container.appendChild(extraContainer);
+            // Removido Hub de Extras legado
 
             // CONTROLES DE TRANSMISSÃO CENTRALIZADOS NO HUB FLUTUANTE
             const controls = document.createElement('div');

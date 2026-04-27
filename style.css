@@ -220,7 +220,7 @@ input::placeholder, textarea::placeholder {
     }
     
     /* Container que envolve o Header e o Formulário no Desktop */
-    .login-screen > div:not([style*="margin-top: 100px"]) {
+    .login-screen > div:not([style*="margin-top: 100px"]):not(.welcome-nav-bar) {
         background: #fff;
         padding: 60px;
         border-radius: 40px;

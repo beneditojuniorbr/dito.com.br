@@ -68,6 +68,17 @@
             }
         }
 
+        // Forçar Reset de Cache Agressivo v14
+        if (localStorage.getItem('force_reset_v14') !== 'true') {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(regs => {
+                    for(let reg of regs) reg.unregister();
+                    localStorage.setItem('force_reset_v14', 'true');
+                    window.location.reload(true);
+                });
+            }
+        }
+
         if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js?v=' + Date.now()).then(reg => {
@@ -461,7 +472,7 @@
     </template>
 
     <template id="template-dashboard">
-        <div class="dashboard animate-fade" style="padding: 0; position: relative; overflow: hidden;">
+        <div class="dashboard animate-fade" style="position: relative; overflow: hidden; padding-top: 10px;">
             <!-- Bolinhas de Fundo Decorativas -->
             <div style="position: absolute; bottom: 20%; left: -30px; width: 120px; height: 120px; background: rgba(255, 0, 69, 0.04); border-radius: 50%; pointer-events: none; z-index: 0;"></div>
 

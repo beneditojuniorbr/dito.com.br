@@ -1847,6 +1847,83 @@
             if (el) el.innerText = `👤 ${presenceCount} Online`;
         },
 
+        toggleLiveMiniChat(show) {
+            const drawer = document.getElementById('live-mini-chat-drawer');
+            if (!drawer) return;
+            if (show) {
+                if (!this.currentUser) return this.showNotification("Faça login para participar do chat.", "error");
+                drawer.style.transform = 'translateY(0)';
+                this.fetchLiveMiniChatMessages();
+                // Assina se não estiver
+                if (!this.miniChatSubscription && supabase && this.selectedProduct) {
+                    const roomId = `LIVE_${this.selectedProduct.id}`;
+                    this.miniChatSubscription = supabase
+                        .channel(`room_${roomId}`)
+                        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'world_chat', filter: `room_id=eq.${roomId}` }, () => {
+                            this.fetchLiveMiniChatMessages();
+                        })
+                        .subscribe();
+                }
+            } else {
+                drawer.style.transform = 'translateY(100%)';
+            }
+        },
+
+        async sendLiveMiniChatMessage() {
+            const input = document.getElementById('live-mini-chat-input');
+            const msg = input.value.trim();
+            if (!msg || !this.currentUser || !this.selectedProduct) return;
+
+            input.value = '';
+            const roomId = `LIVE_${this.selectedProduct.id}`;
+
+            try {
+                const { error } = await supabase.from('world_chat').insert({
+                    room_id: roomId,
+                    user_id: this.currentUser.id,
+                    username: this.currentUser.username,
+                    content: msg,
+                    avatar: this.currentUser.avatar || ''
+                });
+                if (error) throw error;
+                this.fetchLiveMiniChatMessages();
+            } catch (err) {
+                console.error("Erro ao enviar msg:", err);
+                this.showNotification("Não foi possível enviar a mensagem.", "error");
+            }
+        },
+
+        async fetchLiveMiniChatMessages() {
+            if (!this.selectedProduct) return;
+            const roomId = `LIVE_${this.selectedProduct.id}`;
+            const feed = document.getElementById('live-mini-chat-feed');
+            if (!feed) return;
+
+            try {
+                const { data, error } = await supabase
+                    .from('world_chat')
+                    .select('*')
+                    .eq('room_id', roomId)
+                    .order('created_at', { ascending: false })
+                    .limit(30);
+
+                if (error) throw error;
+                
+                const msgs = [...data].reverse();
+                feed.innerHTML = msgs.map(m => `
+                    <div style="display: flex; flex-direction: column; gap: 4px; align-self: ${m.username === this.currentUser.username ? 'flex-end' : 'flex-start'}; max-width: 80%;">
+                        <span style="font-size: 10px; font-weight: 800; color: #999; margin-left: 4px;">${m.username}</span>
+                        <div style="background: ${m.username === this.currentUser.username ? '#000' : '#f0f0f0'}; color: ${m.username === this.currentUser.username ? '#fff' : '#000'}; padding: 12px 16px; border-radius: 18px; font-size: 13px; font-weight: 600; line-height: 1.4;">
+                            ${m.content}
+                        </div>
+                    </div>
+                `).join('');
+                feed.scrollTop = feed.scrollHeight;
+            } catch (err) {
+                console.error("Erro fetch msgs:", err);
+            }
+        },
+
         stopLiveCamera() {
             if (this.liveStream) {
                 this.liveStream.getTracks().forEach(track => track.stop());
@@ -8136,7 +8213,7 @@
             const chatBtn = document.getElementById('btn-open-live-chat');
 
             if (chatBtn) {
-                chatBtn.onclick = () => this.openWorldChat(`LIVE_${p.id}`, `Chat: ${p.name}`);
+                chatBtn.onclick = () => this.toggleLiveMiniChat(true);
             }
 
             if (p.sales_link === 'NATIVE_LIVE') {

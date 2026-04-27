@@ -3386,58 +3386,61 @@
             // Customizar Informações (Nome, Preço, Descrição, Avaliações)
             const detailContent = document.getElementById('product-detail-content');
             if (detailContent && p) {
+                const hostUser = this.users ? this.users.find(u => u.username === (p.seller || p.author)) : null;
+                const producerAvatar = hostUser ? hostUser.avatar : p.seller_avatar;
+
                 detailContent.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
-                        <div>
-                            <span style="font-size: 10px; font-weight: 900; color: #ff005c; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px;">${p.category || 'Geral'}</span>
-                            <h1 style="font-size: 28px; font-weight: 950; line-height: 1.1; letter-spacing: -1.5px; color: #000; margin-bottom: 4px;">${p.name}</h1>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px;">
+                        <div style="flex: 1;">
+                            <span style="font-size: 10px; font-weight: 900; color: #000; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px;">${p.category || 'Geral'}</span>
+                            <h1 style="font-size: 32px; font-weight: 950; line-height: 1; letter-spacing: -2px; color: #000; margin-bottom: 4px;">${p.name}</h1>
                         </div>
-                        <div style="text-align: right;">
-                            <span style="display: block; font-size: 24px; font-weight: 950; color: #000;">R$ ${p.price.toFixed(2)}</span>
-                            ${p.oldPrice ? `<span style="font-size: 12px; font-weight: 700; color: #ccc; text-decoration: line-through;">R$ ${p.oldPrice.toFixed(2)}</span>` : ''}
+                        <div style="text-align: right; padding-left: 20px;">
+                            <span style="display: block; font-size: 28px; font-weight: 950; color: #000; letter-spacing: -1px;">R$ ${p.price.toFixed(2)}</span>
+                            ${p.oldPrice ? `<span style="font-size: 14px; font-weight: 700; color: #ccc; text-decoration: line-through;">R$ ${p.oldPrice.toFixed(2)}</span>` : ''}
                         </div>
                     </div>
 
                     ${p.hasLimit ? `
-                        <div style="margin-bottom: 32px; padding: 0;">
+                        <div style="margin-bottom: 40px; padding: 0;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                <span style="font-size: 11px; font-weight: 900; color: #000;">DISPONIBILIDADE</span>
+                                <span style="font-size: 11px; font-weight: 900; color: #000; letter-spacing: 0.5px;">DISPONIBILIDADE</span>
                                 <span style="font-size: 11px; font-weight: 900; color: #000;">${Math.max(0, p.stockLimit - (p.sales || 0))} / ${p.stockLimit}</span>
                             </div>
-                            <p style="font-size: 10px; font-weight: 900; color: #ff0000; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
-                                <i data-lucide="alert-circle" style="width: 12px;"></i>
+                            <p style="font-size: 11px; font-weight: 800; color: #000; margin-top: 4px; display: flex; align-items: center; gap: 6px;">
+                                <i data-lucide="alert-circle" style="width: 14px;"></i>
                                 ${(p.stockLimit - (p.sales || 0)) <= 0 ? 'Inscrições encerradas.' : `Atenção: Apenas ${p.stockLimit - (p.sales || 0)} ${p.type === 'Curso' ? 'vagas disponíveis' : (p.type === 'Mentoria' ? 'ingressos' : 'unidades')} restantes.`}
                             </p>
                         </div>
                     ` : ''}
 
-                    <div id="product-rating-container" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px;">
-                         <div style="display: flex; align-items: center; gap: 6px;">
-                            <i data-lucide="star" style="width: 14px; color: #facc15; fill: #facc15;"></i>
-                            <span id="product-avg-rating" style="font-size: 12px; font-weight: 800; color: #bbb;">Carregando nota...</span>
+                    <div id="product-rating-container" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px;">
+                         <div style="display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="star" style="width: 16px; color: #facc15; fill: #facc15;"></i>
+                            <span id="product-avg-rating" style="font-size: 13px; font-weight: 900; color: #000;">Carregando nota...</span>
                          </div>
-                         <div id="product-interactive-stars" style="display: flex; gap: 4px;">
-                            <i data-pstar="1" onclick="app.rateProduct('${p.id}', 1)" data-lucide="star" style="width: 20px; color: #eee; cursor: pointer;"></i>
-                            <i data-pstar="2" onclick="app.rateProduct('${p.id}', 2)" data-lucide="star" style="width: 20px; color: #eee; cursor: pointer;"></i>
-                            <i data-pstar="3" onclick="app.rateProduct('${p.id}', 3)" data-lucide="star" style="width: 20px; color: #eee; cursor: pointer;"></i>
-                            <i data-pstar="4" onclick="app.rateProduct('${p.id}', 4)" data-lucide="star" style="width: 20px; color: #eee; cursor: pointer;"></i>
-                            <i data-pstar="5" onclick="app.rateProduct('${p.id}', 5)" data-lucide="star" style="width: 20px; color: #eee; cursor: pointer;"></i>
+                         <div id="product-interactive-stars" style="display: flex; gap: 6px;">
+                            <i data-pstar="1" onclick="app.rateProduct('${p.id}', 1)" data-lucide="star" style="width: 22px; color: #eee; cursor: pointer;"></i>
+                            <i data-pstar="2" onclick="app.rateProduct('${p.id}', 2)" data-lucide="star" style="width: 22px; color: #eee; cursor: pointer;"></i>
+                            <i data-pstar="3" onclick="app.rateProduct('${p.id}', 3)" data-lucide="star" style="width: 22px; color: #eee; cursor: pointer;"></i>
+                            <i data-pstar="4" onclick="app.rateProduct('${p.id}', 4)" data-lucide="star" style="width: 22px; color: #eee; cursor: pointer;"></i>
+                            <i data-pstar="5" onclick="app.rateProduct('${p.id}', 5)" data-lucide="star" style="width: 22px; color: #eee; cursor: pointer;"></i>
                          </div>
                     </div>
 
-                    <p style="font-size: 14px; color: #666; font-weight: 500; line-height: 1.6; margin-bottom: 32px;">${p.description || 'Sem descrição detalhada disponível para este produto no momento.'}</p>
+                    <p style="font-size: 15px; color: #000; font-weight: 600; line-height: 1.6; margin-bottom: 48px; opacity: 0.8;">${p.description || 'Sem descrição detalhada disponível para este produto no momento.'}</p>
                     
-                    <div style="background: transparent; padding: 10px 0; display: flex; justify-content: space-between; align-items: center;">
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <div style="width: 44px; height: 44px; background: #000; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; overflow: hidden;">
-                                ${p.seller_avatar ? `<img src="${p.seller_avatar}" style="width:100%; height:100%; object-fit:cover;">` : (p.seller ? p.seller[0] : 'U')}
+                    <div style="background: transparent; padding: 16px 0; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f9f9f9;">
+                        <div style="display: flex; align-items: center; gap: 14px;">
+                            <div style="width: 54px; height: 54px; background: #000; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; overflow: hidden; border: 2px solid #f5f5f5;">
+                                ${producerAvatar ? `<img src="${producerAvatar}" style="width:100%; height:100%; object-fit:cover;">` : (p.seller ? p.seller[0] : 'U')}
                             </div>
                             <div>
-                                <p style="font-size: 12px; font-weight: 900;">${p.seller || 'Membro'}</p>
-                                <p style="font-size: 10px; color: #ccc; font-weight: 700;">Loja Oficial</p>
+                                <p style="font-size: 14px; font-weight: 950; color: #000; letter-spacing: -0.5px;">${p.seller || 'Membro'}</p>
+                                <p style="font-size: 11px; color: #000; font-weight: 800; opacity: 0.5;">Loja Oficial</p>
                             </div>
                         </div>
-                        <button onclick="app.navigate('perfil')" style="font-size: 10px; font-weight: 900; text-transform: uppercase; background: transparent; border: 1px solid #eee; padding: 10px 16px; border-radius: 30px; cursor: pointer; color: #ccc;">Ver perfil</button>
+                        <button onclick="app.navigate('perfil')" style="font-size: 10px; font-weight: 900; text-transform: uppercase; background: #000; color: #fff; border: none; padding: 12px 20px; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">Ver perfil</button>
                     </div>
                 `;
             }

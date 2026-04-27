@@ -34,7 +34,7 @@
     <meta name="apple-mobile-web-app-title" content="Dito">
     <meta name="application-name" content="Dito">
     <meta name="msapplication-TileColor" content="#ffffff">
-    <link rel="stylesheet" href="style.css?v=20240427_fix4">
+    <link rel="stylesheet" href="style.css?v=20240427_fix5">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         // Lógica PWA Persistente
@@ -68,12 +68,12 @@
             }
         }
 
-        // Forçar Reset de Cache Agressivo v14
-        if (localStorage.getItem('force_reset_v14') !== 'true') {
+        // Forçar Reset de Cache Agressivo v16
+        if (localStorage.getItem('force_reset_v16') !== 'true') {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then(regs => {
                     for(let reg of regs) reg.unregister();
-                    localStorage.setItem('force_reset_v14', 'true');
+                    localStorage.setItem('force_reset_v16', 'true');
                     window.location.reload(true);
                 });
             }
@@ -576,7 +576,7 @@
                 <div id="eventos-carousel" class="hide-scrollbar" style="display: flex; gap: 12px; overflow-x: auto; padding: 0 30px 8px; margin: 0 -30px; scroll-snap-type: x mandatory; scroll-behavior: smooth;">
                     
                     <!-- EVENTO RELÂMPAGO -->
-                    <div style="min-width: 280px; background: #fff; border: 1px solid #f0f0f0; border-radius: 24px; padding: 20px; scroll-snap-align: start; color: #000; position: relative; overflow: hidden; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; min-height: 100px;">
+                    <div style="min-width: 280px; background: #fff; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border-radius: 24px; padding: 20px; scroll-snap-align: start; color: #000; position: relative; overflow: hidden; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; min-height: 100px;">
                         <h4 style="font-size: 16px; font-weight: 950; line-height: 1.1; margin-bottom: 12px; color: #000;">Missão Veloz: 1 Venda em 1h</h4>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <p style="font-size: 12px; font-weight: 800; opacity: 0.7; margin: 0; color: #000;">Ganhe +15 Cupons</p>
@@ -585,7 +585,7 @@
                     </div>
 
                     <!-- EVENTO DO DIA -->
-                    <div style="min-width: 280px; background: #fff; border: 1px solid #f0f0f0; border-radius: 24px; padding: 20px; scroll-snap-align: start; color: #000; position: relative; overflow: hidden; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; min-height: 100px;">
+                    <div style="min-width: 280px; background: #fff; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border-radius: 24px; padding: 20px; scroll-snap-align: start; color: #000; position: relative; overflow: hidden; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; min-height: 100px;">
                         <h4 style="font-size: 16px; font-weight: 950; line-height: 1.1; margin-bottom: 12px; color: #000;">Missão Especialista: 5 Vendas Hoje</h4>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <p style="font-size: 12px; font-weight: 800; opacity: 0.7; margin: 0; color: #000;">Ganhe +30 Cupons</p>
@@ -594,7 +594,7 @@
                     </div>
 
                     <!-- EVENTO DA SEMANA -->
-                    <div style="min-width: 280px; background: #fff; border: 1px solid #f0f0f0; border-radius: 24px; padding: 20px; scroll-snap-align: start; color: #000; position: relative; overflow: hidden; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; min-height: 100px;">
+                    <div style="min-width: 280px; background: #fff; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border-radius: 24px; padding: 20px; scroll-snap-align: start; color: #000; position: relative; overflow: hidden; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; min-height: 100px;">
                         <h4 style="font-size: 16px; font-weight: 950; line-height: 1.1; margin-bottom: 12px; color: #000;">Rei da Rede: 1 Indicação</h4>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <p style="font-size: 12px; font-weight: 800; opacity: 0.7; margin: 0; color: #000;">Ganhe +30 Cupons</p>

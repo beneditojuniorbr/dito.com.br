@@ -8164,11 +8164,11 @@
             const p = this.products.find(item => String(item.id) === String(pId));
             if (!p) return;
 
-            const newLink = prompt("Cole o Link do Produto para a Vitrine:", p.mentoria_link || "");
+            const newLink = prompt("📍 [VITRINE LIVE] Cole o Link do seu produto ou oferta especial:", p.mentoria_link || "https://...");
             if (newLink === null) return;
 
             p.mentoria_link = newLink;
-            p.mentoria_name = prompt("Nome do Produto (opcional):", p.mentoria_name || "Produto em destaque") || "Produto em destaque";
+            p.mentoria_name = prompt("🏷️ Digite o nome chamativo para este produto:", p.mentoria_name || "PRODUTO EM DESTAQUE") || "PRODUTO EM DESTAQUE";
             
             // Sincroniza com a rede
             await this.syncProductToNetwork(p);

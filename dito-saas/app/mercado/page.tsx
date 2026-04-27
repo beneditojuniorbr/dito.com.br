@@ -122,7 +122,7 @@ export default function MercadoPage() {
 
       <main className={`max-w-2xl mx-auto py-8 transition-opacity duration-[1500ms] ${isRefreshing ? 'opacity-20' : 'opacity-100'}`}>
         {view === 'home' && (
-          <div className="px-[9px]">
+          <div className="px-6">
             {/* Seção de Ebooks com Scroll Horizontal */}
             {products.filter(p => p.type === 'Ebook').length > 0 && (
               <div className="mb-10">

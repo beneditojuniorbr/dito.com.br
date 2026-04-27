@@ -1717,31 +1717,22 @@
                 videoWrap.appendChild(videoEl);
                 playerContainer.appendChild(videoWrap);
 
-                // Mecanismo de Retry para garantir o srcObject
-                let attempts = 0;
-                const attachStream = () => {
-                    const v = document.getElementById('live-mentor-video');
-                    if (v) {
-                        v.srcObject = stream;
-                        console.log("✅ Câmera conectada com sucesso ao elemento de vídeo.");
-                        
-                        if (window.lucide) lucide.createIcons();
-                        // --- LOGICA DE SINALIZACAO WEBRTC ---
-                        this.initMentorSignaling(p.id, stream);
-                        // Notifica a rede
-                        p.sales_link = 'NATIVE_LIVE';
-                        this.syncProductToNetwork(p);
-                        this.showNotification("Você está AO VIVO no Dito!", "success");
-                    } else if (attempts < 10) {
-                        attempts++;
-                        setTimeout(attachStream, 100);
-                    } else {
-                        console.error("❌ Erro fatal: Elemento de vídeo não encontrado após 10 tentativas.");
-                        this.showNotification("Erro técnico ao iniciar vídeo. Tente novamente.", "error");
-                    }
-                };
-
-                attachStream();
+                // Conexão direta (sem busca por ID para evitar falhas de DOM)
+                try {
+                    videoEl.srcObject = stream;
+                    console.log("✅ Câmera conectada com sucesso (Referência Direta).");
+                    
+                    if (window.lucide) lucide.createIcons();
+                    // --- LOGICA DE SINALIZACAO WEBRTC ---
+                    this.initMentorSignaling(p.id, stream);
+                    // Notifica a rede
+                    p.sales_link = 'NATIVE_LIVE';
+                    this.syncProductToNetwork(p);
+                    this.showNotification("Você está AO VIVO no Dito!", "success");
+                } catch (e) {
+                    console.error("❌ Erro ao anexar stream:", e);
+                    this.showNotification("Erro técnico ao iniciar vídeo.", "error");
+                }
             } catch (err) {
                 console.error("Erro Câmera:", err);
                 this.showNotification("Permissão de câmera negada ou erro técnico.", "error");

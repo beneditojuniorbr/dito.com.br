@@ -839,22 +839,34 @@
                         Carregando descrição da transmissão...
                     </div>
 
-                    <!-- Seção de Produtos Relacionados (Fixados pelo Mentor) -->
-                    <div id="live-related-products" style="display: none; flex-direction: column; gap: 8px; margin-top: 12px; padding: 12px; background: #fbfbfb; border: 1px solid #f0f0f0; border-radius: 16px; margin-bottom: 32px;">
-                        <span style="font-size: 9px; font-weight: 950; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Produtos relacionados</span>
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <div id="live-related-img" style="width: 50px; height: 50px; border-radius: 12px; background: #eee; overflow: hidden; background-size: cover; background-position: center;"></div>
+                    <!-- Vitrine de Produtos (Fixados pelo Mentor) -->
+                    <div id="live-related-products" style="display: none; flex-direction: column; gap: 12px; margin-top: 24px; padding: 20px; background: #fff; border: 1px solid #eee; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.03);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                            <span style="font-size: 10px; font-weight: 950; color: #000; text-transform: uppercase; letter-spacing: 1px;">Vitrine da Mentoria</span>
+                            <div style="width: 8px; height: 8px; background: #ff005c; border-radius: 50%; animation: pulse 2s infinite;"></div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <div id="live-related-img" style="width: 70px; height: 70px; border-radius: 16px; background: #f5f5f5; overflow: hidden; background-size: cover; background-position: center; border: 1px solid #f0f0f0;"></div>
                             <div style="flex: 1;">
-                                <a id="live-related-link" href="#" target="_blank" style="font-size: 11px; font-weight: 900; color: #ff005c; text-decoration: none; display: flex; align-items: center; gap: 4px;">
-                                    Ver Produto <i data-lucide="external-link" style="width: 10px;"></i>
+                                <p id="live-related-name" style="font-size: 13px; font-weight: 950; color: #000; margin-bottom: 6px; letter-spacing: -0.3px;">Produto em destaque</p>
+                                <a id="live-related-link" href="#" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: #000; color: #fff; text-decoration: none; border-radius: 50px; font-size: 11px; font-weight: 900; transition: 0.2s;">
+                                    ADQUIRIR AGORA <i data-lucide="external-link" style="width: 12px;"></i>
                                 </a>
                             </div>
                         </div>
                     </div>
 
-                    <button id="btn-open-live-chat" style="width: 100%; height: 60px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 900; display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+                    <button id="btn-open-live-chat" style="width: 100%; height: 60px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 900; display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.1); margin-top: 40px;">
                         <i data-lucide="message-circle" style="width: 20px;"></i> ENTRAR NO CHAT DA LIVE
                     </button>
+
+                    <!-- Botão de Ação do Mentor para Fixar Produto -->
+                    <div id="mentor-live-controls" style="display: none; margin-top: 24px; padding: 16px; background: #fff; border: 1.5px dashed #eee; border-radius: 20px; text-align: center;">
+                        <p style="font-size: 10px; font-weight: 900; color: #999; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;">Painel do Mentor</p>
+                        <button onclick="app.fixProductLive()" style="width: 100%; height: 44px; background: #fff; color: #000; border: 1px solid #000; border-radius: 50px; font-weight: 900; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <i data-lucide="pin" style="width: 14px;"></i> FIXAR PRODUTO NA VITRINE
+                        </button>
+                    </div>
                     <p style="text-align: center; font-size: 10px; color: #ccc; font-weight: 700; margin-top: 16px;">Sinal Criptografado Dito VIP</p>
                 </div>
              </div>

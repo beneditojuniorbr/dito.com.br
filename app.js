@@ -7999,10 +7999,11 @@
             document.getElementById('live-host-name').innerText = hostName;
             document.getElementById('live-description').innerText = p.description || "Bem-vindo à transmissão exclusiva.";
 
-            // --- NOVO: PRODUTOS RELACIONADOS DA MENTORIA ---
+            // --- NOVO: VITRINE DE PRODUTOS DA MENTORIA ---
             const relatedContainer = document.getElementById('live-related-products');
             const relatedImg = document.getElementById('live-related-img');
             const relatedLink = document.getElementById('live-related-link');
+            const relatedName = document.getElementById('live-related-name');
 
             if (relatedContainer && (p.mentoria_link || p.mentoria_image)) {
                 relatedContainer.style.display = 'flex';
@@ -8010,14 +8011,23 @@
                 if (relatedImg && finalImage) {
                     relatedImg.style.backgroundImage = `url(${this.rGetPImage(finalImage)})`;
                 }
+                if (relatedName) {
+                    relatedName.innerText = p.mentoria_name || "Recomendado pelo Mentor";
+                }
                 if (relatedLink) {
                     relatedLink.href = p.mentoria_link || '#';
-                    relatedLink.style.display = p.mentoria_link ? 'flex' : 'none';
+                    relatedLink.style.display = p.mentoria_link ? 'inline-flex' : 'none';
                 }
-                console.log("✅ Produto Relacionado carregado:", p.mentoria_link);
+                console.log("✅ Vitrine carregada:", p.mentoria_link);
             } else if (relatedContainer) {
                 relatedContainer.style.display = 'none';
-                console.log("ℹ️ Nenhum produto relacionado definido para esta mentoria.");
+            }
+
+            // --- CONTROLES DO MENTOR ---
+            const mentorControls = document.getElementById('mentor-live-controls');
+            const isOwner = this.currentUser && (this.currentUser.username === p.seller || this.currentUser.username === p.author);
+            if (mentorControls) {
+                mentorControls.style.display = isOwner ? 'block' : 'none';
             }
 
 
@@ -8130,6 +8140,28 @@
             }
 
             if (window.lucide) lucide.createIcons();
+        },
+
+        async fixProductLive() {
+            const pId = this.activeLiveRoomId?.replace('LIVE_', '');
+            if (!pId) return;
+
+            const p = this.products.find(item => String(item.id) === String(pId));
+            if (!p) return;
+
+            const newLink = prompt("Cole o Link do Produto para a Vitrine:", p.mentoria_link || "");
+            if (newLink === null) return;
+
+            p.mentoria_link = newLink;
+            p.mentoria_name = prompt("Nome do Produto (opcional):", p.mentoria_name || "Produto em destaque") || "Produto em destaque";
+            
+            // Sincroniza com a rede
+            await this.syncProductToNetwork(p);
+            
+            this.showNotification("Vitrine atualizada para todos os participantes! 🎯", "success");
+            
+            // Atualiza localmente
+            this.renderMarketLiveRoom(document.getElementById('market-container'));
         },
 
         async updateLiveLink(productId) {

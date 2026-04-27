@@ -8124,7 +8124,6 @@
             if (avatarEl && hostUser && hostUser.avatar) {
                 avatarEl.innerHTML = `<img src="${hostUser.avatar}" style="width: 100%; height: 100%; object-fit: cover;">`;
             } else if (avatarEl) {
-                // Fallback: Usa a imagem do produto se o mentor não tiver avatar
                 avatarEl.innerHTML = `<img src="${this.rGetPImage(p.image, p.name, p.type)}" style="width: 100%; height: 100%; object-fit: cover;">`;
             }
             
@@ -8142,24 +8141,37 @@
                 chatBtn.onclick = () => this.openWorldChat(`LIVE_${p.id}`, `Chat: ${p.name}`);
             }
 
-            // Converter link de vendas em Player (YouTube/Vimeo) - Suporte Mobile Robusto
-            // Converter link de vendas em Player (YouTube/Vimeo) - Suporte Mobile Robusto
             if (p.sales_link === 'NATIVE_LIVE') {
-                playerContainer.innerHTML = `
-                    <div style="width: 100%; height: 100%; background: #000; position: relative; overflow: hidden;">
-                        <video id="live-native-video" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover; background: #000;"></video>
-
-                        <!-- Overlay de Conexão (some após conectar) -->
-                        <div id="live-native-overlay" style="position: absolute; inset: 0; background: rgba(0,0,0,0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; backdrop-filter: blur(5px);">
-                            <div class="live-pulse" style="width: 16px; height: 16px; background: #ff005c; border-radius: 50%; margin-bottom: 12px;"></div>
-                            <p id="live-native-status" style="color: #fff; font-size: 11px; font-weight: 950; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Sincronizando com o Mentor...</p>
-                            <button id="btn-unmute-live" onclick="app.unmuteNativeLive()" style="display: none; margin-top: 16px; background: #ff005c; color: #fff; border: none; padding: 12px 24px; border-radius: 50px; font-weight: 950; font-size: 11px; cursor: pointer; box-shadow: 0 10px 20px rgba(255,0,92,0.3); animation: bounce 2s infinite;">
-                                <i data-lucide="volume-2" style="width: 16px; vertical-align: middle; margin-right: 6px;"></i> OUVIR MENTOR
-                            </button>
+                const isOwnerLiveView = this.currentUser && (p.seller === this.currentUser.username || p.author === this.currentUser.username);
+                
+                if (isOwnerLiveView && this.liveStream) {
+                    // MENTOR: Vê seu próprio sinal local (sem atraso)
+                    playerContainer.innerHTML = `
+                        <div style="width: 100%; height: 100%; background: #000; position: relative; overflow: hidden;">
+                            <video id="live-mentor-local-preview" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover; background: #000;"></video>
+                            <div style="position: absolute; top: 16px; left: 16px; background: rgba(255,0,92,0.8); color: #fff; padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 900; letter-spacing: 1px;">AO VIVO</div>
                         </div>
-                    </div>
-                `;
-                this.startWatchingNativeLive(p.id);
+                    `;
+                    setTimeout(() => {
+                        const v = document.getElementById('live-mentor-local-preview');
+                        if (v) v.srcObject = this.liveStream;
+                    }, 50);
+                } else {
+                    // ALUNOS: Vêem via WebRTC (Native Signal)
+                    playerContainer.innerHTML = `
+                        <div style="width: 100%; height: 100%; background: #000; position: relative; overflow: hidden;">
+                            <video id="live-native-video" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover; background: #000;"></video>
+                            <div id="live-native-overlay" style="position: absolute; inset: 0; background: rgba(0,0,0,0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; backdrop-filter: blur(5px);">
+                                <div class="live-pulse" style="width: 16px; height: 16px; background: #ff005c; border-radius: 50%; margin-bottom: 12px;"></div>
+                                <p id="live-native-status" style="color: #fff; font-size: 11px; font-weight: 950; text-transform: uppercase; letter-spacing: 1px;">Sincronizando com o Mentor...</p>
+                                <button id="btn-unmute-live" onclick="app.unmuteNativeLive()" style="display: none; margin-top: 16px; background: #ff005c; color: #fff; border: none; padding: 12px 24px; border-radius: 50px; font-weight: 950; font-size: 11px; cursor: pointer;">
+                                    <i data-lucide="volume-2" style="width: 16px; margin-right: 6px;"></i> OUVIR MENTOR
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    this.startWatchingNativeLive(p.id);
+                }
             } else if (p.sales_link === 'PAUSED') {
                 playerContainer.innerHTML = `
                     <div style="width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;">
@@ -8181,22 +8193,20 @@
                 } else if (p.sales_link.includes('vimeo.com/')) {
                     embedUrl = p.sales_link.replace('vimeo.com/', 'player.vimeo.com/video/') + '?autoplay=1&muted=1&playsinline=1';
                 }
-
                 playerContainer.innerHTML = `
                     <iframe src="${embedUrl}" style="width:100%; height:100%; border:none;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen playsinline></iframe>
                 `;
             } else {
                 playerContainer.innerHTML = `
-                        <div class="live-pulse" style="width: 12px; height: 12px; background: #000; border-radius: 50%; margin-bottom: 20px;"></div>
-                        <i data-lucide="video-off" style="width: 48px; margin-bottom: 16px; color: #eee;"></i>
-                        <p style="font-size: 15px; font-weight: 950; color: #000; letter-spacing: -0.5px; margin-bottom: 4px;">Aguardando o Mentor iniciar...</p>
-                        <p style="font-size: 12px; color: #999; font-weight: 500;">A transmissão começará automaticamente à medida que o sinal for detectado.</p>
+                    <div style="width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 32px;">
+                        <div class="live-pulse" style="width: 12px; height: 12px; background: #ff005c; border-radius: 50%; margin-bottom: 20px;"></div>
+                        <i data-lucide="video-off" style="width: 48px; margin-bottom: 16px; color: #333;"></i>
+                        <p style="font-size: 15px; font-weight: 950; color: #fff; letter-spacing: -0.5px; margin-bottom: 4px;">Aguardando o Mentor iniciar...</p>
+                        <p style="font-size: 12px; color: #666; font-weight: 500;">A transmissão começará automaticamente.</p>
                         ${this.currentUser && this.currentUser.username === p.seller ? `
-                            <div style="margin-top: 24px; display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; max-width: 240px;">
-                                <button onclick="app.isLocalProtocol() ? app.showRemoteCameraHelp('${p.id}') : app.startLiveCamera()" style="background: #000; color: #fff; border: none; padding: 16px 32px; border-radius: 50px; font-weight: 900; font-size: 12px; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.1); width: 100%; text-transform: uppercase; letter-spacing: 0.5px;">
-                                    <i data-lucide="video" style="width: 16px; margin-right: 8px; vertical-align: middle;"></i> Iniciar Câmera
-                                </button>
-                            </div>
+                            <button onclick="app.startLiveCamera()" style="margin-top: 24px; background: #fff; color: #000; border: none; padding: 16px 32px; border-radius: 50px; font-weight: 900; font-size: 12px; cursor: pointer;">
+                                <i data-lucide="video" style="width: 16px; margin-right: 8px; vertical-align: middle;"></i> INICIAR CÂMERA
+                            </button>
                         ` : ''}
                     </div>
                 `;

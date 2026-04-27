@@ -3610,8 +3610,7 @@
         },
 
         async rateProduct(productId, score) {
-            if (!this.currentUser) return;
-
+            if (!this.currentUser || this._ratingTableMissing) return;
 
             // Se clicar na mesma nota, a intenção é "desmarcar" (nota 0)
             const currentSelected = document.querySelectorAll('[data-pstar][style*="facc15"]').length;
@@ -3624,7 +3623,7 @@
                 const { error } = await supabase
                     .from('dito_product_ratings')
                     .upsert({
-                        product_id: productId,
+                        product_id: String(productId),
                         username: this.currentUser.username,
                         score: newScore
                     }, { onConflict: 'product_id,username' });
@@ -3633,11 +3632,12 @@
                     this.showNotification(newScore === 0 ? 'Avaliação removida.' : 'Avaliado com sucesso!', 'success');
                     this.fetchAndRenderProductRating(productId);
                 } else {
+                    console.error("Erro ao avaliar produto (PostgREST):", error);
                     // Reverte se der erro
                     this.fetchAndRenderProductRating(productId);
                 }
             } catch (e) {
-                console.error(e);
+                console.error("Erro na requisição de avaliação:", e);
             }
         },
 

@@ -6817,12 +6817,42 @@
 
                 if(document.getElementById('prod-name')) document.getElementById('prod-name').value = prod.name || '';
                 if(document.getElementById('prod-desc')) document.getElementById('prod-desc').value = prod.description || '';
+                if(document.getElementById('prod-category')) document.getElementById('prod-category').value = prod.category || 'Dinheiro';
+                
                 if(document.getElementById('prod-price')) {
                     document.getElementById('prod-price').value = prod.price || '';
-                    const val = parseFloat(prod.price) || 0;
-                    const net = (val * 0.97).toFixed(2);
-                    const label = document.getElementById('profit-calc-label');
-                    if (label) label.innerText = `Você receberá: R$ ${net} (Taxa de 3% inclusa)`;
+                    this.calculateNetProfit(prod.price || 0); // Reutiliza a função de cálculo
+                }
+
+                // Configurações
+                if(document.getElementById('prod-visible')) document.getElementById('prod-visible').checked = prod.visible !== false;
+                if(document.getElementById('prod-guarantee')) document.getElementById('prod-guarantee').checked = !!prod.guarantee;
+                if(document.getElementById('prod-has-limit')) {
+                    const hasLimit = !!prod.hasLimit;
+                    document.getElementById('prod-has-limit').checked = hasLimit;
+                    const limitContainer = document.getElementById('prod-limit-container');
+                    if (limitContainer) limitContainer.style.display = hasLimit ? 'block' : 'none';
+                    if (document.getElementById('prod-stock-limit')) document.getElementById('prod-stock-limit').value = prod.stockLimit || '';
+                }
+
+                // Campos de Mentoria
+                if (prod.type === 'Mentoria') {
+                    const mentoriaPresFields = document.getElementById('mentoria-presentation-fields');
+                    if (mentoriaPresFields) mentoriaPresFields.style.display = 'flex';
+                    
+                    if(document.getElementById('mentoria-prod-link')) document.getElementById('mentoria-prod-link').value = prod.mentoria_link || '';
+                    
+                    this.mentoriaPresentationImage = prod.mentoria_image || null;
+                    const presPreview = document.getElementById('mentoria-prod-img-preview');
+                    if (presPreview && this.mentoriaPresentationImage) {
+                        presPreview.style.backgroundImage = `url(${this.rGetPImage(this.mentoriaPresentationImage)})`;
+                        presPreview.style.backgroundSize = 'cover';
+                        presPreview.style.backgroundPosition = 'center';
+                        presPreview.innerHTML = '';
+                    } else if (presPreview) {
+                        presPreview.style.backgroundImage = 'none';
+                        presPreview.innerHTML = '<i data-lucide="image" style="width: 20px; color: #ccc;"></i><span style="font-size: 10px; font-weight: 900; color: #bbb;">Upload da Imagem</span>';
+                    }
                 }
                 
                 // Carrega Galeria

@@ -3174,6 +3174,9 @@
                     stockLimit: product.stockLimit,
                     sales: product.sales,
                     slug: product.slug,
+                    mentoria_link: product.mentoria_link,
+                    mentoria_name: product.mentoria_name,
+                    mentoria_image: product.mentoria_image,
                     content: JSON.stringify(product.content || [])
                 }, { onConflict: 'id' });
                 if (error) console.error("❌ Erro Sync Produto:", error.message);

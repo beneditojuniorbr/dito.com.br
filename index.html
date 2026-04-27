@@ -591,41 +591,45 @@
                 <div class="hide-scrollbar" style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 16px; scroll-snap-type: x mandatory;">
                     
                     <!-- CARD COMPARTILHE -->
-                    <div style="min-width: 240px; background: #fff; border: 1px solid #000; border-radius: 16px; padding: 24px; scroll-snap-align: start; color: #000; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div style="min-width: 220px; scroll-snap-align: start; color: #000; position: relative; display: flex; flex-direction: column; justify-content: flex-start; padding-right: 20px;">
                         <div>
-                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
                                 <i data-lucide="crown" style="width: 18px; color: #000;"></i>
                                 <h4 style="font-size: 14px; font-weight: 950; margin-bottom: 0;">Compartilhe Dito</h4>
                             </div>
-                            <p style="font-size: 13px; color: #666; margin-bottom: 20px; font-weight: 500; line-height: 1.4;">Ganhe <span style="background: linear-gradient(135deg, #ff0045 0%, #0094ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 950;">+100 cupons</span> por cada indicação!</p>
+                            <p style="font-size: 13px; color: #666; margin-bottom: 12px; font-weight: 500; line-height: 1.4;">Ganhe <span style="background: linear-gradient(135deg, #ff0045 0%, #0094ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 950;">+100 cupons</span> por cada indicação!</p>
                         </div>
-                        <button onclick="app.shareReferralLink()" style="width: 100%; height: 44px; background: #fff; color: #000; border: 1px solid #000; border-radius: 50px; font-size: 12px; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 8px; justify-content: center;">
-                            <i data-lucide="crown" style="width: 14px;"></i> Compartilhar
+                        <button onclick="app.shareReferralLink()" style="background: transparent; color: #000; border: none; font-size: 11px; font-weight: 950; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+                            <i data-lucide="share-2" style="width: 12px;"></i> Compartilhar
                         </button>
                     </div>
 
                     <!-- CARD COMUNIDADE -->
-                    <div style="min-width: 240px; background: #fff; border: 1px solid #000; border-radius: 16px; padding: 24px; scroll-snap-align: start; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div style="min-width: 220px; scroll-snap-align: start; display: flex; flex-direction: column; justify-content: flex-start; padding-right: 20px;">
                         <div>
-                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
                                 <i data-lucide="users" style="width: 18px; color: #000;"></i>
                                 <h4 style="font-size: 14px; font-weight: 950; margin-bottom: 0;">Comunidade Dito</h4>
                             </div>
-                            <p style="font-size: 12px; color: #666; margin-bottom: 20px; font-weight: 500; line-height: 1.4;">Encontre sócios e cresça seu faturamento junto com a nossa rede.</p>
+                            <p style="font-size: 12px; color: #666; margin-bottom: 12px; font-weight: 500; line-height: 1.4;">Encontre sócios e cresça seu faturamento junto com a nossa rede.</p>
                         </div>
-                        <button onclick="app.navigate('sociedade')" style="width: 100%; height: 44px; background: #fff; border: 1px solid #000; color: #000; border-radius: 50px; font-size: 12px; font-weight: 900; cursor: pointer;">Acessar Agora</button>
+                        <button onclick="app.navigate('sociedade')" style="background: transparent; border: none; color: #000; font-size: 11px; font-weight: 950; cursor: pointer; padding: 0; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
+                            <i data-lucide="arrow-right" style="width: 12px;"></i> Acessar Agora
+                        </button>
                     </div>
 
                     <!-- CARD COMPRA DE CUPONS -->
-                    <div style="min-width: 240px; background: #fff; border: 1px solid #000; border-radius: 16px; padding: 24px; scroll-snap-align: start; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div style="min-width: 220px; scroll-snap-align: start; display: flex; flex-direction: column; justify-content: flex-start; padding-right: 20px;">
                         <div>
-                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
                                 <i data-lucide="ticket" style="width: 18px; color: #ff005c;"></i>
                                 <h4 style="font-size: 14px; font-weight: 950; margin-bottom: 0;">Compre + Cupons</h4>
                             </div>
-                            <p style="font-size: 12px; color: #666; margin-bottom: 20px; font-weight: 500; line-height: 1.4;">Aumente seu poder de compra! Adquira pacotes de cupons e desbloqueie descontos de até 100% em qualquer produto.</p>
+                            <p style="font-size: 12px; color: #666; margin-bottom: 12px; font-weight: 500; line-height: 1.4;">Aumente seu poder de compra! Adquira pacotes de cupons.</p>
                         </div>
-                        <button onclick="app.navigate('loja-cupons')" style="width: 100%; height: 44px; background: #fff; color: #000; border: 1px solid #000; border-radius: 50px; font-size: 12px; font-weight: 900; cursor: pointer;">Comprar Agora</button>
+                        <button onclick="app.navigate('loja-cupons')" style="background: transparent; color: #000; border: none; font-size: 11px; font-weight: 950; cursor: pointer; padding: 0; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
+                            <i data-lucide="shopping-cart" style="width: 12px;"></i> Comprar Agora
+                        </button>
                     </div>
 
                 </div>

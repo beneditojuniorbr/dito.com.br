@@ -2233,8 +2233,8 @@
 
                 return `
                 <div style="scroll-snap-align: start; min-width: 200px; padding: 20px; border-radius: 24px; border: 1.5px solid #eee; background: #fff; display: flex; flex-direction: column; gap: 12px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
-                    <div style="width: 44px; height: 44px; background: ${evt.color}15; border-radius: 14px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.02);">
-                        <i data-lucide="ticket" style="width: 22px; color: ${evt.color};"></i>
+                    <div style="width: 44px; height: 44px; background: transparent; border-radius: 14px; display: flex; align-items: center; justify-content: flex-start;">
+                        <i data-lucide="ticket" style="width: 24px; color: #000;"></i>
                     </div>
                     <div>
                         <p style="font-weight: 950; font-size: 14px; color: #000; margin-bottom: 2px;">${evt.name}</p>

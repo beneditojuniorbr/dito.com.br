@@ -789,21 +789,28 @@ input::placeholder, textarea::placeholder {
     }
 
     .welcome-nav-bar {
-        left: auto !important;
-        right: 40px !important;
-        top: 30px !important;
-        width: 340px !important;
-        border-radius: 30px;
+        left: 80px !important;
+        right: 0 !important;
+        top: 0 !important;
+        width: calc(100% - 80px) !important;
+        border-radius: 0 !important;
         background: #fff !important;
-        box-shadow: 0 15px 45px rgba(0,0,0,0.1);
-        border: 1px solid rgba(0,0,0,0.05);
-        height: auto !important;
+        box-shadow: none !important;
+        border-bottom: 1px solid #f0f0f0;
+        height: 70px !important;
+        display: flex !important;
+        align-items: center;
     }
 
     .welcome-nav-bar > div {
-        max-width: none !important;
-        padding: 12px 24px !important;
+        max-width: 1200px !important;
+        margin: 0 auto !important;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
+
 
 
     .sidebar-logo {

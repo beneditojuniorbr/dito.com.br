@@ -1810,10 +1810,23 @@
                         }
                     }
                 })
-                .subscribe((status) => {
+                .on('presence', { event: 'sync' }, () => {
+                    const state = this.mentorChannel.presenceState();
+                    this.livePresenceCount = Object.keys(state).length;
+                    const el = document.getElementById('live-spectator-count');
+                    if (el) el.innerText = this.livePresenceCount;
+                    this.updateViewerCount();
+                })
+                .subscribe(async (status) => {
                     if (status === 'SUBSCRIBED') {
                         console.log("📡 [Dito Native] Canal de Transmissão pronto via WebSockets.");
                         
+                        await this.mentorChannel.track({
+                            user: this.currentUser.username,
+                            role: 'mentor',
+                            online_at: new Date().toISOString()
+                        });
+
                         // Inicia heartbeat apenas após estar inscrito
                         this.heartbeatInterval = setInterval(() => {
                             if (this.mentorChannel) {
@@ -1830,8 +1843,8 @@
 
         updateViewerCount() {
             const el = document.getElementById('live-viewer-count');
-            const count = Object.keys(this.peerConnections || {}).length;
-            if (el) el.innerText = `👤 ${count} Online`;
+            const presenceCount = this.livePresenceCount || Object.keys(this.peerConnections || {}).length;
+            if (el) el.innerText = `👤 ${presenceCount} Online`;
         },
 
         stopLiveCamera() {
@@ -8115,9 +8128,8 @@
             
             const specCountEl = document.getElementById('live-spectator-count');
             if (specCountEl) {
-                const base = parseInt(p.sales || 0) + 7;
-                const randomSpecs = Math.floor(Math.random() * 12) + base;
-                specCountEl.innerText = randomSpecs;
+                // Remove o boost fake e usa o contador real se disponível
+                specCountEl.innerText = this.livePresenceCount || 1;
             }
 
             const playerContainer = document.getElementById('live-player-container');
@@ -8401,9 +8413,21 @@
                         }
                     }
                 })
-                .subscribe((status) => {
+                .on('presence', { event: 'sync' }, () => {
+                    const state = this.studentChannel.presenceState();
+                    this.livePresenceCount = Object.keys(state).length;
+                    const el = document.getElementById('live-spectator-count');
+                    if (el) el.innerText = this.livePresenceCount;
+                })
+                .subscribe(async (status) => {
                     if (status === 'SUBSCRIBED') {
                         diag("Buscando mentor na rede...");
+                        // Rastreia presença real
+                        await this.studentChannel.track({
+                            user: this.currentUser ? this.currentUser.username : 'anon_' + myId,
+                            online_at: new Date().toISOString(),
+                        });
+
                         this.signalInterval = setInterval(() => {
                             if (pc.iceConnectionState !== 'connected' && pc.iceConnectionState !== 'completed') {
                                 this.studentChannel.send({

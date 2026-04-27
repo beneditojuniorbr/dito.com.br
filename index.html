@@ -70,7 +70,7 @@
 
         if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').then(reg => {
+                navigator.serviceWorker.register('/sw.js?v=' + Date.now()).then(reg => {
                     // Verificação automática desativada para evitar loops em modo local
                     // reg.update();
                     console.log("🚀 Service Worker pronto.");
@@ -487,10 +487,8 @@
 
             <!-- Quick Actions Scroll -->
             <div id="quick-actions-scroll" class="hide-scrollbar" style="display: flex; gap: 16px; overflow-x: auto; padding: 10px 0 30px; margin-bottom: 24px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;">
-                <!-- Espaçador inicial para desencostar da parede -->
-                <div style="width: 30px; flex-shrink: 0; scroll-snap-align: start;"></div>
                 
-                <div class="clickable" style="scroll-snap-align: start; flex-shrink: 0; text-align: center; position: relative;" onclick="app.navigate('criar-produto', 'right'); app.initCreateProduct();">
+                <div class="clickable" style="scroll-snap-align: start; flex-shrink: 0; text-align: center; position: relative; margin-left: 30px;" onclick="app.navigate('criar-produto', 'right'); app.initCreateProduct();">
                     <div id="create-product-dot" style="position: absolute; top: 0; right: 8px; width: 12px; height: 12px; background: #ffd600; border: 2px solid #fff; z-index: 10; display: none;"></div>
                     <div class="action-circle" style="margin: 0 auto 12px;">
                         <i data-lucide="plus" style="width: 22px;"></i>
@@ -565,11 +563,9 @@
                 <h3 style="font-size: 16px; font-weight: 950; margin: 0 30px 12px; letter-spacing: -0.5px;">Eventos</h3>
                 
                 <div id="eventos-carousel" class="hide-scrollbar" style="display: flex; gap: 12px; overflow-x: auto; padding: 0 0 8px; scroll-snap-type: x mandatory; scroll-behavior: smooth;">
-                    <!-- Espaçador inicial -->
-                    <div style="width: 30px; flex-shrink: 0; scroll-snap-align: start;"></div>
                     
                     <!-- EVENTO RELÂMPAGO -->
-                    <div style="min-width: 280px; background: #fff; border: 1px solid #f0f0f0; border-radius: 24px; padding: 20px; scroll-snap-align: start; color: #000; position: relative; overflow: hidden; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; min-height: 100px;">
+                    <div style="min-width: 280px; margin-left: 30px; background: #fff; border: 1px solid #f0f0f0; border-radius: 24px; padding: 20px; scroll-snap-align: start; color: #000; position: relative; overflow: hidden; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; min-height: 100px;">
                         <h4 style="font-size: 16px; font-weight: 950; line-height: 1.1; margin-bottom: 12px; color: #000;">Missão Veloz: 1 Venda em 1h</h4>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <p style="font-size: 12px; font-weight: 800; opacity: 0.7; margin: 0; color: #000;">Ganhe +15 Cupons</p>

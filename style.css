@@ -296,6 +296,41 @@ input::placeholder, textarea::placeholder {
     }
 }
 
+/* Marketplace Filters */
+.market-filters {
+    padding: 0 15px;
+    margin-bottom: 24px;
+}
+
+.filter-chip {
+    padding: 10px 22px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #555;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+}
+
+.filter-chip.active {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.filter-chip:active {
+    transform: scale(0.95);
+}
+
 .login-header {
     margin-bottom: 48px;
 }

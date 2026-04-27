@@ -8606,10 +8606,29 @@
             // --- ORDENAR POR NOVOS PRIMEIRO (DESC) ---
             all = all.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
 
-            // --- FILTRO POR NICHO (NOVO) ---
-            const currentCat = this.marketCategory || 'Todas';
-            if (currentCat !== 'Todas') {
-                all = all.filter(p => p.category === currentCat);
+            // --- FILTROS AVANÇADOS ---
+            this.marketFilters = this.marketFilters || { niche: 'all', priceSort: null, minRating: 0 };
+
+            // 1. Nicho
+            if (this.marketFilters.niche !== 'all') {
+                all = all.filter(p => (p.category || '').toLowerCase().includes(this.marketFilters.niche.toLowerCase()));
+            }
+
+            // 2. Avaliação (4.5+)
+            if (this.marketFilters.minRating > 0) {
+                all = all.filter(p => {
+                    const r = this.getProductRating(p.id);
+                    return r.avg >= this.marketFilters.minRating;
+                });
+            }
+
+            // 3. Ordenação
+            if (this.marketFilters.priceSort === 'asc') {
+                all = all.sort((a,b) => (parseFloat(a.price) || 0) - (parseFloat(b.price) || 0));
+            } else if (this.marketFilters.priceSort === 'desc') {
+                all = all.sort((a,b) => (parseFloat(b.price) || 0) - (parseFloat(a.price) || 0));
+            } else {
+                all = all.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
             }
 
             if (all.length === 0 && currentCat === 'Todas') {
@@ -8738,6 +8757,49 @@
             `}).join('');
 
             if (window.lucide) lucide.createIcons();
+        },
+
+        setMarketFilter(niche) {
+            this.marketFilters = this.marketFilters || { niche: 'all', priceSort: null, minRating: 0 };
+            this.marketFilters.niche = niche;
+            
+            // Atualiza UI dos chips
+            document.querySelectorAll('.market-filters .filter-chip').forEach(el => el.classList.remove('active'));
+            const idMap = { 'all': 'all', 'Dinheiro': 'money', 'Saúde': 'health', 'Relacionamentos': 'love' };
+            const activeId = `filter-cat-${idMap[niche]}`;
+            const activeEl = document.getElementById(activeId);
+            if (activeEl) activeEl.classList.add('active');
+            
+            this.renderMarketHome();
+        },
+
+        toggleMarketPriceSort() {
+            this.marketFilters = this.marketFilters || { niche: 'all', priceSort: null, minRating: 0 };
+            const states = [null, 'asc', 'desc'];
+            const currentIndex = states.indexOf(this.marketFilters.priceSort);
+            this.marketFilters.priceSort = states[(currentIndex + 1) % states.length];
+            
+            const el = document.getElementById('filter-price');
+            if (el) {
+                el.classList.toggle('active', this.marketFilters.priceSort !== null);
+                const label = this.marketFilters.priceSort === 'asc' ? 'Menor Preço' : (this.marketFilters.priceSort === 'desc' ? 'Maior Preço' : 'Preço');
+                el.innerHTML = `<i data-lucide="arrow-up-down" style="width: 14px;"></i> ${label}`;
+                if (window.lucide) lucide.createIcons();
+            }
+            
+            this.renderMarketHome();
+        },
+
+        toggleMarketRatingFilter() {
+            this.marketFilters = this.marketFilters || { niche: 'all', priceSort: null, minRating: 0 };
+            this.marketFilters.minRating = this.marketFilters.minRating === 4.5 ? 0 : 4.5;
+            
+            const el = document.getElementById('filter-rating');
+            if (el) {
+                el.classList.toggle('active', this.marketFilters.minRating > 0);
+            }
+            
+            this.renderMarketHome();
         },
 
         addToCartDirectly(id, event) {

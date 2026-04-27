@@ -403,8 +403,8 @@ input::placeholder, textarea::placeholder {
 .notif-pill {
     padding: 12px 24px;
     border-radius: 50px;
-    background: #000;
-    color: #fff;
+    background: #000 !important;
+    color: #fff !important;
     font-weight: 800;
     font-size: 13px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
@@ -416,6 +416,18 @@ input::placeholder, textarea::placeholder {
     transform: translateY(-50px);
     opacity: 0;
     transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.notif-pill::before {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #ffd600;
+    box-shadow: 0 0 8px rgba(255, 214, 0, 0.6);
+    flex-shrink: 0;
 }
 
 .notif-pill.show {
@@ -423,9 +435,9 @@ input::placeholder, textarea::placeholder {
     opacity: 1;
 }
 
-.notif-pill.success { background: #000; color: #fff; border: 1px solid #22c55e33; }
-.notif-pill.error { background: #ef4444; color: #fff; }
-.notif-pill.info { background: #0099ff; color: #fff; }
+.notif-pill.success { }
+.notif-pill.error { }
+.notif-pill.info { }
 
 @keyframes slideUp {
     from { transform: translateY(100px); opacity: 0; }

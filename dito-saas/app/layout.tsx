@@ -121,11 +121,10 @@ export default function RootLayout({
         {notification && (
           <div
             key={Date.now()}
-            className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999] px-10 py-5 rounded-full font-black shadow-2xl animate-in fade-in zoom-in duration-300 whitespace-nowrap ${notification.type === 'success' ? 'bg-green-500 text-white' :
-                notification.type === 'error' ? 'bg-[#ef4444] text-white' :
-                  'bg-white text-black border border-gray-100'
-              }`}>
-            {notification.message}
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999] px-8 py-4 rounded-full font-black shadow-2xl animate-in fade-in zoom-in duration-300 whitespace-nowrap bg-black text-white flex items-center gap-3 border border-white/10"
+          >
+            <div className="w-3 h-3 rounded-full bg-[#ffd600] shadow-[0_0_8px_rgba(255,214,0,0.6)] shrink-0"></div>
+            <span>{notification.message}</span>
           </div>
         )}
       </body>

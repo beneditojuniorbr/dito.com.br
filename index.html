@@ -34,7 +34,7 @@
     <meta name="apple-mobile-web-app-title" content="Dito">
     <meta name="application-name" content="Dito">
     <meta name="msapplication-TileColor" content="#ffffff">
-    <link rel="stylesheet" href="style.css?v=20240427_fix3">
+    <link rel="stylesheet" href="style.css?v=20240427_fix4">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         // Lógica PWA Persistente
@@ -486,7 +486,9 @@
             </section>
 
             <!-- Quick Actions Scroll -->
-            <div id="quick-actions-scroll" class="hide-scrollbar" style="display: flex; gap: 24px; overflow-x: auto; padding: 10px 30px 30px; margin-bottom: 24px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;">
+            <div id="quick-actions-scroll" class="hide-scrollbar" style="display: flex; gap: 16px; overflow-x: auto; padding: 10px 0 30px; margin-bottom: 24px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;">
+                <!-- Espaçador inicial para desencostar da parede -->
+                <div style="width: 30px; flex-shrink: 0; scroll-snap-align: start;"></div>
                 
                 <div class="clickable" style="scroll-snap-align: start; flex-shrink: 0; text-align: center; position: relative;" onclick="app.navigate('criar-produto', 'right'); app.initCreateProduct();">
                     <div id="create-product-dot" style="position: absolute; top: 0; right: 8px; width: 12px; height: 12px; background: #ffd600; border: 2px solid #fff; z-index: 10; display: none;"></div>
@@ -562,7 +564,9 @@
             <div style="margin-bottom: 32px;">
                 <h3 style="font-size: 16px; font-weight: 950; margin: 0 30px 12px; letter-spacing: -0.5px;">Eventos</h3>
                 
-                <div id="eventos-carousel" class="hide-scrollbar" style="display: flex; gap: 12px; overflow-x: auto; padding: 0 30px 8px; scroll-snap-type: x mandatory; scroll-behavior: smooth;">
+                <div id="eventos-carousel" class="hide-scrollbar" style="display: flex; gap: 12px; overflow-x: auto; padding: 0 0 8px; scroll-snap-type: x mandatory; scroll-behavior: smooth;">
+                    <!-- Espaçador inicial -->
+                    <div style="width: 30px; flex-shrink: 0; scroll-snap-align: start;"></div>
                     
                     <!-- EVENTO RELÂMPAGO -->
                     <div style="min-width: 280px; background: #fff; border: 1px solid #f0f0f0; border-radius: 24px; padding: 20px; scroll-snap-align: start; color: #000; position: relative; overflow: hidden; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; min-height: 100px;">

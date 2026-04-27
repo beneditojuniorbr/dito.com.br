@@ -6937,6 +6937,10 @@
             if(ebookUpload) ebookUpload.style.display = type === 'Ebook' ? 'block' : 'none';
             if(cursoUpload) cursoUpload.style.display = type === 'Curso' ? 'flex' : 'none';
             if(mentoriaFields) mentoriaFields.style.display = type === 'Mentoria' ? 'flex' : 'none';
+            
+            // Mostrar campos de apresentação na etapa 2 se for Mentoria
+            const mentoriaPresFields = document.getElementById('mentoria-presentation-fields');
+            if (mentoriaPresFields) mentoriaPresFields.style.display = type === 'Mentoria' ? 'flex' : 'none';
 
             // Avança para o passo 2 automaticamente após um pequeno delay para feedback visual
             setTimeout(() => this.setProductCreateStep(2), 400);
@@ -6979,6 +6983,31 @@
             });
             input.value = ''; // Limpa para permitir selecionar o mesmo arquivo novamente
         },
+
+        handleMentoriaPresentationImage(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const maxSize = 200 * 1024; // 200kb
+            if (file.size > maxSize) {
+                this.showNotification("Imagem muito pesada. Limite: 200kb.", "error");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.mentoriaPresentationImage = e.target.result;
+                const preview = document.getElementById('mentoria-prod-img-preview');
+                if (preview) {
+                    preview.style.backgroundImage = `url(${e.target.result})`;
+                    preview.style.backgroundSize = 'cover';
+                    preview.style.backgroundPosition = 'center';
+                    preview.innerHTML = ''; // Limpa ícone e texto
+                }
+            };
+            reader.readAsDataURL(file);
+        },
+
 
         renderProductImageGallery() {
             const gallery = document.getElementById('product-images-gallery-preview');
@@ -7142,6 +7171,8 @@
                     hasLimit: hasLimit,
                     stockLimit: hasLimit ? stockLimit : null,
                     slug: this.generateRandomSlug(),
+                    mentoria_link: this.selectedProductType === 'Mentoria' ? (document.getElementById('mentoria-prod-link')?.value || null) : null,
+                    mentoria_image: this.selectedProductType === 'Mentoria' ? (this.mentoriaPresentationImage || null) : null,
                     content: this.selectedProductType === 'Curso' ? this.courseStructure : null
                 };
 

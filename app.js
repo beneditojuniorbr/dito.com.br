@@ -1703,32 +1703,45 @@
                 this.liveStream = stream;
                 
                 // UI do Mentor (limpa, sem overlays)
-                playerContainer.innerHTML = `
-                    <div style="position: relative; width: 100%; height: 100%; background: #000; border-radius: 0; overflow: hidden;">
-                        <video id="live-mentor-video" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover; background: #000;"></video>
-                    </div>
-                `;
+                playerContainer.innerHTML = '';
+                const videoWrap = document.createElement('div');
+                videoWrap.style.cssText = "position: relative; width: 100%; height: 100%; background: #000; border-radius: 0; overflow: hidden;";
+                
+                const videoEl = document.createElement('video');
+                videoEl.id = 'live-mentor-video';
+                videoEl.autoplay = true;
+                videoEl.playsInline = true;
+                videoEl.muted = true;
+                videoEl.style.cssText = "width: 100%; height: 100%; object-fit: cover; background: #000;";
+                
+                videoWrap.appendChild(videoEl);
+                playerContainer.appendChild(videoWrap);
 
-                // Pequena pausa para garantir o DOM
-                setTimeout(() => {
-                    const video = document.getElementById('live-mentor-video');
-                    if (video) {
-                        video.srcObject = stream;
+                // Mecanismo de Retry para garantir o srcObject
+                let attempts = 0;
+                const attachStream = () => {
+                    const v = document.getElementById('live-mentor-video');
+                    if (v) {
+                        v.srcObject = stream;
+                        console.log("✅ Câmera conectada com sucesso ao elemento de vídeo.");
+                        
+                        if (window.lucide) lucide.createIcons();
+                        // --- LOGICA DE SINALIZACAO WEBRTC ---
+                        this.initMentorSignaling(p.id, stream);
+                        // Notifica a rede
+                        p.sales_link = 'NATIVE_LIVE';
+                        this.syncProductToNetwork(p);
+                        this.showNotification("Você está AO VIVO no Dito!", "success");
+                    } else if (attempts < 10) {
+                        attempts++;
+                        setTimeout(attachStream, 100);
                     } else {
-                        console.error("❌ Falha crítica: Elemento de vídeo não encontrado após render.");
+                        console.error("❌ Erro fatal: Elemento de vídeo não encontrado após 10 tentativas.");
+                        this.showNotification("Erro técnico ao iniciar vídeo. Tente novamente.", "error");
                     }
-                }, 100);
-                
-                if (window.lucide) lucide.createIcons();
+                };
 
-                // --- LOGICA DE SINALIZACAO WEBRTC (DITO NATIVE) ---
-                this.initMentorSignaling(p.id, stream);
-                
-                // Notifica a rede que a live nativa começou
-                p.sales_link = 'NATIVE_LIVE'; // Flag especial
-                this.syncProductToNetwork(p);
-
-                this.showNotification("Você está AO VIVO no Dito!", "success");
+                attachStream();
             } catch (err) {
                 console.error("Erro Câmera:", err);
                 this.showNotification("Permissão de câmera negada ou erro técnico.", "error");

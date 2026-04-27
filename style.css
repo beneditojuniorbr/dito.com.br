@@ -846,7 +846,7 @@ input::placeholder, textarea::placeholder {
         transform: translateX(-50%) !important;
         width: 100% !important;
         max-width: 500px !important;
-        padding: 0 32px !important;
+        padding: 0 30px !important;
         border-bottom: 1px solid var(--border);
     }
 

@@ -261,6 +261,51 @@ input::placeholder, textarea::placeholder {
     .login-screen > div[style*="position: absolute"] i {
         width: 30px !important;
     }
+
+    /* Aumentar Landing Page (Welcome) em 50% */
+    .login-screen > div[style*="max-width: 400px"] {
+        max-width: 600px !important;
+    }
+
+    .login-screen h1 {
+        font-size: 48px !important;
+        margin-bottom: 24px !important;
+    }
+
+    .login-screen h2, .login-screen h3 {
+        font-size: 64px !important;
+        line-height: 1 !important;
+    }
+
+    .login-screen p {
+        font-size: 20px !important;
+    }
+
+    .login-screen .btn {
+        height: 80px !important;
+        font-size: 20px !important;
+        border-radius: 20px !important;
+    }
+
+    .login-screen img[src="D.png"] {
+        width: 150px !important;
+        height: 150px !important;
+    }
+
+    /* Ajuste de seções da Landing Page */
+    .login-screen > div[style*="padding: 64px 24px"] {
+        padding: 100px 40px !important;
+        max-width: 1200px !important;
+        margin: 0 auto !important;
+        background: transparent !important;
+    }
+
+    .login-screen .benefit-item h4 {
+        font-size: 24px !important;
+    }
+    .login-screen .benefit-item p {
+        font-size: 18px !important;
+    }
 }
 
 .login-header {

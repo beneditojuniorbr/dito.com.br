@@ -8047,10 +8047,13 @@
             const isOwner = this.currentUser && (this.currentUser.username === p.seller || this.currentUser.username === p.author);
             
             // Busca dados (pode estar na raiz ou dentro de content)
-            const mLink = p.mentoria_link || (p.content && p.content.mentoria_link);
-            const mName = p.mentoria_name || (p.content && p.content.mentoria_name);
-            const mImage = p.mentoria_image || (p.content && p.content.mentoria_image);
-            const hasProduct = !!(mLink || mImage);
+            // Se estiver vazio, usa os dados da própria mentoria como padrão (Fluidez solicitada pelo usuário)
+            const mLink = p.mentoria_link || (p.content && p.content.mentoria_link) || (window.location.origin + '/?p=' + p.id);
+            const mName = p.mentoria_name || (p.content && p.content.mentoria_name) || p.name;
+            const mImage = p.mentoria_image || (p.content && p.content.mentoria_image) || p.image || p.image_url;
+            
+            // Agora a vitrine é considerada "sempre pronta" se for uma mentoria
+            const hasProduct = true; 
 
             if (relatedContainer) {
                 if (hasProduct || isOwner) {

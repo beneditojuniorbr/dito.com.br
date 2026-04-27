@@ -8096,11 +8096,6 @@
                 }
             }
 
-            // --- CONTROLES DO MENTOR ---
-            const mentorControls = document.getElementById('mentor-live-controls');
-            if (mentorControls) {
-                mentorControls.style.display = isOwner ? 'block' : 'none';
-            }
 
 
             // --- NOVO: MINI CHAT INICIALIZAÇÃO ---
@@ -8146,8 +8141,8 @@
                         playerContainer.innerHTML = `
                             <div style="width: 100%; height: 100%; background: #000; position: relative; overflow: hidden;">
                                 <video id="live-mentor-local-preview" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover; background: #000;"></video>
-                                <div style="position: absolute; top: 16px; left: 16px; background: rgba(255,204,0,0.9); color: #000; padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 900; letter-spacing: 1px; display: flex; align-items: center; gap: 6px;">
-                                    <div style="width: 8px; height: 8px; background: #000; border-radius: 50%; animation: pulse 1s infinite;"></div> TRANSMITINDO AO VIVO
+                                <div style="position: absolute; top: 10px; left: 10px; background: rgba(255,204,0,0.8); color: #000; padding: 2px 6px; border-radius: 4px; font-size: 7px; font-weight: 900; letter-spacing: 0.5px; display: flex; align-items: center; gap: 4px;">
+                                    <div style="width: 4px; height: 4px; background: #000; border-radius: 50%; animation: pulse 1s infinite;"></div> TRANSMITINDO AO VIVO
                                 </div>
                             </div>
                         `;
@@ -8863,6 +8858,9 @@
             </button>
             <button onclick="app.toggleLiveSignal('${target.id}', 'on'); app.startLiveCamera()" style="width: 100%; padding: 12px; background: transparent; border: none; text-align: left; font-size: 12px; font-weight: 800; color: #000; display: flex; align-items: center; gap: 8px; cursor: pointer; border-radius: 12px; transition: 0.2s;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='transparent'">
                 <i data-lucide="refresh-cw" style="width: 16px; color: #000;"></i> Reiniciar
+            </button>
+            <button onclick="app.fixProductLive()" style="width: 100%; padding: 12px; background: transparent; border: none; text-align: left; font-size: 12px; font-weight: 800; color: #000; display: flex; align-items: center; gap: 8px; cursor: pointer; border-radius: 12px; transition: 0.2s;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='transparent'">
+                <i data-lucide="pin" style="width: 16px; color: #000;"></i> Fixar Vitrine
             </button>
             <button onclick="app.enterMentorshipRoom('${target.id}')" style="width: 100%; padding: 12px; background: #000; border: none; text-align: center; font-size: 11px; font-weight: 900; color: #fff; cursor: pointer; border-radius: 50px; margin-top: 5px;">
                 ENTRAR NA SALA

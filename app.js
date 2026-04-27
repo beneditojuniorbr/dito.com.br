@@ -7976,15 +7976,18 @@
 
             if (relatedContainer && (p.mentoria_link || p.mentoria_image)) {
                 relatedContainer.style.display = 'flex';
-                if (relatedImg) {
-                    relatedImg.style.backgroundImage = `url(${p.mentoria_image || 'https://via.placeholder.com/50'})`;
+                const finalImage = p.mentoria_image || p.image || p.image_url;
+                if (relatedImg && finalImage) {
+                    relatedImg.style.backgroundImage = `url(${this.rGetPImage(finalImage)})`;
                 }
                 if (relatedLink) {
                     relatedLink.href = p.mentoria_link || '#';
                     relatedLink.style.display = p.mentoria_link ? 'flex' : 'none';
                 }
+                console.log("✅ Produto Relacionado carregado:", p.mentoria_link);
             } else if (relatedContainer) {
                 relatedContainer.style.display = 'none';
+                console.log("ℹ️ Nenhum produto relacionado definido para esta mentoria.");
             }
 
 

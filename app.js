@@ -8355,6 +8355,13 @@
                             event: 'answer',
                             payload: { studentId: myId, target: payload.mentorId || this.selectedProduct.seller, answer }
                         });
+
+                        // Processa candidatos que chegaram antes da offer
+                        if (pc.iceQueue) {
+                            while (pc.iceQueue.length > 0) {
+                                await pc.addIceCandidate(pc.iceQueue.shift()).catch(e => console.warn("Erro ao processar candidato na fila:", e));
+                            }
+                        }
                     }
                 })
                 .on('broadcast', { event: 'mentor-presence' }, ({ payload }) => {
@@ -8367,7 +8374,13 @@
                 })
                 .on('broadcast', { event: 'ice-candidate' }, async ({ payload }) => {
                     if (payload.target === myId) {
-                        await pc.addIceCandidate(new RTCIceCandidate(payload.candidate));
+                        const candidate = new RTCIceCandidate(payload.candidate);
+                        if (pc.remoteDescription) {
+                            await pc.addIceCandidate(candidate).catch(e => console.warn("Erro ao adicionar candidato:", e));
+                        } else {
+                            pc.iceQueue = pc.iceQueue || [];
+                            pc.iceQueue.push(candidate);
+                        }
                     }
                 })
                 .subscribe((status) => {

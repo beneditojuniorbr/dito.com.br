@@ -1795,7 +1795,7 @@
                 .on('broadcast', { event: 'answer' }, async ({ payload }) => {
                     if (payload.target === this.currentUser.username) {
                         const pc = this.peerConnections[payload.studentId];
-                        if (pc) {
+                        if (pc && pc.signalingState === 'have-local-offer') {
                             await pc.setRemoteDescription(new RTCSessionDescription(payload.answer));
                             // Processa candidatos que chegaram antes do answer
                             if (pc.iceQueue) {

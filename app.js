@@ -8631,7 +8631,7 @@
                 all = all.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
             }
 
-            if (all.length === 0 && currentCat === 'Todas') {
+            if (all.length === 0 && this.marketFilters.niche === 'all') {
                 // Mercado começa vazio para os usuários cadastrarem seus produtos
                 localStorage.setItem('dito_products', '[]');
             }

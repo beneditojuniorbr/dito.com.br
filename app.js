@@ -8139,21 +8139,37 @@
                 
                 console.log("📡 [NativeLive] Renderizando Sala:", { isOwner: isOwnerLiveView, hasStream: !!(this.liveStream || window.app.liveStream) });
 
-                if (isOwnerLiveView && (this.liveStream || window.app.liveStream)) {
-                    // MENTOR: Vê seu próprio sinal local (sem atraso)
-                    playerContainer.innerHTML = `
-                        <div style="width: 100%; height: 100%; background: #000; position: relative; overflow: hidden;">
-                            <video id="live-mentor-local-preview" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover; background: #000;"></video>
-                            <div style="position: absolute; top: 16px; left: 16px; background: rgba(255,0,92,0.8); color: #fff; padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 900; letter-spacing: 1px;">AO VIVO</div>
-                        </div>
-                    `;
-                    setTimeout(() => {
-                        const v = document.getElementById('live-mentor-local-preview');
-                        const s = this.liveStream || window.app.liveStream;
-                        if (v && s) v.srcObject = s;
-                    }, 100);
+                if (isOwnerLiveView) {
+                    // MENTOR: Vê seu próprio sinal local ou botão de iniciar (Sem overlays de aluno)
+                    const stream = this.liveStream || window.app.liveStream;
+                    if (stream) {
+                        playerContainer.innerHTML = `
+                            <div style="width: 100%; height: 100%; background: #000; position: relative; overflow: hidden;">
+                                <video id="live-mentor-local-preview" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover; background: #000;"></video>
+                                <div style="position: absolute; top: 16px; left: 16px; background: rgba(255,204,0,0.9); color: #000; padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 900; letter-spacing: 1px; display: flex; align-items: center; gap: 6px;">
+                                    <div style="width: 8px; height: 8px; background: #000; border-radius: 50%; animation: pulse 1s infinite;"></div> TRANSMITINDO AO VIVO
+                                </div>
+                            </div>
+                        `;
+                        setTimeout(() => {
+                            const v = document.getElementById('live-mentor-local-preview');
+                            if (v) v.srcObject = stream;
+                        }, 100);
+                    } else {
+                        // Caso o sinal tenha caído mas o status continue NATIVE_LIVE
+                        playerContainer.innerHTML = `
+                            <div style="width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 32px;">
+                                <div class="live-pulse" style="width: 12px; height: 12px; background: #ffcc00; border-radius: 50%; margin-bottom: 20px;"></div>
+                                <i data-lucide="video-off" style="width: 48px; margin-bottom: 16px; color: #333;"></i>
+                                <p style="font-size: 15px; font-weight: 950; color: #fff; letter-spacing: -0.5px; margin-bottom: 4px;">Sinal local desconectado</p>
+                                <button onclick="app.startLiveCamera()" style="margin-top: 24px; background: #ffcc00; color: #000; border: none; padding: 16px 32px; border-radius: 50px; font-weight: 900; font-size: 12px; cursor: pointer;">
+                                    RECONECTAR CÂMERA
+                                </button>
+                            </div>
+                        `;
+                    }
                 } else {
-                    // ALUNOS: Vêem via WebRTC (Native Signal)
+                    // ALUNOS: Vêem via WebRTC (Native Signal) com Overlay de Sincronia
                     playerContainer.innerHTML = `
                         <div style="width: 100%; height: 100%; background: #000; position: relative; overflow: hidden;">
                             <video id="live-native-video" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover; background: #000;"></video>

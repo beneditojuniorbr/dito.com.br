@@ -3,7 +3,7 @@
 :root {
     --primary: #000000;
     --background: #FFFFFF;
-    --surface: #F5F5F7;
+    --surface: #FFFFFF;
     --text: #000000;
     --text-secondary: #666666;
     --border: #EEEEEE;
@@ -215,7 +215,7 @@ input::placeholder, textarea::placeholder {
         padding: 60px 0;
         justify-content: center;
         align-items: center;
-        background: #fbfbfb; /* Fundo sutil para desktop */
+        background: #fff; 
         overflow-x: hidden;
     }
     
@@ -747,7 +747,7 @@ input::placeholder, textarea::placeholder {
 /* DESKTOP PREMIUM (Telas maiores que 1024px) */
 @media (min-width: 1024px) {
     body {
-        background: #f8f9fa; /* Fundo levemente cinza no PC para destacar os cards brancos */
+        background: #fff;
     }
 
     .app-container {
@@ -765,9 +765,8 @@ input::placeholder, textarea::placeholder {
         left: 50% !important;
         transform: translateX(-50%) !important;
         border-radius: 24px 24px 0 0 !important;
-        box-shadow: 0 -10px 40px rgba(0,0,0,0.1) !important;
-        border: 1px solid #f0f0f0;
-        border-bottom: none;
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.05) !important;
+        background: #fff;
     }
 
     /* Ocultar Sidebar Minimalista */
@@ -780,7 +779,7 @@ input::placeholder, textarea::placeholder {
         width: 100% !important;
         max-width: none !important;
         padding: 0 40px !important;
-        border-bottom: 1px solid #f0f0f0;
+        border-bottom: none;
     }
 
     .welcome-nav-bar {
@@ -791,8 +790,8 @@ input::placeholder, textarea::placeholder {
         z-index: 10000 !important;
         border-radius: 0 !important;
         background: #fff !important;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.03) !important;
-        border-bottom: 1px solid #f0f0f0;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.02) !important;
+        border-bottom: none;
         height: 70px !important;
         display: flex !important;
         align-items: center;

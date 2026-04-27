@@ -1795,13 +1795,28 @@
                 .on('broadcast', { event: 'answer' }, async ({ payload }) => {
                     if (payload.target === this.currentUser.username) {
                         const pc = this.peerConnections[payload.studentId];
-                        if (pc) await pc.setRemoteDescription(new RTCSessionDescription(payload.answer));
+                        if (pc) {
+                            await pc.setRemoteDescription(new RTCSessionDescription(payload.answer));
+                            // Processa candidatos que chegaram antes do answer
+                            if (pc.iceQueue) {
+                                while (pc.iceQueue.length > 0) {
+                                    await pc.addIceCandidate(pc.iceQueue.shift());
+                                }
+                            }
+                        }
                     }
                 })
                 .on('broadcast', { event: 'ice-candidate-from-student' }, async ({ payload }) => {
                     if (payload.target === this.currentUser.username) {
                         const pc = this.peerConnections[payload.studentId];
-                        if (pc) await pc.addIceCandidate(new RTCIceCandidate(payload.candidate));
+                        if (!pc) return;
+                        const candidate = new RTCIceCandidate(payload.candidate);
+                        if (pc.remoteDescription) {
+                            await pc.addIceCandidate(candidate);
+                        } else {
+                            pc.iceQueue = pc.iceQueue || [];
+                            pc.iceQueue.push(candidate);
+                        }
                     }
                 })
                 .subscribe((status) => {

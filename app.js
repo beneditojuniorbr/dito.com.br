@@ -8156,14 +8156,14 @@
                             if (v) v.srcObject = stream;
                         }, 100);
                     } else {
-                        // Caso o sinal tenha caído mas o status continue NATIVE_LIVE
+                        // Se o sinal não estiver ativo localmente, mostra o botão de iniciar
                         playerContainer.innerHTML = `
                             <div style="width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 32px;">
                                 <div class="live-pulse" style="width: 12px; height: 12px; background: #ffcc00; border-radius: 50%; margin-bottom: 20px;"></div>
                                 <i data-lucide="video-off" style="width: 48px; margin-bottom: 16px; color: #333;"></i>
-                                <p style="font-size: 15px; font-weight: 950; color: #fff; letter-spacing: -0.5px; margin-bottom: 4px;">Sinal local desconectado</p>
+                                <p style="font-size: 15px; font-weight: 950; color: #fff; letter-spacing: -0.5px; margin-bottom: 4px;">Pronto para entrar ao vivo?</p>
                                 <button onclick="app.startLiveCamera()" style="margin-top: 24px; background: #ffcc00; color: #000; border: none; padding: 16px 32px; border-radius: 50px; font-weight: 900; font-size: 12px; cursor: pointer;">
-                                    RECONECTAR CÂMERA
+                                    <i data-lucide="video" style="width: 16px; margin-right: 8px; vertical-align: middle;"></i> INICIAR CÂMERA
                                 </button>
                             </div>
                         `;

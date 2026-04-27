@@ -1701,26 +1701,17 @@
                 });
                 
                 this.liveStream = stream;
+                window.app.liveStream = stream; // Garante persistência global
                 
-                // UI do Mentor (limpa, sem overlays)
-                playerContainer.innerHTML = '';
-                const videoWrap = document.createElement('div');
-                videoWrap.style.cssText = "position: relative; width: 100%; height: 100%; background: #000; border-radius: 0; overflow: hidden;";
-                
-                const videoEl = document.createElement('video');
-                videoEl.id = 'live-mentor-video';
-                videoEl.autoplay = true;
-                videoEl.playsInline = true;
-                videoEl.muted = true;
-                videoEl.style.cssText = "width: 100%; height: 100%; object-fit: cover; background: #000;";
-                
-                videoWrap.appendChild(videoEl);
-                playerContainer.appendChild(videoWrap);
+                // Força renderização da sala para usar a lógica unificada
+                const container = document.getElementById('market-container');
+                if (container) this.renderMarketLiveRoom(container);
 
                 // Conexão direta (sem busca por ID para evitar falhas de DOM)
                 try {
-                    videoEl.srcObject = stream;
-                    console.log("✅ Câmera conectada com sucesso (Referência Direta).");
+                    const videoEl = document.getElementById('live-mentor-local-preview') || document.getElementById('live-native-video');
+                    if (videoEl) videoEl.srcObject = stream;
+                    console.log("✅ Câmera conectada e UI sincronizada.");
                     
                     if (window.lucide) lucide.createIcons();
                     // --- LOGICA DE SINALIZACAO WEBRTC ---
@@ -8146,9 +8137,9 @@
                 const currentUser = (this.currentUser ? this.currentUser.username : "").trim().toLowerCase();
                 const isOwnerLiveView = currentUser && mentorUser === currentUser;
                 
-                console.log("📡 [NativeLive] Renderizando Sala:", { isOwner: isOwnerLiveView, hasStream: !!this.liveStream });
+                console.log("📡 [NativeLive] Renderizando Sala:", { isOwner: isOwnerLiveView, hasStream: !!(this.liveStream || window.app.liveStream) });
 
-                if (isOwnerLiveView && this.liveStream) {
+                if (isOwnerLiveView && (this.liveStream || window.app.liveStream)) {
                     // MENTOR: Vê seu próprio sinal local (sem atraso)
                     playerContainer.innerHTML = `
                         <div style="width: 100%; height: 100%; background: #000; position: relative; overflow: hidden;">
@@ -8158,8 +8149,9 @@
                     `;
                     setTimeout(() => {
                         const v = document.getElementById('live-mentor-local-preview');
-                        if (v) v.srcObject = this.liveStream;
-                    }, 50);
+                        const s = this.liveStream || window.app.liveStream;
+                        if (v && s) v.srcObject = s;
+                    }, 100);
                 } else {
                     // ALUNOS: Vêem via WebRTC (Native Signal)
                     playerContainer.innerHTML = `

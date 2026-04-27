@@ -224,8 +224,8 @@ input::placeholder, textarea::placeholder {
         background: #fff;
         padding: 60px;
         border-radius: 40px;
-        box-shadow: 0 40px 100px rgba(0,0,0,0.06);
-        border: 1px solid #f0f0f0;
+        box-shadow: none;
+        border: none;
         width: 100% !important;
         max-width: 500px !important;
         margin-bottom: 24px;
@@ -236,8 +236,8 @@ input::placeholder, textarea::placeholder {
         max-width: 1000px;
         margin: 80px auto 0 !important;
         border-radius: 40px;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.03);
-        border: 1px solid #f9f9f9;
+        box-shadow: none;
+        border: none;
         padding: 80px !important;
     }
 }
@@ -790,7 +790,7 @@ input::placeholder, textarea::placeholder {
         z-index: 10000 !important;
         border-radius: 0 !important;
         background: #fff !important;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.02) !important;
+        box-shadow: none !important;
         border-bottom: none;
         height: 70px !important;
         display: flex !important;

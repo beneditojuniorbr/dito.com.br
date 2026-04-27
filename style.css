@@ -789,8 +789,20 @@ input::placeholder, textarea::placeholder {
     }
 
     .welcome-nav-bar {
-        left: 80px !important;
-        width: calc(100% - 80px) !important;
+        left: auto !important;
+        right: 40px !important;
+        top: 30px !important;
+        width: 340px !important;
+        border-radius: 30px;
+        background: #fff !important;
+        box-shadow: 0 15px 45px rgba(0,0,0,0.1);
+        border: 1px solid rgba(0,0,0,0.05);
+        height: auto !important;
+    }
+
+    .welcome-nav-bar > div {
+        max-width: none !important;
+        padding: 12px 24px !important;
     }
 
 

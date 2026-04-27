@@ -8830,6 +8830,16 @@
             return;
         }
 
+        // NOVO: Se estiver na sala e não estiver live, inicia direto com 1 toque
+        const isCurrentlyInLiveRoom = this.currentView === 'mercado' && this.marketView === 'live-room';
+        const hasNoActiveStream = !(this.liveStream || window.app.liveStream);
+        
+        if (isCurrentlyInLiveRoom && hasNoActiveStream) {
+            console.log("🚀 [NativeLive] Início rápido detectado (Single Click)");
+            this.startLiveCamera();
+            return;
+        }
+
         // Identifica mentoria alvo
         const myMentorships = this.products.filter(p => (p.seller === this.currentUser?.username || p.author === this.currentUser?.username) && p.type === 'Mentoria');
         if (myMentorships.length === 0) {

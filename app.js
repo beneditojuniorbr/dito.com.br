@@ -3701,7 +3701,7 @@
 
 
 
-        generateCheckoutQR() {
+        async generateCheckoutQR() {
             const qrImg = document.getElementById('checkout-qr-code');
             const qrLoading = document.getElementById('qr-loading');
             const btnPayPal = document.getElementById('btn-paypal-direct');
@@ -3710,16 +3710,14 @@
             
             if (!qrImg) return;
 
-            // Determina o link baseado no método
-            let link = "";
-            
-            // Prioridade: Link do primeiro produto no carrinho -> Link Global -> Link Fake
+            if (qrLoading) qrLoading.style.display = 'flex';
+            qrImg.style.display = 'none';
+
             const productWithLink = this.cart.find(p => p.sales_link);
             const activePayPalLink = productWithLink ? productWithLink.sales_link : this.paypalLink;
 
             if (this.paymentMethod === 'pix') {
-                link = "https://dito.app/pix-placeholder-" + Date.now();
-                paymentText.innerText = "Escaneie o QR Code acima para pagar via Pix e receber seu acesso imediato.";
+                paymentText.innerText = "Gerando seu Pix Seguro...";
                 copyText.innerText = "Copiar código Pix";
                 
                 // Remove o container de simulação se existir para garantir limpeza
@@ -3728,9 +3726,44 @@
                     ppContainer.style.display = 'none';
                     ppContainer.innerHTML = '';
                 }
+
+                try {
+                    const total = this.cart.reduce((sum, p) => sum + p.price, 0);
+                    const productId = productWithLink ? productWithLink.id : 'global';
+                    const email = this.currentUser?.email || 'cliente@dito.com.br';
+                    const userId = this.currentUser?.username || 'visitante';
+
+                    const res = await fetch('https://hlzmahaekybidmwielsr.supabase.co/functions/v1/create-pix', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ productId, amount: total.toFixed(2), email, userId })
+                    });
+                    
+                    const data = await res.json();
+
+                    if (data.qr_code_base64 && data.qr_code) {
+                        qrImg.src = `data:image/jpeg;base64,${data.qr_code_base64}`;
+                        this.paymentPixCode = data.qr_code; // Salva chave real para copiar
+                        paymentText.innerText = "Escaneie o QR Code acima ou copie a chave para pagar via Pix.";
+                    } else {
+                        throw new Error("Resposta inválida da Edge Function");
+                    }
+                } catch(e) {
+                    console.warn("Edge Function do Pix ainda não configurada/deployada. Usando fallback.", e);
+                    const link = "https://dito.app/pix-placeholder-" + Date.now();
+                    this.paymentPixCode = link;
+                    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(link)}`;
+                    paymentText.innerText = "Modo de Teste (Pix Simulado).";
+                }
+
+                qrImg.onload = () => {
+                    if (qrLoading) qrLoading.style.display = 'none';
+                    qrImg.style.display = 'block';
+                };
+
             } else {
                 // Se for PayPal (Cartão)
-                link = activePayPalLink; 
+                const link = activePayPalLink; 
                 paymentText.innerText = "Use o botão do PayPal abaixo para pagar com cartão em até 12x.";
                 copyText.innerText = "Copiar link de pagamento";
                 
@@ -3742,16 +3775,15 @@
                     ppContainer.innerHTML = ''; // Limpa botões anteriores
                     this.initPayPalOfficialButton(total.toFixed(2), productId);
                 }
-            }
 
-            // Gera o QR Code usando API pública (QRServer)
-            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(link)}`;
-            
-            qrImg.src = qrUrl;
-            qrImg.onload = () => {
-                if (qrLoading) qrLoading.style.display = 'none';
-                qrImg.style.display = 'block';
-            };
+                // Gera o QR Code usando API pública (QRServer) pro link do paypal
+                const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(link)}`;
+                qrImg.src = qrUrl;
+                qrImg.onload = () => {
+                    if (qrLoading) qrLoading.style.display = 'none';
+                    qrImg.style.display = 'block';
+                };
+            }
         },
         initPayPalOfficialButton(amount, productId) {
             if (typeof paypal === 'undefined') {

@@ -2441,7 +2441,7 @@
 
             const todayIndex = new Date().getDay(); // getDay() retorna 0 para Domingo, 1 para Segunda...
             
-            const dot = document.getElementById('mission-dot');
+            const dot = document.getElementById('mission-dot-scroll');
             if (dot) {
                 // A lógica de index na renderMissions é: 0=Dom, 1=Seg...
                 const hasPending = checklist[todayIndex] && !checklist[todayIndex].checked;
@@ -4697,7 +4697,7 @@
 
                 // Limpa bolinhas de notificação ao entrar nas telas
                 if (view === 'missoes') {
-                    const mDot = document.getElementById('mission-dot');
+                    const mDot = document.getElementById('mission-dot-scroll');
                     if (mDot) mDot.style.display = 'none';
                 }
                 if (view === 'mensagens' || view === 'chat-global') {

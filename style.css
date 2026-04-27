@@ -240,6 +240,27 @@ input::placeholder, textarea::placeholder {
         border: none;
         padding: 80px !important;
     }
+
+    /* Aumentar botões de ação e voltar em 50% no Desktop */
+    #global-fixed-actions button, 
+    #global-fixed-actions-right button {
+        width: 54px !important;
+        height: 54px !important;
+    }
+    #global-fixed-actions button i, 
+    #global-fixed-actions-right button i {
+        width: 24px !important;
+    }
+
+    .login-screen > div[style*="position: absolute"] {
+        width: 66px !important;
+        height: 66px !important;
+        top: 60px !important;
+        left: 40px !important;
+    }
+    .login-screen > div[style*="position: absolute"] i {
+        width: 30px !important;
+    }
 }
 
 .login-header {

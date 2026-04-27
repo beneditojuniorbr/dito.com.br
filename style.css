@@ -817,11 +817,13 @@ input::placeholder, textarea::placeholder {
     }
 
     .app-container {
-        width: 100% !important;
-        max-width: none !important;
-        margin: 0 !important;
+        max-width: 500px !important;
+        margin: 0 auto !important;
         padding-bottom: 80px;
-        background: transparent;
+        background: #fff;
+        border-left: 1px solid var(--border);
+        border-right: 1px solid var(--border);
+        box-shadow: 0 0 40px rgba(0,0,0,0.05);
     }
 
     /* Ocultar Navegação Mobile - AGORA ATIVA NO DESKTOP TAMBÉM */
@@ -840,12 +842,12 @@ input::placeholder, textarea::placeholder {
 
     /* Expansão do Header no PC */
     #global-header {
-        left: 0 !important; 
-        transform: none !important;
+        left: 50% !important; 
+        transform: translateX(-50%) !important;
         width: 100% !important;
-        max-width: none !important;
-        padding: 0 40px !important;
-        border-bottom: none;
+        max-width: 500px !important;
+        padding: 0 32px !important;
+        border-bottom: 1px solid var(--border);
     }
 
     .welcome-nav-bar {

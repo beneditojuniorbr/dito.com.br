@@ -7987,23 +7987,6 @@
                 relatedContainer.style.display = 'none';
             }
 
-            // --- NOVO: PRODUTOS RELACIONADOS DA MENTORIA ---
-            const relatedContainer = document.getElementById('live-related-products');
-            const relatedImg = document.getElementById('live-related-img');
-            const relatedLink = document.getElementById('live-related-link');
-
-            if (relatedContainer && (p.mentoria_link || p.mentoria_image)) {
-                relatedContainer.style.display = 'flex';
-                if (relatedImg) {
-                    relatedImg.style.backgroundImage = `url(${p.mentoria_image || 'https://via.placeholder.com/50'})`;
-                }
-                if (relatedLink) {
-                    relatedLink.href = p.mentoria_link || '#';
-                    relatedLink.style.display = p.mentoria_link ? 'flex' : 'none';
-                }
-            } else if (relatedContainer) {
-                relatedContainer.style.display = 'none';
-            }
 
             // --- NOVO: MINI CHAT INICIALIZAÇÃO ---
             this.activeLiveRoomId = `LIVE_${p.id}`;

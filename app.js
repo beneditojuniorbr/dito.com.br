@@ -8142,8 +8142,12 @@
             }
 
             if (p.sales_link === 'NATIVE_LIVE') {
-                const isOwnerLiveView = this.currentUser && (p.seller === this.currentUser.username || p.author === this.currentUser.username);
+                const mentorUser = (p.seller || p.author || "").trim().toLowerCase();
+                const currentUser = (this.currentUser ? this.currentUser.username : "").trim().toLowerCase();
+                const isOwnerLiveView = currentUser && mentorUser === currentUser;
                 
+                console.log("📡 [NativeLive] Renderizando Sala:", { isOwner: isOwnerLiveView, hasStream: !!this.liveStream });
+
                 if (isOwnerLiveView && this.liveStream) {
                     // MENTOR: Vê seu próprio sinal local (sem atraso)
                     playerContainer.innerHTML = `

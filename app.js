@@ -1677,7 +1677,15 @@
             this.selectedProduct = updatedP || p;
             
             this.showLoading(false);
+
+            // GARANTIA DE NAVEGAÇÃO: 
+            // Se estivermos fora do mercado (ex: na Carteira), forçamos a ida para o Mercado primeiro
+            if (this.currentView !== 'mercado') {
+                this.navigate('mercado');
+            }
+            
             this.setMarketView('live-room');
+            this.renderMarketLiveRoom(document.getElementById('market-container'));
         },
 
         async startLiveCamera() {

@@ -4629,12 +4629,7 @@
             if (type === 'success') { badgeIcon = 'check-circle'; badgeBg = '#22c55e'; }
 
             notif.innerHTML = `
-                <div class="system-notif-icon" style="position: relative; background: transparent; overflow: visible;">
-                    <img src="D.png" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px; border: 1px solid #f0f0f0;">
-                    <div style="position: absolute; bottom: -4px; right: -4px; width: 22px; height: 22px; background: ${badgeBg}; border-radius: 50%; border: 2px solid #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                        <i data-lucide="${badgeIcon}" style="width: 12px; color: #fff;"></i>
-                    </div>
-                </div>
+                <div style="width: 12px; height: 12px; border-radius: 50%; background-color: #ffd600; box-shadow: 0 0 8px rgba(255, 214, 0, 0.6); flex-shrink: 0;"></div>
                 <div class="system-notif-content">
                     <div class="system-notif-title">${title}</div>
                     <div class="system-notif-desc">${message}</div>

@@ -3158,6 +3158,17 @@
         async syncProductToNetwork(product) {
             if (!supabase) return;
             try {
+                // Se as colunas não existem, salvamos dentro do JSON 'content'
+                const contentObj = typeof product.content === 'string' ? JSON.parse(product.content || '[]') : (product.content || []);
+                
+                // Garantimos que o content seja um objeto se quisermos salvar chaves nomeadas
+                // Se for um array (legado), convertemos ou apenas adicionamos as chaves se for objeto
+                const metadata = Array.isArray(contentObj) ? { items: contentObj } : contentObj;
+                
+                metadata.mentoria_link = product.mentoria_link;
+                metadata.mentoria_name = product.mentoria_name;
+                metadata.mentoria_image = product.mentoria_image;
+
                 const { error } = await supabase.from('dito_market_products').upsert({
                     id: product.id,
                     name: product.name,
@@ -3174,14 +3185,14 @@
                     stockLimit: product.stockLimit,
                     sales: product.sales,
                     slug: product.slug,
-                    mentoria_link: product.mentoria_link,
-                    mentoria_name: product.mentoria_name,
-                    mentoria_image: product.mentoria_image,
-                    content: JSON.stringify(product.content || [])
+                    content: JSON.stringify(metadata)
                 }, { onConflict: 'id' });
+                
                 if (error) console.error("❌ Erro Sync Produto:", error.message);
-                else console.log("☁️ Produto compartilhado na rede!");
-            } catch (e) {}
+                else console.log("☁️ Produto compartilhado na rede (Metadados em Content)!");
+            } catch (e) {
+                console.error("❌ Falha crítica no Sync:", e);
+            }
         },
 
         viewProduct(id) {
@@ -8009,12 +8020,17 @@
             const relatedName = document.getElementById('live-related-name');
 
             const isOwner = this.currentUser && (this.currentUser.username === p.seller || this.currentUser.username === p.author);
-            const hasProduct = !!(p.mentoria_link || p.mentoria_image);
+            
+            // Busca dados (pode estar na raiz ou dentro de content)
+            const mLink = p.mentoria_link || (p.content && p.content.mentoria_link);
+            const mName = p.mentoria_name || (p.content && p.content.mentoria_name);
+            const mImage = p.mentoria_image || (p.content && p.content.mentoria_image);
+            const hasProduct = !!(mLink || mImage);
 
             if (relatedContainer) {
                 if (hasProduct || isOwner) {
                     relatedContainer.style.display = 'flex';
-                    const finalImage = p.mentoria_image || p.image || p.image_url;
+                    const finalImage = mImage || p.image || p.image_url;
                     
                     if (relatedImg) {
                         if (hasProduct && finalImage) {
@@ -8027,11 +8043,11 @@
                     }
 
                     if (relatedName) {
-                        relatedName.innerText = hasProduct ? (p.mentoria_name || "Recomendado pelo Mentor") : "Sua Vitrine está vazia";
+                        relatedName.innerText = hasProduct ? (mName || "Recomendado pelo Mentor") : "Sua Vitrine está vazia";
                     }
 
                     if (relatedLink) {
-                        relatedLink.href = p.mentoria_link || '#';
+                        relatedLink.href = mLink || '#';
                         relatedLink.innerHTML = hasProduct ? `ADQUIRIR AGORA <i data-lucide="external-link" style="width: 12px;"></i>` : `AGUARDANDO PRODUTO...`;
                         relatedLink.style.display = 'inline-flex';
                         relatedLink.style.opacity = hasProduct ? '1' : '0.3';

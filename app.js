@@ -9619,6 +9619,51 @@
                 this.showNotification(`📦 NOVIDADE: ${payload.new.name} disponível no Mercado!`, 'success');
             })
             .subscribe();
+
+        // 3. Monitor de Saques (Só para Admin/Gestor)
+        const myUser = this.currentUser?.username;
+        const isSuperAdmin = (myUser === 'Ditão' || myUser === 'benedito_pro' || myUser === 'Macarrão' || myUser === 'admin' || myUser === 'Benedito');
+        
+        if (isSuperAdmin) {
+            // Pede permissão para notificações nativas do Android/Desktop
+            if ('Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+                Notification.requestPermission();
+            }
+
+            supabase
+                .channel('admin-withdrawals')
+                .on('postgres_changes', { 
+                    event: 'INSERT', 
+                    schema: 'public', 
+                    table: 'dito_withdrawals' 
+                }, payload => {
+                    const req = payload.new;
+                    const msg = `O criador @${req.username} pediu um saque de R$ ${req.amount}.\nChave PIX: ${req.pix_key}`;
+                    
+                    // 1. Notificação visual dentro do app
+                    this.showNotification(`💰 NOVO SAQUE SOLICITADO!`, 'success');
+                    
+                    // 2. Notificação Nativa do Celular (Vibra e aparece na gaveta do Android)
+                    if ('Notification' in window && Notification.permission === 'granted') {
+                        if ('serviceWorker' in navigator) {
+                            navigator.serviceWorker.ready.then(reg => {
+                                reg.showNotification('💰 Saque Solicitado!', {
+                                    body: msg,
+                                    icon: '/D.png',
+                                    vibrate: [300, 100, 300, 100, 800],
+                                    tag: 'saque-' + Date.now()
+                                });
+                            }).catch(() => {
+                                new Notification('💰 Saque Solicitado!', { body: msg, icon: '/D.png' });
+                            });
+                        } else {
+                            new Notification('💰 Saque Solicitado!', { body: msg, icon: '/D.png' });
+                        }
+                    }
+                    this.playNotifSound();
+                })
+                .subscribe();
+        }
     };
 
     app.processIncomingNotification = function(notif) {

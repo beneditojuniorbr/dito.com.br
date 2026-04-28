@@ -4,11 +4,26 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1"
 serve(async (req) => {
   try {
     const url = new URL(req.url)
-    const topic = url.searchParams.get("topic") || url.searchParams.get("type")
-    const id = url.searchParams.get("data.id") || url.searchParams.get("id")
+    let body = {}
+    
+    // Tenta ler o body JSON (Webhooks enviam como POST JSON)
+    if (req.method === 'POST') {
+      try {
+        body = await req.json()
+      } catch (e) {
+        console.log("Sem JSON body")
+      }
+    }
 
-    if (topic !== 'payment' && topic !== 'payment.created') {
+    const topic = url.searchParams.get("topic") || url.searchParams.get("type") || body?.type || body?.action
+    const id = url.searchParams.get("data.id") || url.searchParams.get("id") || body?.data?.id || (body?.action?.includes('payment') ? body.id : null)
+
+    if (!topic || (!topic.includes('payment') && topic !== 'payment.created')) {
       return new Response('Ignorado', { status: 200 })
+    }
+
+    if (!id) {
+      return new Response('ID do pagamento não encontrado', { status: 400 })
     }
 
     const MP_ACCESS_TOKEN = Deno.env.get('MP_ACCESS_TOKEN')

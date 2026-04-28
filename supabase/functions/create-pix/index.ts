@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const { productId, amount, email, userId } = await req.json()
+    const { productId, amount, email, userId, paymentId } = await req.json()
     const MP_ACCESS_TOKEN = Deno.env.get('MP_ACCESS_TOKEN')
     
     if (!MP_ACCESS_TOKEN) {
@@ -23,7 +23,7 @@ serve(async (req) => {
       description: `Produto Dito - ${productId}`,
       payment_method_id: 'pix',
       payer: { email: email || 'cliente@dito.com.br' },
-      external_reference: JSON.stringify({ userId, productId }) // GUARDA QUEM COMPROU O QUE
+      external_reference: JSON.stringify({ userId, productId, paymentId }) // AGORA GUARDA O paymentId!
     }
 
     const response = await fetch('https://api.mercadopago.com/v1/payments', {

@@ -25,9 +25,9 @@ serve(async (req) => {
     const paymentData = await paymentRes.json()
 
     if (paymentData.status === 'approved') {
-      // Pega o userId e productId que enviamos no create-pix
+      // Pega o userId, productId e paymentId que enviamos no create-pix
       if (paymentData.external_reference) {
-        const { userId, productId } = JSON.parse(paymentData.external_reference)
+        const { userId, productId, paymentId } = JSON.parse(paymentData.external_reference)
 
         const supabaseAdmin = createClient(
           Deno.env.get('SUPABASE_URL') ?? '',
@@ -35,10 +35,8 @@ serve(async (req) => {
         )
 
         // Salva a compra no banco de dados para liberar o acesso!
-        // No Dito, vamos inserir na tabela 'dito_purchased_products' ou equivalente
-        // baseada na estrutura do localStorage que estava sendo usada
         await supabaseAdmin.from('dito_purchases').insert([
-          { user_id: userId, product_id: productId, payment_id: id, status: 'approved' }
+          { user_id: userId, product_id: productId, payment_id: paymentId || id, status: 'approved' }
         ])
         
         // Se houver uma tabela de notificações, também poderíamos avisar por ela aqui

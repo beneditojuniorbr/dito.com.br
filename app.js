@@ -702,16 +702,6 @@
             this.showLoading(true, 'Gerando seu código Pix real...');
 
             try {
-                const FUNCTION_URL = 'https://hlzmahaekybidmwielsr.supabase.co/functions/v1/mercado-pago-bridge';
-                
-                // DIAGNÓSTICO DE CORS PARA O USUÁRIO
-                if (window.location.protocol === 'file:') {
-                    this.showLoading(false);
-                    alert("🚨 ERRO DE SEGURANÇA (CORS):\nVocê está rodando o Dito via arquivo local (file://). O Mercado Pago e a Nuvem bloqueiam conexões sem um domínio real.\n\nPara resolver:\n1. Acesse via https://www.ditoapp.com.br\n2. Ou use um servidor local (Live Server/Localhost).");
-                    return;
-                }
-
-                
                 // Sanitiza o email (Mercado Pago exige um email válido e sem espaços)
                 let email = this.currentUser.email;
                 if (!email || !email.includes('@')) {
@@ -720,15 +710,7 @@
                 }
 
                 const product = this.cart[0];
-                
-                // Metadata simplificado para nao estourar o limite do Mercado Pago
-                const metadata = {
-                    payment_id: paymentId,
-                    username: this.currentUser.username || 'Guest',
-                    product_id: product.id,
-                    product_name: product.name.substring(0, 50),
-                    is_mentoria: product.type === 'Mentoria'
-                };
+                const productId = product ? product.id : 'global';
 
                 let response;
                 let attempts = 0;
@@ -736,26 +718,24 @@
 
                 while (attempts < maxAttempts) {
                     try {
-                        response = await fetch(`${SUPABASE_URL}/functions/v1/mercado-pago-bridge`, {
+                        response = await fetch(`${SUPABASE_URL}/functions/v1/create-pix`, {
                             method: 'POST',
                             headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                                'Content-Type': 'application/json'
                             },
                             body: JSON.stringify({
-                                action: 'create-pix',
-                                amount: total,
-                                description: `Compra: ${product.name}`,
+                                productId: productId,
+                                amount: total.toFixed(2),
                                 email: email,
-                                metadata: metadata
+                                userId: this.currentUser.username || 'Guest',
+                                paymentId: paymentId
                             })
                         });
 
                         if (response.status === 503) {
                             attempts++;
-                            console.warn(`⚠️ [Pagamento] Servidor Instável (503). Tentativa ${attempts}/${maxAttempts}...`);
                             if (attempts < maxAttempts) {
-                                await new Promise(r => setTimeout(r, 2000 * attempts)); // Backoff exponencial
+                                await new Promise(r => setTimeout(r, 1000 * attempts));
                                 continue;
                             }
                         }
@@ -1071,73 +1051,28 @@
 
         async verifyPaymentDirectly(paymentId, isSilent = false) {
             try {
-                if (!isSilent) this.showLoading(true, 'Verificando com o banco...');
+                if (!isSilent) this.showLoading(true, 'Consultando o banco...');
                 
-                // 1. BUSCA INTELIGENTE: Procura QUALQUER pagamento aprovado deste usuário nos últimos 20 minutos
-                const key = this.getUserKey();
-                const twentyMinsAgo = new Date(Date.now() - 20 * 60 * 1000).toISOString();
-                
+                // 1. Busca na nova tabela dito_purchases atualizada pelo nosso mp-webhook
                 const { data: recentPayments } = await supabase
-                    .from('dito_payments')
+                    .from('dito_purchases')
                     .select('*')
                     .eq('status', 'approved')
-                    .gte('created_at', twentyMinsAgo)
-                    .filter('metadata->>username', 'ilike', this.currentUser.username)
-                    .order('created_at', { ascending: false });
+                    .eq('payment_id', paymentId);
 
                 if (recentPayments && recentPayments.length > 0) {
-                    console.log("💎 [PAGAMENTO] Pagamento aprovado detectado via busca direta!");
+                    console.log("💎 [PAGAMENTO] Pagamento aprovado detectado via Webhook!");
+                    if (this.paymentPollingTimer) clearInterval(this.paymentPollingTimer);
                     this.finalizeSuccessfulPurchase();
                     return;
                 }
 
-                // 2. Se não achou no banco, tenta via BRIDGE (Mercado Pago)
-                let response;
-                let attempts = 0;
-                const maxAttempts = 3;
-
-                while (attempts < maxAttempts) {
-                    try {
-                        response = await fetch(`${SUPABASE_URL}/functions/v1/mercado-pago-bridge`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                            },
-                            body: JSON.stringify({
-                                action: 'check-status',
-                                id: paymentId
-                            })
-                        });
-
-                        if (response.status === 503) {
-                            attempts++;
-                            if (attempts < maxAttempts) {
-                                await new Promise(r => setTimeout(r, 1000 * attempts));
-                                continue;
-                            }
-                        }
-                        break;
-                    } catch (err) {
-                        attempts++;
-                        if (attempts >= maxAttempts) throw err;
-                        await new Promise(r => setTimeout(r, 1000 * attempts));
-                    }
-                }
-
-                if (!response.ok) throw new Error(`Erro ${response.status}`);
-                
-                const data = await response.json();
-                
-                if (data.status === 'approved') {
-                    console.log("✅ [Pagamento] APROVADO via Polling!");
-                    clearInterval(this.paymentPollingTimer);
-                    this.finalizeSuccessfulPurchase();
-                } else if (!isSilent) {
+                // 2. Fallback caso ainda não tenha chegado
+                if (!isSilent) {
                     this.showLoading(false);
-                    const isAdm = this.currentUser && (this.currentUser.username === 'Ditão' || this.currentUser.username === 'janavan');
+                    const isAdm = this.currentUser && (this.currentUser.username === 'Ditão' || this.currentUser.username === 'benedito_pro');
                     const admBtn = isAdm ? `<br><br><button onclick="app.finalizeSuccessfulPurchase()" style="background:#000; color:#fff; border:none; padding:10px 20px; border-radius:12px; font-size:12px; cursor:pointer; font-weight:950; margin-top:10px;">FORÇAR LIBERAÇÃO AGORA (ADM)</button>` : '';
-                    this.showNotification(`Pagamento ainda não identificado. Se você já pagou, aguarde 30 segundos e clique novamente.${admBtn}`, 'info');
+                    this.showNotification(`Ainda não identificado. Se você já pagou, aguarde 30 segundos e clique novamente.${admBtn}`, 'info');
                 }
             } catch (e) {
                 console.error("❌ [Vigilante] Erro na verificação:", e);
@@ -4769,7 +4704,7 @@
                         // Checa se é dono de alguma mentoria na lista global
                         const isMentor = this.products.some(p => (p.seller === myUser || p.author === myUser) && p.type === 'Mentoria');
                         
-                        if (isSuperAdmin || isMentor) {
+                        if (view === 'curso-player' && (isSuperAdmin || isMentor)) {
                             liveAction.style.display = 'flex';
                             if (window.lucide) lucide.createIcons();
                         } else {

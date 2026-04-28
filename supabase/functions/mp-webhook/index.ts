@@ -56,7 +56,7 @@ serve(async (req) => {
 
         // 2. Busca o dono do produto e o valor do produto
         const { data: product } = await supabaseAdmin
-          .from('dito_products')
+          .from('dito_market_products')
           .select('seller, price')
           .eq('id', productId)
           .single()

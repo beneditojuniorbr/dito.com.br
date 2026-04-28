@@ -1669,6 +1669,14 @@
         initMentorSignaling(productId, stream) {
             if (!supabase) return;
             const channelName = `live-native-${productId}`;
+
+            // Remove canais antigos (se o mentor entrou antes como "aluno") para evitar o erro "cannot add presence... after subscribe"
+            const existingChannel = supabase.getChannels().find(c => c.topic === `realtime:${channelName}`);
+            if (existingChannel) {
+                console.log("♻️ [NativeLive] Limpando canal anterior antes de virar Host.");
+                supabase.removeChannel(existingChannel);
+            }
+
             this.mentorChannel = supabase.channel(channelName, { config: { broadcast: { ack: true } } });
             this.peerConnections = this.peerConnections || {}; 
 
@@ -8366,9 +8374,17 @@
             // LIMPEZA
             if (this.activePC) { this.activePC.close(); this.activePC = null; }
             if (this.signalInterval) { clearInterval(this.signalInterval); this.signalInterval = null; }
-            if (this.studentChannel) { this.studentChannel.unsubscribe(); }
-
+            if (this.studentChannel) { 
+                supabase.removeChannel(this.studentChannel); 
+                this.studentChannel = null; 
+            }
+            
             const channelName = `live-native-${productId}`;
+            const existingChannel = supabase.getChannels().find(c => c.topic === `realtime:${channelName}`);
+            if (existingChannel) {
+                supabase.removeChannel(existingChannel);
+            }
+
             this.studentChannel = supabase.channel(channelName);
             const myId = this.currentUser ? this.currentUser.username : `guest-${Math.random().toString(36).substr(2, 9)}`;
 

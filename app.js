@@ -5755,39 +5755,56 @@
             }
         },
 
-        renderAdminUsers(skipFetch = false) {
+        async renderAdminUsers(skipFetch = false) {
             const list = document.getElementById('admin-users-list');
-            if (!list) return;
+            if (!list || !supabase) return;
 
-            // Prioriza a lista em memória sincronizada com o Supabase (networkUsers)
-            // Fallback para dito_network_users (cache da rede) e por último dito_usuarios
-            const usuarios = (this.networkUsers && this.networkUsers.length > 0) 
-                ? this.networkUsers 
-                : JSON.parse(localStorage.getItem('dito_network_users') || localStorage.getItem('dito_usuarios') || '[]');
-            
-            if (usuarios.length === 0 && !skipFetch) {
-                list.innerHTML = `<p style="text-align: center; color: #999; font-weight: 800; padding: 40px;">Buscando usuários na rede...</p>`;
-                this.fetchNetworkUsers();
-                return;
-            }
+            list.innerHTML = `<div style="text-align: center; padding: 40px;"><div class="loading-spinner" style="margin: 0 auto 20px;"></div><p style="font-weight: 800; color: #999;">Carregando banco de dados...</p></div>`;
 
-            list.innerHTML = usuarios.map(user => `
-                <div style="background: #fff; border: 1px solid #f2f2f2; border-radius: 24px; padding: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
-                    <div style="display: flex; gap: 14px; align-items: center;">
-                        <div style="width: 46px; height: 46px; border-radius: 50%; overflow: hidden; background: #f5f5f5; border: 1px solid #eee; display: flex; align-items: center; justify-content: center;">
-                            <img src="${this.rGetPImage(user.avatar, user.username)}" style="width: 100%; height: 100%; object-fit: cover;">
+            try {
+                const { data: usuarios, error } = await supabase.from('dito_users').select('*').order('created_at', { ascending: false });
+                if (error) throw error;
+
+                if (!usuarios || usuarios.length === 0) {
+                    list.innerHTML = `<p style="text-align: center; color: #999; font-weight: 800; padding: 40px;">Nenhum usuário encontrado.</p>`;
+                    return;
+                }
+
+                list.innerHTML = usuarios.map(user => `
+                    <div style="background: #fff; border: 1px solid #f2f2f2; border-radius: 24px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                            <div style="display: flex; gap: 14px; align-items: center;">
+                                <div style="width: 46px; height: 46px; border-radius: 50%; overflow: hidden; background: #f5f5f5; border: 1px solid #eee; display: flex; align-items: center; justify-content: center;">
+                                    <img src="${this.rGetPImage(user.avatar, user.username)}" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <div>
+                                    <h4 style="font-weight: 900; font-size: 16px; color: #000; margin-bottom: 2px;">${user.username}</h4>
+                                    <p style="font-size: 11px; font-weight: 800; color: #999;">${(user.name || 'Sem nome')} • ${(user.email || 'Sem email')}</p>
+                                </div>
+                            </div>
+                            <button onclick="app.deleteUser('${user.username}', '${user.id}')" style="width: 36px; height: 36px; background: #fee2e2; color: #ef4444; border: none; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                <i data-lucide="trash-2" style="width: 16px;"></i>
+                            </button>
                         </div>
-                        <div>
-                            <h4 style="font-weight: 900; font-size: 14px; color: #000;">${user.username}</h4>
-                            <p style="font-size: 10px; font-weight: 800; color: #ccc;">${(user.name || '').toLowerCase()} • R$ ${(parseFloat(user.sales || 0)).toFixed(2)}</p>
+                        
+                        <div style="background: #f9f9f9; padding: 14px; border-radius: 16px; border: 1px dashed #e5e5e5; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 11px; color: #555; font-weight: 600;">
+                            <div><strong style="color:#000;">Senha:</strong> ${user.password || 'N/A'}</div>
+                            <div><strong style="color:#000;">Chave Pix:</strong> ${user.pix_key || 'Não cadastrado'}</div>
+                            <div><strong style="color:#000;">Saldo Disp.:</strong> <span style="color:#10b981; font-weight: 800;">R$ ${parseFloat(user.balance || 0).toFixed(2)}</span></div>
+                            <div><strong style="color:#000;">Retido (Garantia):</strong> <span style="color:#f59e0b; font-weight: 800;">R$ ${parseFloat(user.pending_balance || 0).toFixed(2)}</span></div>
+                            <div><strong style="color:#000;">Vendas Totais:</strong> ${user.sales || 0}</div>
+                            <div><strong style="color:#000;">Moedas Dito:</strong> ${user.coins || 0}</div>
+                            <div style="grid-column: 1 / -1; font-size: 10px; color: #aaa; margin-top: 4px; padding-top: 8px; border-top: 1px solid #eee;">
+                                <strong>ID:</strong> ${user.id} • <strong>Data:</strong> ${new Date(user.created_at).toLocaleString('pt-BR')}
+                            </div>
                         </div>
                     </div>
-                    <button onclick="app.deleteUser('${user.username}', '${user.id}')" style="width: 40px; height: 40px; background: #fee2e2; color: #ef4444; border: none; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-                        <i data-lucide="trash-2" style="width: 18px;"></i>
-                    </button>
-                </div>
-            `).join('');
-            if (window.lucide) lucide.createIcons();
+                `).join('');
+                if (window.lucide) lucide.createIcons();
+            } catch (err) {
+                console.error("Erro ao buscar usuários pro admin:", err);
+                list.innerHTML = `<p style="text-align: center; color: red;">Erro ao carregar banco de dados.</p>`;
+            }
         },
 
         async deleteUser(username, id) {

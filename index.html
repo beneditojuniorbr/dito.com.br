@@ -1822,12 +1822,19 @@
 
     <template id="template-admin-contas">
         <div style="padding: 24px; padding-bottom: 120px;">
-            <header style="display: flex; align-items: center; gap: 16px; margin-bottom: 32px;">
-                <div onclick="app.navigate('perfil')" style="width: 44px; height: 44px; background: #f5f5f5; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <header style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+                <div onclick="app.navigate('admin-painel-unificado')" style="width: 44px; height: 44px; background: #f5f5f5; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
                     <i data-lucide="arrow-left" style="width: 20px; color: #000;"></i>
                 </div>
-                <h2 style="font-weight: 900; font-size: 20px;">Gestão de Contas</h2>
+                <h2 style="font-weight: 950; font-size: 20px; letter-spacing: -1px;">Gestão de Contas</h2>
             </header>
+
+            <!-- Barra de Busca -->
+            <div style="margin-bottom: 24px; position: relative;">
+                <input type="text" id="admin-user-search" placeholder="🔍 Buscar nome ou @usuário..." 
+                    oninput="app.filterAdminUsers(this.value)"
+                    style="width: 100%; padding: 14px 20px; border-radius: 16px; border: 1px solid #eee; background: #f9f9f9; font-size: 13px; font-weight: 800; outline: none; transition: 0.3s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+            </div>
 
             <div id="admin-users-list" style="display: flex; flex-direction: column; gap: 16px;">
                 <!-- Lista de usuários carregada via JS -->

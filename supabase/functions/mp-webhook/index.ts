@@ -49,12 +49,39 @@ serve(async (req) => {
           Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         )
 
-        // Salva a compra no banco de dados para liberar o acesso!
+        // 1. Salva a compra no banco para liberar o acesso ao cliente
         await supabaseAdmin.from('dito_purchases').insert([
           { user_id: userId, product_id: productId, payment_id: paymentId || id, status: 'approved' }
         ])
-        
-        // Se houver uma tabela de notificações, também poderíamos avisar por ela aqui
+
+        // 2. Busca o dono do produto e o valor do produto
+        const { data: product } = await supabaseAdmin
+          .from('dito_products')
+          .select('seller, price')
+          .eq('id', productId)
+          .single()
+
+        if (product && product.seller) {
+          const productPrice = parseFloat(product.price || 0)
+          const creatorShare = productPrice * 0.97 // 97% para o Criador (3% Taxa Dito)
+
+          // 3. Busca o saldo atual do vendedor
+          const { data: sellerInfo } = await supabaseAdmin
+            .from('dito_users')
+            .select('balance, sales')
+            .eq('username', product.seller)
+            .single()
+
+          if (sellerInfo) {
+            // 4. Atualiza o saldo e a quantidade de vendas do vendedor
+            const newBalance = (parseFloat(sellerInfo.balance || 0) + creatorShare).toFixed(2)
+            const newSales = (sellerInfo.sales || 0) + 1
+
+            await supabaseAdmin.from('dito_users')
+              .update({ balance: newBalance, sales: newSales })
+              .eq('username', product.seller)
+          }
+        }
       }
     }
 

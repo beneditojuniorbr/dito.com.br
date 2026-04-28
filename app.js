@@ -4708,7 +4708,9 @@
                         // Checa se é dono de alguma mentoria na lista global
                         const isMentor = this.products.some(p => (p.seller === myUser || p.author === myUser) && p.type === 'Mentoria');
                         
-                        if (view === 'curso-player' && (isSuperAdmin || isMentor)) {
+                        const allowedViews = ['dashboard', 'curso-player', 'meus-cursos', 'produtos'];
+                        
+                        if (allowedViews.includes(view) && (isSuperAdmin || isMentor)) {
                             liveAction.style.display = 'flex';
                             if (window.lucide) lucide.createIcons();
                         } else {

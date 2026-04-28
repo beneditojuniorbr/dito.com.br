@@ -1639,6 +1639,9 @@
                 this.liveStream = stream;
                 window.app.liveStream = stream; // Garante persistência global
                 
+                const indicator = document.getElementById('live-btn-indicator');
+                if (indicator) indicator.style.display = 'block';
+                
                 // Força renderização da sala para usar a lógica unificada
                 const container = document.getElementById('market-container');
                 if (container) this.renderMarketLiveRoom(container);
@@ -1873,6 +1876,8 @@
                 this.liveStream.getTracks().forEach(track => track.stop());
                 this.liveStream = null;
             }
+            const indicator = document.getElementById('live-btn-indicator');
+            if (indicator) indicator.style.display = 'none';
             const p = this.selectedProduct;
             if (p) this.renderMarketLiveRoom(document.getElementById('market-container'));
             this.showNotification("Transmissão encerrada.", "default");

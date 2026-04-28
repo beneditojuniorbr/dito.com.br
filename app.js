@@ -721,7 +721,8 @@
                         response = await fetch(`${SUPABASE_URL}/functions/v1/create-pix`, {
                             method: 'POST',
                             headers: {
-                                'Content-Type': 'application/json'
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
                             },
                             body: JSON.stringify({
                                 productId: productId,
@@ -3670,7 +3671,10 @@
 
                     const res = await fetch('https://hlzmahaekybidmwielsr.supabase.co/functions/v1/create-pix', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        },
                         body: JSON.stringify({ productId, amount: total.toFixed(2), email, userId })
                     });
                     

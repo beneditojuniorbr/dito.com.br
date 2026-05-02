@@ -6460,6 +6460,7 @@
                     this.updateBalanceUI();
                     if (this.currentView === 'hall') this.renderHallOfFame();
                     
+                    this.refreshUserAvatarsGlobally(this.currentUser.username, null);
                     this.showNotification('Foto removida com sucesso!', 'success');
                 }
             }
@@ -10184,6 +10185,19 @@
         if (confirm("⚠️ Isso irá limpar TODA a memória local do app (histórico, produtos locais, etc). Seus dados no Supabase estão seguros. Continuar?")) {
             localStorage.clear();
             location.reload();
+        }
+    };
+
+    app.refreshUserAvatarsGlobally = function(username, newSrc) {
+        if (this.networkUsers) {
+            const idx = this.networkUsers.findIndex(u => u.username === username);
+            if (idx !== -1) this.networkUsers[idx].avatar = newSrc;
+        }
+        if (this.currentView === 'hall') this.renderHallOfFame();
+        if (this.currentView === 'admin-contas') this.renderAdminUsers();
+        if (this.currentUser && this.currentUser.username === username) {
+            this.currentUser.avatar = newSrc;
+            this.saveSession(this.currentUser);
         }
     };
 

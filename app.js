@@ -2418,6 +2418,23 @@
             }
         },
 
+        checkSalesNotification() {
+            if (!this.currentUser) return;
+            const key = this.getUserKey();
+            const history = JSON.parse(localStorage.getItem(`dito_real_sales_history_${key}`) || '[]');
+            const lastView = parseInt(localStorage.getItem(`dito_last_sales_view_${key}`) || '0');
+            
+            const dot = document.getElementById('sales-dot-scroll');
+            if (!dot) return;
+
+            if (history.length > 0) {
+                const latestSaleTimestamp = history[0].timestamp || 0;
+                dot.style.display = (latestSaleTimestamp > lastView) ? 'block' : 'none';
+            } else {
+                dot.style.display = 'none';
+            }
+        },
+
         claimDailyCheckin(dayIndex) {
             const key = this.getUserKey();
             const storageKey = `dito_missions_${key}`;
@@ -4824,6 +4841,7 @@
                         this.updateBalanceUI(); 
                         this.renderEvents();
                         this.checkMissionsNotification();
+                        this.checkSalesNotification();
                         this.startEventsCarousel();
                         break;
                     case 'mercado': setTimeout(() => this.renderStore(), 10); break;
@@ -4831,7 +4849,11 @@
                 case 'sociedade-detalhe': this.renderSocietyDetail(); break;
                     case 'hall': this.renderHallOfFame(); break;
                     case 'perfil': this.renderProfile(); break;
-                    case 'vendas': this.renderSales(); break;
+                    case 'vendas': 
+                        this.renderSales(); 
+                        localStorage.setItem(`dito_last_sales_view_${this.getUserKey()}`, Date.now().toString());
+                        this.checkSalesNotification();
+                        break;
                     case 'sacar': this.updateWithdrawUI(); break;
                     case 'admin-contas': this.renderAdminUsers(); break;
                     case 'admin-produtos': this.renderAdminProducts(); break;
@@ -9881,6 +9903,8 @@
                 localStorage.setItem(`dito_real_sales_history_${key}`, JSON.stringify(history));
                 this.updateBalanceUI();
                 this.playNotifSound();
+                this.checkSalesNotification();
+                this.checkMissionsNotification(); // Atualiza missão de venda se houver
                 if (this.currentView === 'vendas') this.renderSales();
             }
         }

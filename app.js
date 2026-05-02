@@ -1987,6 +1987,23 @@
                 localStorage.setItem(storageKey, JSON.stringify(checklist));
             }
 
+            // SINCRONIZAÇÃO DE SEGURANÇA: Verifica o histórico real para evitar o bug de "Perdeu" em dias já feitos
+            const historyKey = `dito_checkin_history_${key}`;
+            const history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+            const currentWeek = this.getWeekNumber();
+            
+            let changed = false;
+            checklist.forEach((item, idx) => {
+                if (!item.checked) {
+                    const wasDone = history.some(h => h.week === currentWeek && h.day === item.dayName);
+                    if (wasDone) {
+                        item.checked = true;
+                        changed = true;
+                    }
+                }
+            });
+            if (changed) localStorage.setItem(storageKey, JSON.stringify(checklist));
+
             // Atualiza saldo de cupons na barra superior
             const currentCoins = parseInt(localStorage.getItem(`dito_coins_${key}`) || '0');
             if (balanceEl) balanceEl.innerText = currentCoins.toLocaleString();
@@ -2025,7 +2042,7 @@
 
                     ${item.checked ? `
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
-                            <span style="font-size: 8px; font-weight: 950; color: #10b981; text-transform: uppercase;">Concluído</span>
+                            <span style="font-size: 8px; font-weight: 950; color: #10b981; text-transform: uppercase;">Recebeu</span>
                             <span style="font-size: 9px; font-weight: 950; color: #000;">+${item.rewardGiven || potentialReward}</span>
                         </div>
                     ` : (past ? `

@@ -9346,11 +9346,12 @@
     app.recalculateCheckoutTotal = function() {
         const totalBase = this.cart.reduce((acc, i) => acc + parseFloat(i.price || 0), 0);
         
-        // Aplica desconto de cupons (R$ 0,10 por cupom, max 100 cupons)
+        // Regra: 1 cupom = 1% de desconto (Max 100%)
         const couponsUsed = this.selectedCouponsForPurchase || 0;
-        const discount = couponsUsed * 0.10;
+        const discountPercentage = Math.min(couponsUsed, 100);
+        const discountAmount = totalBase * (discountPercentage / 100);
         
-        let final = Math.max(0.01, totalBase - discount); // Mínimo de 1 centavo
+        let final = Math.max(0.01, totalBase - discountAmount); // Mínimo de 1 centavo
         
         const disp = document.getElementById('checkout-total-value');
         if (disp) disp.innerText = 'R$ ' + final.toFixed(2);
@@ -9383,11 +9384,20 @@
         const input = document.getElementById('input-seletor-cupons');
         const label = document.getElementById('label-cupons-selecionados');
         const labelDesconto = document.getElementById('label-desconto-valor');
+        const labelTotal = document.getElementById('label-total-final');
         
-        if (input && label && labelDesconto) {
+        if (input && label && labelDesconto && labelTotal) {
             const val = parseInt(input.value);
             label.innerText = val;
-            labelDesconto.innerText = `R$ ${(val * 0.10).toFixed(2)}`;
+            
+            const totalBase = this.cart.reduce((acc, i) => acc + parseFloat(i.price || 0), 0);
+            const discountPercentage = Math.min(val, 100);
+            const discountAmount = totalBase * (discountPercentage / 100);
+            const finalPrice = Math.max(0.01, totalBase - discountAmount);
+            
+            labelDesconto.innerText = `- R$ ${discountAmount.toFixed(2)}`;
+            labelTotal.innerText = `R$ ${finalPrice.toFixed(2)}`;
+            
             this.selectedCouponsForPurchase = val;
         }
     };

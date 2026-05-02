@@ -7080,7 +7080,6 @@
             this.updateProductProgress();
 
             // Cálculo de lucro em tempo real
-            const priceInp = document.getElementById('prod-price');
             if (priceInp) {
                 priceInp.oninput = () => {
                     const val = parseFloat(priceInp.value) || 0;

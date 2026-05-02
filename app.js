@@ -6217,7 +6217,6 @@
                     }
                 }
                 if (fansEl) fansEl.innerText = currentFans;
-                if (friendsEl) friendsEl.innerText = this.currentUser?.friends || "0";
 
                 if (this.currentUser) {
                     if (usernameEl) usernameEl.innerText = this.currentUser.username;
@@ -6429,6 +6428,9 @@
                         
                         this.renderProfile();
                         this.showNotification('Sua foto foi otimizada e salva! ✨', 'success');
+                        
+                        // Atualização Global: Força todos os elementos que usam a foto do usuário a atualizar
+                        this.refreshUserAvatarsGlobally(this.currentUser.username, avatarData);
                     }
                 };
                 img.src = event.target.result;

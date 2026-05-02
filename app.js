@@ -7031,8 +7031,16 @@
         },
 
         initCreateProduct() {
-            this.editingProductId = null; // Reset estado de edição
+            this.editingProductId = null;
+            this.selectedProduct = null;
             this.hasSeenCreateProd = true;
+            
+            const priceInp = document.getElementById('prod-price');
+            if (priceInp) {
+                priceInp.readOnly = false;
+                priceInp.style.opacity = '1';
+                priceInp.style.cursor = 'text';
+            }
             const dotDash = document.getElementById('create-product-dot');
             const dotHeader = document.getElementById('header-create-dot');
             if (dotDash) dotDash.style.display = 'none';
@@ -7110,9 +7118,15 @@
                 if(document.getElementById('prod-category')) document.getElementById('prod-category').value = prod.category || 'Dinheiro';
                 
                 if(document.getElementById('prod-price')) {
-                    document.getElementById('prod-price').value = prod.price || '';
-                    this.calculateNetProfit(prod.price || 0); // Reutiliza a função de cálculo
+                    const priceInp = document.getElementById('prod-price');
+                    priceInp.value = prod.price || '';
+                    priceInp.readOnly = true; // Não permite editar preço
+                    priceInp.style.opacity = '0.6';
+                    priceInp.style.cursor = 'not-allowed';
+                    this.calculateNetProfit(prod.price || 0);
                 }
+
+                this.selectedProduct = prod; // Armazena o produto original para preservar dados não editáveis (como vendas)
 
                 // Configurações
                 if(document.getElementById('prod-visible')) document.getElementById('prod-visible').checked = prod.visible !== false;
@@ -7147,6 +7161,7 @@
                 
                 // Carrega Galeria
                 this.selectedProductImages = prod.images && prod.images.length > 0 ? [...prod.images] : (prod.image ? [prod.image] : []);
+                this.selectedProductImage = prod.image || null; // Sincroniza imagem principal
                 this.renderProductImageGallery();
                 
                 if (this.selectedProductImages.length > 0) {
@@ -7469,31 +7484,33 @@
                 const finalImage = urlInput || this.selectedProductImage || null;
 
                 const isEdit = !!this.editingProductId;
+                const originalProd = isEdit ? this.selectedProduct : null;
+
                 let newProd = {
                     id: this.editingProductId || ('p-' + Date.now()),
                     name: name,
                     description: desc,
                     price: price,
-                    oldPrice: price * 1.4,
+                    oldPrice: originalProd ? originalProd.oldPrice : (price * 1.4),
                     type: this.selectedProductType,
                     visible: visible,
-                    rating: 5.0,
-                    sales: isEdit ? (this.selectedProduct?.sales || 0) : 0,
+                    rating: originalProd ? originalProd.rating : 5.0,
+                    sales: originalProd ? (originalProd.sales || 0) : 0,
                     image: finalImage,
-                    images: this.selectedProductImages && this.selectedProductImages.length > 0 ? this.selectedProductImages : [finalImage], // Galeria completa
+                    images: this.selectedProductImages && this.selectedProductImages.length > 0 ? this.selectedProductImages : [finalImage],
                     image_url: finalImage,
-                    author: this.currentUser?.username || "Você",
-                    seller: this.currentUser?.username || "Você",
+                    author: originalProd ? originalProd.author : (this.currentUser?.username || "Você"),
+                    seller: originalProd ? originalProd.seller : (this.currentUser?.username || "Você"),
                     sales_link: salesLink,
                     guarantee: hasGuarantee,
                     category: category,
-                    createdAt: Date.now(),
+                    createdAt: originalProd ? originalProd.createdAt : Date.now(),
                     hasLimit: hasLimit,
                     stockLimit: hasLimit ? stockLimit : null,
-                    slug: this.generateRandomSlug(),
+                    slug: originalProd ? originalProd.slug : this.generateRandomSlug(),
                     mentoria_link: this.selectedProductType === 'Mentoria' ? (document.getElementById('mentoria-prod-link')?.value || null) : null,
                     mentoria_image: this.selectedProductType === 'Mentoria' ? (this.mentoriaPresentationImage || null) : null,
-                    content: this.selectedProductType === 'Curso' ? this.courseStructure : null
+                    content: this.selectedProductType === 'Curso' ? this.courseStructure : (originalProd ? originalProd.content : null)
                 };
 
                 const networkProd = { ...newProd };

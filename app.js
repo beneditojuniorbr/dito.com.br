@@ -2395,23 +2395,26 @@
         checkMissionsNotification() {
             if (!this.currentUser) return;
             const key = this.getUserKey();
-            const storageKey = `dito_missions_${key}`;
+            const today = new Date().toDateString();
             
-            // Tenta carregar. Se não existir, gera o checklist inicial para poder alertar
+            // 1. Check-in Diário
+            const storageKey = `dito_missions_${key}`;
             let checklist = JSON.parse(localStorage.getItem(storageKey) || '[]');
-            if (checklist.length === 0 || checklist[0].week !== this.getWeekNumber()) {
-                const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-                checklist = days.map((d, i) => ({ dayName: d, index: i, checked: false, week: this.getWeekNumber() }));
-                localStorage.setItem(storageKey, JSON.stringify(checklist));
-            }
+            const todayIndex = new Date().getDay();
+            const hasPendingCheckin = checklist[todayIndex] && !checklist[todayIndex].checked;
 
-            const todayIndex = new Date().getDay(); // getDay() retorna 0 para Domingo, 1 para Segunda...
+            // 2. Desafio Diário (Venda)
+            const salesHistory = JSON.parse(localStorage.getItem(`dito_real_sales_history_${key}`) || '[]');
+            const hasSaleToday = salesHistory.some(s => new Date(s.date).toDateString() === today);
+            const claimedKey = `dito_claimed_daily_${key}_${today}`;
+            const isClaimed = localStorage.getItem(claimedKey) === 'true';
+            const hasPendingDaily = hasSaleToday && !isClaimed;
+
+            const hasAnythingToReceive = hasPendingCheckin || hasPendingDaily;
             
             const dot = document.getElementById('mission-dot-scroll');
             if (dot) {
-                // A lógica de index na renderMissions é: 0=Dom, 1=Seg...
-                const hasPending = checklist[todayIndex] && !checklist[todayIndex].checked;
-                dot.style.display = hasPending ? 'block' : 'none';
+                dot.style.display = hasAnythingToReceive ? 'block' : 'none';
             }
         },
 
@@ -4820,6 +4823,7 @@
                     case 'dashboard': 
                         this.updateBalanceUI(); 
                         this.renderEvents();
+                        this.checkMissionsNotification();
                         this.startEventsCarousel();
                         break;
                     case 'mercado': setTimeout(() => this.renderStore(), 10); break;

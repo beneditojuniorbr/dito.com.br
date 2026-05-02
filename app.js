@@ -5863,14 +5863,28 @@
                         if (error) throw error;
                     }
 
-                    // 2. Remove do localStorage local
-                    let localUsers = JSON.parse(localStorage.getItem('dito_usuarios_vanilla') || '[]');
-                    localUsers = localUsers.filter(u => u.username !== username);
-                    localStorage.setItem('dito_usuarios_vanilla', JSON.stringify(localUsers));
+                    // 2. Remove de TODOS os caches locais possíveis
+                    const caches = ['dito_usuarios_vanilla', 'dito_usuarios', 'dito_network_users', 'dito_users_db'];
+                    caches.forEach(c => {
+                        try {
+                            let data = JSON.parse(localStorage.getItem(c) || '[]');
+                            if (Array.isArray(data)) {
+                                data = data.filter(u => u.username !== username);
+                                localStorage.setItem(c, JSON.stringify(data));
+                            }
+                        } catch(err) {}
+                    });
 
                     this.showNotification(`Conta de ${username} excluída com sucesso.`);
-                    await this.fetchNetworkUsers(); // Atualiza a lista da rede
-                    this.renderAdminUsers(); // Redesenha o painel
+                    
+                    // 3. Atualiza as listas globais na memória do app
+                    if (this.networkUsers) {
+                        this.networkUsers = this.networkUsers.filter(u => u.username !== username);
+                    }
+                    
+                    await this.fetchNetworkUsers(); // Força nova busca no servidor
+                    this.renderAdminUsers(); // Redesenha o painel de admin
+                    if (this.currentView === 'hall') this.renderHallOfFame();
                 } catch (e) {
                     console.error("Erro ao deletar usuário:", e);
                     this.showNotification('Erro ao excluir conta da rede.', 'error');

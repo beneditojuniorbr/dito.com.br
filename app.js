@@ -3519,7 +3519,13 @@
                 this.cart = [this.selectedProduct];
                 localStorage.setItem(`dito_cart_${this.getUserKey()}`, JSON.stringify(this.cart));
                 this.updateCartBadge();
-                this.setMarketView('checkout');
+                
+                // Redireciona para o seletor de cupons se logado, senão direto pro checkout
+                if (this.currentUser && !this.currentUser.isGuest) {
+                    this.setMarketView('seletor-cupons', 'right');
+                } else {
+                    this.setMarketView('checkout', 'right');
+                }
             }
         },
 
@@ -8111,6 +8117,7 @@
             if (this.marketView === 'product') this.renderMarketProduct(container);
             if (this.marketView === 'cart') this.renderMarketCart(container);
             if (this.marketView === 'checkout') this.renderMarketCheckout(container);
+            if (this.marketView === 'seletor-cupons') this.renderMarketCouponSelector(container);
             if (this.marketView === 'live-room') this.renderMarketLiveRoom(container);
 
             
@@ -9338,16 +9345,55 @@
 
     app.recalculateCheckoutTotal = function() {
         const totalBase = this.cart.reduce((acc, i) => acc + parseFloat(i.price || 0), 0);
-        let final = totalBase;
         
-        // Limita o desconto das cupons em no máximo 100%
-        let coins = parseInt(document.getElementById('coin-discount-slider')?.value || '0');
-        if (coins > 100) coins = 100; 
+        // Aplica desconto de cupons (R$ 0,10 por cupom, max 100 cupons)
+        const couponsUsed = this.selectedCouponsForPurchase || 0;
+        const discount = couponsUsed * 0.10;
         
-        final -= (final * (coins / 100));
+        let final = Math.max(0.01, totalBase - discount); // Mínimo de 1 centavo
+        
         const disp = document.getElementById('checkout-total-value');
         if (disp) disp.innerText = 'R$ ' + final.toFixed(2);
+        
         return final;
+    };
+
+    app.renderMarketCouponSelector = function(container) {
+        const temp = document.getElementById('template-seletor-cupons');
+        if (!temp) return;
+        container.innerHTML = temp.innerHTML;
+        
+        const key = this.getUserKey();
+        const currentCoins = parseInt(localStorage.getItem(`dito_coins_${key}`) || '0');
+        
+        const saldoEl = document.getElementById('seletor-saldo-atual');
+        const input = document.getElementById('input-seletor-cupons');
+        
+        if (saldoEl) saldoEl.innerText = currentCoins.toLocaleString();
+        if (input) {
+            input.max = Math.min(currentCoins, 100);
+            input.value = this.selectedCouponsForPurchase || 0;
+        }
+        
+        this.updateCouponSelectorLabel();
+        if (window.lucide) lucide.createIcons();
+    };
+
+    app.updateCouponSelectorLabel = function() {
+        const input = document.getElementById('input-seletor-cupons');
+        const label = document.getElementById('label-cupons-selecionados');
+        const labelDesconto = document.getElementById('label-desconto-valor');
+        
+        if (input && label && labelDesconto) {
+            const val = parseInt(input.value);
+            label.innerText = val;
+            labelDesconto.innerText = `R$ ${(val * 0.10).toFixed(2)}`;
+            this.selectedCouponsForPurchase = val;
+        }
+    };
+
+    app.applyCouponsAndContinue = function() {
+        this.setMarketView('checkout', 'right');
     };
 
     app.renderMyProducts = function() {

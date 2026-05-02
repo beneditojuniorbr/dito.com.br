@@ -2435,6 +2435,28 @@
             }
         },
 
+        async checkAdminNotifications() {
+            if (!this.currentUser || this.currentUser.username !== 'Ditão') return;
+            
+            try {
+                const { data, error } = await supabase
+                    .from('dito_withdrawals')
+                    .select('id')
+                    .eq('status', 'pending');
+                
+                if (error) throw error;
+                
+                const hasPending = data && data.length > 0;
+                const dotMobile = document.getElementById('dot-perfil');
+                const dotDesktop = document.getElementById('dot-perfil-desktop');
+                
+                if (dotMobile) dotMobile.style.display = hasPending ? 'block' : 'none';
+                if (dotDesktop) dotDesktop.style.display = hasPending ? 'block' : 'none';
+            } catch (e) {
+                console.error("Erro ao verificar notificações admin:", e);
+            }
+        },
+
         claimDailyCheckin(dayIndex) {
             const key = this.getUserKey();
             const storageKey = `dito_missions_${key}`;
@@ -4842,13 +4864,22 @@
                         this.renderEvents();
                         this.checkMissionsNotification();
                         this.checkSalesNotification();
+                        this.checkAdminNotifications();
                         this.startEventsCarousel();
                         break;
                     case 'mercado': setTimeout(() => this.renderStore(), 10); break;
                     case 'sociedade': this.fetchSocieties(); break;
                 case 'sociedade-detalhe': this.renderSocietyDetail(); break;
                     case 'hall': this.renderHallOfFame(); break;
-                    case 'perfil': this.renderProfile(); break;
+                    case 'perfil': 
+                        this.renderProfile(); 
+                        if (this.currentUser && this.currentUser.username === 'Ditão') {
+                            const dotMobile = document.getElementById('dot-perfil');
+                            const dotDesktop = document.getElementById('dot-perfil-desktop');
+                            if (dotMobile) dotMobile.style.display = 'none';
+                            if (dotDesktop) dotDesktop.style.display = 'none';
+                        }
+                        break;
                     case 'vendas': 
                         this.renderSales(); 
                         localStorage.setItem(`dito_last_sales_view_${this.getUserKey()}`, Date.now().toString());

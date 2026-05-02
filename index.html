@@ -567,35 +567,8 @@
             <div style="margin-bottom: 32px; padding: 0;">
                 <h3 style="font-size: 16px; font-weight: 950; margin: 0 0 12px; letter-spacing: -0.5px;">Eventos</h3>
                 
-                <div id="eventos-carousel" class="hide-scrollbar" style="display: flex; gap: 12px; overflow-x: auto; padding: 0 24px 8px; scroll-snap-type: x mandatory; scroll-behavior: smooth;">
-                    
-                    <!-- EVENTO RELÂMPAGO -->
-                    <div style="min-width: 280px; background: #fff; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border-radius: 24px; padding: 20px; scroll-snap-align: start; color: #000; position: relative; overflow: hidden; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; min-height: 100px;">
-                        <h4 style="font-size: 16px; font-weight: 950; line-height: 1.1; margin-bottom: 12px; color: #000;">Missão Veloz: 1 Venda em 1h</h4>
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <p style="font-size: 12px; font-weight: 800; opacity: 0.7; margin: 0; color: #000;">Ganhe +15 Cupons</p>
-                            <button onclick="app.participateEvent('flash')" style="padding: 0 20px; height: 36px; background: #000; color: #fff; border: none; border-radius: 50px; font-size: 11px; font-weight: 950; cursor: pointer;">PARTICIPAR</button>
-                        </div>
-                    </div>
-
-                    <!-- EVENTO DO DIA -->
-                    <div style="min-width: 280px; background: #fff; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border-radius: 24px; padding: 20px; scroll-snap-align: start; color: #000; position: relative; overflow: hidden; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; min-height: 100px;">
-                        <h4 style="font-size: 16px; font-weight: 950; line-height: 1.1; margin-bottom: 12px; color: #000;">Missão Especialista: 5 Vendas Hoje</h4>
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <p style="font-size: 12px; font-weight: 800; opacity: 0.7; margin: 0; color: #000;">Ganhe +30 Cupons</p>
-                            <button onclick="app.participateEvent('master')" style="padding: 0 20px; height: 36px; background: #000; color: #fff; border: none; border-radius: 50px; font-size: 11px; font-weight: 950; cursor: pointer;">PARTICIPAR</button>
-                        </div>
-                    </div>
-
-                    <!-- EVENTO DA SEMANA -->
-                    <div style="min-width: 280px; background: #fff; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border-radius: 24px; padding: 20px; scroll-snap-align: start; color: #000; position: relative; overflow: hidden; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; min-height: 100px;">
-                        <h4 style="font-size: 16px; font-weight: 950; line-height: 1.1; margin-bottom: 12px; color: #000;">Rei da Rede: 1 Indicação</h4>
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <p style="font-size: 12px; font-weight: 800; opacity: 0.7; margin: 0; color: #000;">Ganhe +30 Cupons</p>
-                            <button onclick="app.participateEvent('king')" style="padding: 0 20px; height: 36px; background: #000; color: #fff; border: none; border-radius: 50px; font-size: 11px; font-weight: 950; cursor: pointer;">PARTICIPAR</button>
-                        </div>
-                    </div>
-
+                <div id="eventos-carousel" class="hide-scrollbar" style="display: flex; gap: 0; overflow-x: auto; padding: 0 24px 8px; scroll-snap-type: x mandatory; scroll-behavior: smooth;">
+                    <!-- Populado via app.renderEvents() -->
                 </div>
             </div>
 

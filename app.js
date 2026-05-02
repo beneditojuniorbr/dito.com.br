@@ -4819,6 +4819,7 @@
                 switch(view) {
                     case 'dashboard': 
                         this.updateBalanceUI(); 
+                        this.renderEvents();
                         this.startEventsCarousel();
                         break;
                     case 'mercado': setTimeout(() => this.renderStore(), 10); break;
@@ -6719,31 +6720,96 @@
 
         startEventsCarousel() {
             if (this.eventsInterval) clearInterval(this.eventsInterval);
+            if (this.countdownInterval) clearInterval(this.countdownInterval);
             
             const carousel = document.getElementById('eventos-carousel');
             if (!carousel) return;
 
+            // Inicia o carrossel automático
             this.eventsInterval = setInterval(() => {
-                // Se o carrossel não estiver mais no DOM, para o intervalo
                 if (!document.getElementById('eventos-carousel')) {
                     clearInterval(this.eventsInterval);
                     return;
                 }
-                
                 const item = carousel.querySelector('div');
                 if (!item) return;
-                
-                const scrollAmount = item.offsetWidth; // Gap removido conforme solicitado
+                const scrollAmount = item.offsetWidth;
                 const maxScroll = carousel.scrollWidth - carousel.offsetWidth;
-                
                 if (carousel.scrollLeft >= maxScroll - 50) {
-                    // Loop Infinito: Volta para o começo
                     carousel.scrollTo({ left: 0, behavior: 'smooth' });
                 } else {
-                    // Próxima caixa
                     carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
                 }
-            }, 3000);
+            }, 4000);
+
+            // Inicia o contador regressivo
+            this.updateEventsCountdown();
+            this.countdownInterval = setInterval(() => this.updateEventsCountdown(), 1000);
+        },
+
+        renderEvents() {
+            const carousel = document.getElementById('eventos-carousel');
+            if (!carousel) return;
+
+            const now = new Date();
+            const day = now.getDate();
+            const isEventDay = (day % 2 !== 0); // Lógica: Dia Ímpar = Sim, Dia Par = Não (Começando do dia 1)
+
+            if (!isEventDay) {
+                // Se não for dia de evento, mostra card informativo do próximo
+                carousel.innerHTML = `
+                    <div style="min-width: 100%; background: #f9f9f9; border: 1.5px dashed #eee; border-radius: 24px; padding: 30px; scroll-snap-align: start; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 140px;">
+                        <i data-lucide="calendar" style="width: 24px; color: #ccc; margin-bottom: 12px;"></i>
+                        <h4 style="font-size: 14px; font-weight: 950; color: #999; margin: 0;">PREPARANDO NOVOS EVENTOS</h4>
+                        <p style="font-size: 11px; font-weight: 700; color: #bbb; margin-top: 4px;">O próximo desafio começa amanhã às 00:00</p>
+                    </div>
+                `;
+            } else {
+                // Lista de eventos ativos hoje
+                const activeEvents = [
+                    { id: 'flash', title: 'Missão Veloz: 1 Venda em 1h', reward: '+300 Moedas' },
+                    { id: 'master', title: 'Missão Especialista: 5 Vendas', reward: '+500 Moedas' },
+                    { id: 'king', title: 'Rei da Rede: 3 Indicações', reward: '+750 Moedas' }
+                ];
+
+                carousel.innerHTML = activeEvents.map(ev => `
+                    <div style="min-width: 280px; background: #fff; border: 1.5px solid #f2f2f2; box-shadow: 0 4px 20px rgba(0,0,0,0.02); border-radius: 24px; padding: 24px; scroll-snap-align: start; color: #000; position: relative; overflow: hidden; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; min-height: 160px; margin-right: 12px;">
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                                <span style="font-size: 9px; font-weight: 950; color: #ff005c; text-transform: uppercase; letter-spacing: 1px;">Evento Ativo</span>
+                                <span class="event-timer" style="font-size: 10px; font-weight: 950; color: #000; background: #f5f5f5; padding: 4px 10px; border-radius: 10px;">00:00:00</span>
+                            </div>
+                            <h4 style="font-size: 15px; font-weight: 950; line-height: 1.2; margin-bottom: 4px; color: #000;">${ev.title}</h4>
+                            <p style="font-size: 11px; font-weight: 800; color: #10b981; margin: 0;">Prêmio: ${ev.reward}</p>
+                        </div>
+                        <button onclick="app.participateEvent('${ev.id}')" style="width: 100%; height: 44px; background: #000; color: #fff; border: none; border-radius: 15px; font-size: 11px; font-weight: 950; cursor: pointer; margin-top: 16px; letter-spacing: 0.5px;">QUERO PARTICIPAR</button>
+                    </div>
+                `).join('');
+            }
+            
+            if (window.lucide) lucide.createIcons();
+        },
+
+        updateEventsCountdown() {
+            const timers = document.querySelectorAll('.event-timer');
+            if (timers.length === 0) return;
+
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setHours(23, 59, 59, 999);
+            
+            const diff = tomorrow - now;
+            if (diff <= 0) {
+                timers.forEach(t => t.innerText = "EXPIRADO");
+                return;
+            }
+
+            const h = Math.floor(diff / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+
+            const timeStr = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            timers.forEach(t => t.innerText = timeStr);
         },
 
         participateEvent(type) {

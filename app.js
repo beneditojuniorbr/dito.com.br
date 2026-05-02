@@ -6756,12 +6756,11 @@
             const isEventDay = (day % 2 !== 0); // Lógica: Dia Ímpar = Sim, Dia Par = Não (Começando do dia 1)
 
             if (!isEventDay) {
-                // Se não for dia de evento, mostra card informativo do próximo
+                // Se não for dia de evento, mostra apenas texto informativo
                 carousel.innerHTML = `
-                    <div style="min-width: 100%; background: #f9f9f9; border: 1.5px dashed #eee; border-radius: 24px; padding: 30px; scroll-snap-align: start; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 140px;">
-                        <i data-lucide="calendar" style="width: 24px; color: #ccc; margin-bottom: 12px;"></i>
-                        <h4 style="font-size: 14px; font-weight: 950; color: #999; margin: 0;">PREPARANDO NOVOS EVENTOS</h4>
-                        <p style="font-size: 11px; font-weight: 700; color: #bbb; margin-top: 4px;">O próximo desafio começa amanhã às 00:00</p>
+                    <div style="min-width: 100%; padding: 20px 0; text-align: left; display: flex; flex-direction: column; align-items: flex-start; justify-content: center;">
+                        <h4 style="font-size: 13px; font-weight: 950; color: #ccc; margin: 0; letter-spacing: 0.5px; text-transform: uppercase;">Preparando novos eventos...</h4>
+                        <p style="font-size: 10px; font-weight: 800; color: #eee; margin-top: 4px; text-transform: uppercase;">O próximo desafio começa amanhã às 00:00</p>
                     </div>
                 `;
             } else {

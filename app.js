@@ -7107,10 +7107,11 @@
             this.selectedProductType = prod.type;
             
             setTimeout(() => {
-                const selection = document.getElementById('product-type-selection');
-                const form = document.getElementById('create-product-form');
-                if (selection) selection.style.display = 'none';
-                if (form) form.style.display = 'block';
+                this.setProductCreateStep(2);
+                
+                // Atualiza título para Editar
+                const title = document.querySelector('#product-step-1 h3') || document.querySelector('#create-product-form h3');
+                if (title) title.innerText = "Editar produto";
 
                 if(document.getElementById('prod-name')) document.getElementById('prod-name').value = prod.name || '';
                 if(document.getElementById('prod-desc')) document.getElementById('prod-desc').value = prod.description || '';
@@ -7172,7 +7173,7 @@
                 
                 this.updateProductProgress();
                 if (window.lucide) lucide.createIcons();
-            }, 50);
+            }, 200);
         },
 
         setProductCreateStep(step) {

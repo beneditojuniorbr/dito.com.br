@@ -7310,6 +7310,14 @@
                     }
                 }
                 
+                // Campos de Curso (Módulos e Aulas)
+                if (p.type === 'Curso') {
+                    this.courseStructure = Array.isArray(p.content) ? [...p.content] : [];
+                    this.renderCourseStructure();
+                } else {
+                    this.courseStructure = [];
+                }
+                
                 // Carrega Galeria
                 this.selectedProductImages = p.images && p.images.length > 0 ? [...p.images] : (p.image ? [p.image] : []);
                 this.selectedProductImage = p.image || null; // Sincroniza imagem principal
@@ -7353,7 +7361,14 @@
                 
                 if (step === 2 && step2) step2.style.display = 'flex';
                 if (step === 3 && step3) step3.style.display = 'flex';
-                if (step === 4 && step4) step4.style.display = 'flex';
+                if (step === 4 && step4) {
+                    step4.style.display = 'flex';
+                    // Toggle sub-campos específicos baseados no tipo
+                    if (document.getElementById('ebook-upload')) document.getElementById('ebook-upload').style.display = (this.selectedProductType === 'Ebook') ? 'block' : 'none';
+                    if (document.getElementById('curso-upload')) document.getElementById('curso-upload').style.display = (this.selectedProductType === 'Curso') ? 'flex' : 'none';
+                    if (document.getElementById('mentoria-fields')) document.getElementById('mentoria-fields').style.display = (this.selectedProductType === 'Mentoria') ? 'flex' : 'none';
+                    if (document.getElementById('fisico-fields')) document.getElementById('fisico-fields').style.display = (this.selectedProductType === 'Fisico') ? 'flex' : 'none';
+                }
                 if (step === 5 && step5) step5.style.display = 'flex';
             }
 

@@ -6940,8 +6940,7 @@
                 carousel.innerHTML = activeEvents.map(ev => `
                     <div style="min-width: 280px; background: #fff; border: 1.5px solid #f2f2f2; box-shadow: 0 4px 20px rgba(0,0,0,0.02); border-radius: 24px; padding: 24px; scroll-snap-align: start; color: #000; position: relative; overflow: hidden; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; min-height: 160px; margin-right: 12px;">
                         <div>
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                                <span style="font-size: 9px; font-weight: 950; color: #ff005c; text-transform: uppercase; letter-spacing: 1px;">Evento Ativo</span>
+                            <div style="display: flex; justify-content: flex-end; align-items: flex-start; margin-bottom: 8px;">
                                 <span class="event-timer" style="font-size: 10px; font-weight: 950; color: #000; background: #f5f5f5; padding: 4px 10px; border-radius: 10px;">00:00:00</span>
                             </div>
                             <h4 style="font-size: 15px; font-weight: 950; line-height: 1.2; margin-bottom: 4px; color: #000;">${ev.title}</h4>

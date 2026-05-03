@@ -6937,7 +6937,7 @@
                                 <span class="event-timer" style="font-size: 10px; font-weight: 950; color: #000; background: #f5f5f5; padding: 4px 10px; border-radius: 10px;">00:00:00</span>
                             </div>
                             <h4 style="font-size: 15px; font-weight: 950; line-height: 1.2; margin-bottom: 4px; color: #000;">${ev.title}</h4>
-                            <p style="font-size: 11px; font-weight: 800; color: #10b981; margin: 0;">Prêmio: ${ev.reward}</p>
+                            <p style="font-size: 12px; font-weight: 950; background: linear-gradient(135deg, #ff005c 0%, #00a2ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; display: inline-block;">Prêmio: ${ev.reward}</p>
                         </div>
                         <button onclick="app.participateEvent('${ev.id}')" style="width: 100%; height: 44px; background: #000; color: #fff; border: none; border-radius: 15px; font-size: 11px; font-weight: 950; cursor: pointer; margin-top: 16px; letter-spacing: 0.5px;">QUERO PARTICIPAR</button>
                     </div>

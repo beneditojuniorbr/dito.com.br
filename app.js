@@ -1625,9 +1625,18 @@
         },
 
         async startLiveCamera() {
-            const playerContainer = document.getElementById('live-player-container');
             const p = this.selectedProduct;
-            if (!playerContainer || !p) return;
+            if (!p) return;
+
+            const playerContainer = document.getElementById('live-player-container');
+            
+            // Se não estiver na sala de live, navega para lá e tenta novamente
+            if (!playerContainer || this.marketView !== 'live-room') {
+                this.navigate('mercado');
+                this.setMarketView('live-room');
+                setTimeout(() => this.startLiveCamera(), 500);
+                return;
+            }
 
             try {
                 this.showNotification("Iniciando Transmissão Nativa Dito...", "default");
@@ -3974,12 +3983,20 @@
                         `Venda Realizada! R$ ${sellerNet.toFixed(2)} disponível para saque imediato! 🔥`;
 
                     this.sendNetworkNotification(sellerUsername, 'venda', isGuaranteed ? 'Venda Garantida 🔒' : 'Dinheiro na Mão! ⚡', msg);
+                    
+                    // Adicional para Produtos Físicos
+                    if (prod && prod.type === 'Fisico') {
+                        this.sendNetworkNotification(sellerUsername, 'pedido_pendente', '📦 NOVO PEDIDO FÍSICO!', `Você recebeu um pedido de "${productName}". Organize a entrega com o cliente.`);
+                    }
                 }
 
                 // 2. NOTIFICA O COMPRADOR (Entrega/Liberação)
-                // Buscamos o comprador atual na sessão
                 if (this.currentUser) {
-                    this.sendNetworkNotification(this.currentUser.username, 'compra_aprovada', 'Pagamento Confirmado! ✅', `Seu acesso ao produto "${productName}" foi liberado.`);
+                    const confirmMsg = (prod && prod.type === 'Fisico') ? 
+                        `Seu pedido de "${productName}" foi confirmado! O vendedor foi notificado e organizará a entrega.` :
+                        `Seu acesso ao produto "${productName}" foi liberado.`;
+                        
+                    this.sendNetworkNotification(this.currentUser.username, 'compra_aprovada', 'Pagamento Confirmado! ✅', confirmMsg);
                 }
 
                 // 2. CREDITA O ADMIN DITÃO (3%)
@@ -4096,11 +4113,17 @@
             const list = document.getElementById('purchased-products-list');
             if (!list) return;
 
-            if (this.purchasedProducts.length === 0) {
+            const key = this.getUserKey();
+            const trash = JSON.parse(localStorage.getItem(`dito_purchased_trash_${key}`) || '[]');
+            const visibleProducts = (this.purchasedProducts || []).filter(p => !trash.includes(p.id));
+
+            if (visibleProducts.length === 0) {
                 list.innerHTML = `
                     <div style="text-align: center; padding: 60px 20px; color: #ccc;">
                         <i data-lucide="shopping-bag" style="width: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
-                        <p style="font-weight: 800; font-size: 14px;">Nenhuma compra realizada ainda.</p>
+                        <p style="font-weight: 800; font-size: 14px;">Nenhuma compra visível.</p>
+                        ${trash.length > 0 ? `<button onclick="app.renderPurchasedTrash()" style="margin-top: 10px; background: none; border: none; color: #ff005c; font-weight: 900; font-size: 11px; cursor: pointer; text-decoration: underline;">VER LIXEIRA (${trash.length})</button>` : ''}
+                        <br>
                         <button onclick="app.navigate('mercado')" style="margin-top: 20px; background: #000; color: #fff; border: none; padding: 14px 32px; border-radius: 40px; font-weight: 900; font-size: 11px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;">Ir para o Mercado</button>
                     </div>
                 `;
@@ -4108,15 +4131,12 @@
                 return;
             }
 
-            list.innerHTML = this.purchasedProducts.map(p => {
+            let html = visibleProducts.map(p => {
                 const now = Date.now();
-                const purchaseDate = p.purchased_at || now; // Fallback para compras antigas
+                const purchaseDate = p.purchased_at || now;
                 const diffTime = now - purchaseDate;
                 const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
-                // Reembolso permitido apenas para Curso e Ebook dento de 7 dias
                 const isRefundable = (diffTime <= sevenDaysMs) && (p.type === 'Curso' || p.type === 'Ebook');
-                
-                // Calcula dias restantes para o UI
                 const daysRemaining = Math.max(0, Math.ceil((sevenDaysMs - diffTime) / (1000 * 60 * 60 * 24)));
 
                 return `
@@ -4133,22 +4153,99 @@
                                     ${isRefundable ? `<span style="font-size: 9px; color: #f59e0b; font-weight: 800;">• ${daysRemaining}d para reembolso</span>` : ''}
                                 </div>
                             </div>
-                            <button onclick="app.openCourse('${p.id}')" style="width: 42px; height: 42px; background: #000; color: #fff; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                                <i data-lucide="arrow-right" style="width: 18px;"></i>
-                            </button>
-                        </div>
-                        
-                        ${isRefundable ? `
-                            <div style="border-top: 1px solid #f9f9f9; padding-top: 12px; display: flex; justify-content: flex-start;">
-                                <button onclick="app.requestRefund('${p.id}')" style="background: none; border: none; color: #999; font-size: 10px; font-weight: 800; padding: 0; cursor: pointer; display: flex; align-items: center; gap: 4px; text-decoration: underline;">
-                                    <i data-lucide="refresh-cw" style="width: 10px;"></i> Solicitar Reembolso (Garantia Dito)
+                            <div style="display: flex; gap: 8px;">
+                                <button onclick="app.moveToTrash('${p.id}')" title="Mover para Lixeira" style="width: 40px; height: 40px; background: #fff1f2; color: #e11d48; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                                    <i data-lucide="trash-2" style="width: 18px;"></i>
+                                </button>
+                                <button onclick="app.openCourse('${p.id}')" style="width: 42px; height: 42px; background: #000; color: #fff; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                                    <i data-lucide="arrow-right" style="width: 18px;"></i>
                                 </button>
                             </div>
-                        ` : ''}
+                        </div>
                     </div>
                 `;
             }).join('');
+
+            if (trash.length > 0) {
+                html += `
+                    <div style="text-align: center; margin-top: 24px; padding-bottom: 20px;">
+                        <button onclick="app.renderPurchasedTrash()" style="background: #f5f5f5; border: none; color: #666; font-weight: 900; font-size: 10px; padding: 10px 20px; border-radius: 50px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; margin: 0 auto;">
+                            <i data-lucide="trash" style="width: 14px;"></i> Lixeira (${trash.length})
+                        </button>
+                    </div>
+                `;
+            }
+
+            list.innerHTML = html;
             if (window.lucide) lucide.createIcons();
+        },
+
+        moveToTrash(id) {
+            if (!confirm("Deseja mover este produto para a lixeira? Você poderá restaurá-lo depois.")) return;
+            const key = this.getUserKey();
+            const trash = JSON.parse(localStorage.getItem(`dito_purchased_trash_${key}`) || '[]');
+            if (!trash.includes(id)) {
+                trash.push(id);
+                localStorage.setItem(`dito_purchased_trash_${key}`, JSON.stringify(trash));
+                this.showNotification("Produto movido para a lixeira.", "info");
+                this.renderPurchasedProducts();
+            }
+        },
+
+        renderPurchasedTrash() {
+            const list = document.getElementById('purchased-products-list');
+            if (!list) return;
+
+            const key = this.getUserKey();
+            const trash = JSON.parse(localStorage.getItem(`dito_purchased_trash_${key}`) || '[]');
+            const trashedProducts = (this.purchasedProducts || []).filter(p => trash.includes(p.id));
+
+            if (trashedProducts.length === 0) {
+                this.renderPurchasedProducts();
+                return;
+            }
+
+            let html = `
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding: 0 4px;">
+                    <button onclick="app.renderPurchasedProducts()" style="background: none; border: none; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center;">
+                        <i data-lucide="arrow-left" style="width: 20px; color: #000;"></i>
+                    </button>
+                    <h3 style="font-size: 18px; font-weight: 900; color: #000; margin: 0;">Lixeira</h3>
+                </div>
+            `;
+
+            html += trashedProducts.map(p => `
+                <div style="background: #fff; border-radius: 24px; border: 1px solid #eee; padding: 16px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 12px; opacity: 0.7; box-shadow: 0 4px 20px rgba(0,0,0,0.02);">
+                    <div style="display: flex; gap: 16px; align-items: center;">
+                        <div style="width: 60px; height: 60px; background: #f8f8f8; border-radius: 18px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; filter: grayscale(1);">
+                            ${p.image ? `<img src="${p.image}" style="width: 100%; height: 100%; object-fit: cover;">` : `<i data-lucide="play-circle" style="width: 24px; color: #ccc;"></i>`}
+                        </div>
+                        <div style="flex: 1; min-width: 0;">
+                            <h4 style="font-size: 14px; font-weight: 900; color: #000; margin-bottom: 2px;">${p.name}</h4>
+                            <p style="font-size: 10px; color: #999; font-weight: 800;">Mover de volta para restaurar acesso.</p>
+                        </div>
+                        <button onclick="app.restoreFromTrash('${p.id}')" title="Restaurar" style="width: 42px; height: 42px; background: #22c55e10; color: #22c55e; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                            <i data-lucide="rotate-ccw" style="width: 18px;"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            list.innerHTML = html;
+            if (window.lucide) lucide.createIcons();
+        },
+
+        restoreFromTrash(id) {
+            const key = this.getUserKey();
+            let trash = JSON.parse(localStorage.getItem(`dito_purchased_trash_${key}`) || '[]');
+            trash = trash.filter(item => item !== id);
+            localStorage.setItem(`dito_purchased_trash_${key}`, JSON.stringify(trash));
+            this.showNotification("Produto restaurado com sucesso! ✅", "success");
+            if (trash.length > 0) {
+                this.renderPurchasedTrash();
+            } else {
+                this.renderPurchasedProducts();
+            }
         },
 
         async requestRefund(id) {
@@ -7100,6 +7197,9 @@
                 document.getElementById('prod-image-preview').innerHTML = `<i data-lucide="image-plus" style="width: 32px; color: #ddd;"></i><span style="font-size: 9px; font-weight: 900; color: #bbb; margin-top: 8px;">Upload</span>`;
             }
 
+            if(document.getElementById('prod-fisico-deadline')) document.getElementById('prod-fisico-deadline').value = '';
+            if(document.getElementById('prod-fisico-specs')) document.getElementById('prod-fisico-specs').value = '';
+
             const profitLabel = document.getElementById('profit-calc-label');
             if (profitLabel) profitLabel.innerText = "Você receberá: R$ 0,00";
             
@@ -7123,9 +7223,16 @@
         },
 
         editProduct(id) {
-            const market = JSON.parse(localStorage.getItem('dito_products_vanilla') || '[]');
-            const prod = market.find(p => p.id === id);
-            if (!prod) return;
+            const prod = this.products.find(p => String(p.id) === String(id));
+            if (!prod) {
+                const market = JSON.parse(localStorage.getItem('dito_products_vanilla') || '[]');
+                const localProd = market.find(p => String(p.id) === String(id));
+                if (!localProd) return;
+                this.selectedProduct = localProd;
+            } else {
+                this.selectedProduct = prod;
+            }
+            const p = this.selectedProduct;
 
             this.editingProductId = id;
             
@@ -7135,7 +7242,7 @@
             if (container) container.style.display = 'none';
             
             // Força a seleção do tipo de produto e pula para o formulário
-            this.selectedProductType = prod.type;
+            this.selectedProductType = p.type;
             
             setTimeout(() => {
                 this.setProductCreateStep(2);
@@ -7144,40 +7251,40 @@
                 const title = document.querySelector('#product-step-1 h3') || document.querySelector('#create-product-form h3');
                 if (title) title.innerText = "Editar produto";
 
-                if(document.getElementById('prod-name')) document.getElementById('prod-name').value = prod.name || '';
-                if(document.getElementById('prod-desc')) document.getElementById('prod-desc').value = prod.description || '';
-                if(document.getElementById('prod-category')) document.getElementById('prod-category').value = prod.category || 'Dinheiro';
+                if(document.getElementById('prod-name')) document.getElementById('prod-name').value = p.name || '';
+                if(document.getElementById('prod-desc')) document.getElementById('prod-desc').value = p.description || '';
+                if(document.getElementById('prod-category')) document.getElementById('prod-category').value = p.category || 'Dinheiro';
                 
                 if(document.getElementById('prod-price')) {
                     const priceInp = document.getElementById('prod-price');
-                    priceInp.value = prod.price || '';
+                    priceInp.value = p.price || '';
                     priceInp.readOnly = true; // Não permite editar preço
                     priceInp.style.opacity = '0.6';
                     priceInp.style.cursor = 'not-allowed';
-                    this.calculateNetProfit(prod.price || 0);
+                    this.calculateNetProfit(p.price || 0);
                 }
 
-                this.selectedProduct = prod; // Armazena o produto original para preservar dados não editáveis (como vendas)
+                this.selectedProduct = p; // Armazena o produto original para preservar dados não editáveis (como vendas)
 
                 // Configurações
-                if(document.getElementById('prod-visible')) document.getElementById('prod-visible').checked = prod.visible !== false;
-                if(document.getElementById('prod-guarantee')) document.getElementById('prod-guarantee').checked = !!prod.guarantee;
+                if(document.getElementById('prod-visible')) document.getElementById('prod-visible').checked = p.visible !== false;
+                if(document.getElementById('prod-guarantee')) document.getElementById('prod-guarantee').checked = !!p.guarantee;
                 if(document.getElementById('prod-has-limit')) {
-                    const hasLimit = !!prod.hasLimit;
+                    const hasLimit = !!p.hasLimit;
                     document.getElementById('prod-has-limit').checked = hasLimit;
                     const limitContainer = document.getElementById('prod-limit-container');
                     if (limitContainer) limitContainer.style.display = hasLimit ? 'block' : 'none';
-                    if (document.getElementById('prod-stock-limit')) document.getElementById('prod-stock-limit').value = prod.stockLimit || '';
+                    if (document.getElementById('prod-stock-limit')) document.getElementById('prod-stock-limit').value = p.stockLimit || '';
                 }
 
                 // Campos de Mentoria
-                if (prod.type === 'Mentoria') {
+                if (p.type === 'Mentoria') {
                     const mentoriaPresFields = document.getElementById('mentoria-presentation-fields');
                     if (mentoriaPresFields) mentoriaPresFields.style.display = 'flex';
                     
-                    if(document.getElementById('mentoria-prod-link')) document.getElementById('mentoria-prod-link').value = prod.mentoria_link || '';
+                    if(document.getElementById('mentoria-prod-link')) document.getElementById('mentoria-prod-link').value = p.mentoria_link || '';
                     
-                    this.mentoriaPresentationImage = prod.mentoria_image || null;
+                    this.mentoriaPresentationImage = p.mentoria_image || null;
                     const presPreview = document.getElementById('mentoria-prod-img-preview');
                     if (presPreview && this.mentoriaPresentationImage) {
                         presPreview.style.backgroundImage = `url(${this.rGetPImage(this.mentoriaPresentationImage)})`;
@@ -7191,14 +7298,14 @@
                 }
                 
                 // Carrega Galeria
-                this.selectedProductImages = prod.images && prod.images.length > 0 ? [...prod.images] : (prod.image ? [prod.image] : []);
-                this.selectedProductImage = prod.image || null; // Sincroniza imagem principal
+                this.selectedProductImages = p.images && p.images.length > 0 ? [...p.images] : (p.image ? [p.image] : []);
+                this.selectedProductImage = p.image || null; // Sincroniza imagem principal
                 this.renderProductImageGallery();
                 
                 if (this.selectedProductImages.length > 0) {
                     const mainPreview = document.getElementById('prod-image-preview');
                     if (mainPreview) {
-                        mainPreview.innerHTML = `<img src="${this.rGetPImage(this.selectedProductImages[0], prod.name)}" style="width: 100%; height: 100%; object-fit: cover;">`;
+                        mainPreview.innerHTML = `<img src="${this.rGetPImage(this.selectedProductImages[0], p.name)}" style="width: 100%; height: 100%; object-fit: cover;">`;
                     }
                 }
                 
@@ -7303,6 +7410,7 @@
             if(ebookUpload) ebookUpload.style.display = type === 'Ebook' ? 'block' : 'none';
             if(cursoUpload) cursoUpload.style.display = type === 'Curso' ? 'flex' : 'none';
             if(mentoriaFields) mentoriaFields.style.display = type === 'Mentoria' ? 'flex' : 'none';
+            if(document.getElementById('fisico-fields')) document.getElementById('fisico-fields').style.display = type === 'Fisico' ? 'flex' : 'none';
             
             // Mostrar campos de apresentação na etapa 2 se for Mentoria
             const mentoriaPresFields = document.getElementById('mentoria-presentation-fields');
@@ -7541,6 +7649,8 @@
                     slug: originalProd ? originalProd.slug : this.generateRandomSlug(),
                     mentoria_link: this.selectedProductType === 'Mentoria' ? (document.getElementById('mentoria-prod-link')?.value || null) : null,
                     mentoria_image: this.selectedProductType === 'Mentoria' ? (this.mentoriaPresentationImage || null) : null,
+                    fisico_deadline: this.selectedProductType === 'Fisico' ? (document.getElementById('prod-fisico-deadline')?.value || null) : null,
+                    fisico_specs: this.selectedProductType === 'Fisico' ? (document.getElementById('prod-fisico-specs')?.value || null) : null,
                     content: this.selectedProductType === 'Curso' ? this.courseStructure : (originalProd ? originalProd.content : null)
                 };
 
@@ -8885,7 +8995,7 @@
                                 <div style="display: flex; gap: 2px;">
                                     ${this.renderStars(this.getProductRating(p.id).avg)}
                                 </div>
-                                <span style="font-size: 7px; font-weight: 900; color: #bbb;">${this.getProductRating(p.id).count}</span>
+                                <span style="font-size: 8px; font-weight: 900; color: #bbb;">(${this.getProductRating(p.id).count})</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
                                 <span style="font-weight: 900; font-size: 14px; color: #ff005c;">R$ ${parseFloat(p.price || 0).toFixed(2)}</span>
@@ -9153,6 +9263,8 @@
 
         let target = (this.currentView === 'curso-player' || this.currentView === 'live-room') ? this.activeCourse : myMentorships[0];
         if (!target || target.type !== 'Mentoria') target = myMentorships[0];
+        
+        this.selectedProduct = target; // Sincroniza para funções internas como startLiveCamera
 
         popup.innerHTML = `
             <div style="padding: 10px; border-bottom: 1px solid #f0f0f0; margin-bottom: 5px;">

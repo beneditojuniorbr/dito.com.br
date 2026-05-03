@@ -172,9 +172,9 @@
             <i data-lucide="store" style="width: 24px; height: 24px; color: #000; fill: transparent; transition: 0.3s;"></i>
             <div id="dot-mercado" class="notif-dot" style="position: absolute; top: 8px; right: 8px; display: none;"></div>
         </div>
-        <div id="nav-friends" class="nav-item" onclick="app.showOnlineFriends()" style="position: relative; cursor: pointer; padding: 10px;">
-            <i data-lucide="users" style="width: 24px; height: 24px; color: #000; fill: transparent; transition: 0.3s;"></i>
-            <span id="dot-friends" style="position: absolute; top: 8px; right: 8px; width: 10px; height: 10px; background: #FFD600; border-radius: 50%; border: 1.5px solid #fff; box-shadow: 0 2px 8px rgba(255, 214, 0, 0.4); display: none;"></span>
+        <div class="nav-item" data-view="missoes" onclick="app.navigate('missoes')" style="position: relative; cursor: pointer; padding: 10px;">
+            <i data-lucide="target" style="width: 24px; height: 24px; color: #000; fill: transparent; transition: 0.3s;"></i>
+            <div id="dot-missoes" class="notif-dot" style="position: absolute; top: 8px; right: 8px; display: none;"></div>
         </div>
         <div class="nav-item" data-view="perfil" onclick="app.navigate('perfil')" style="position: relative; cursor: pointer; padding: 10px;">
             <i data-lucide="user" style="width: 24px; height: 24px; color: #000; fill: transparent; transition: 0.3s;"></i>
@@ -200,9 +200,9 @@
                 <i data-lucide="store"></i>
                 <div id="dot-mercado-desktop" class="notif-dot" style="display: none;"></div>
             </div>
-            <div class="sidebar-item" data-view="friends" onclick="app.showOnlineFriends()" title="Amigos">
-                <i data-lucide="users"></i>
-                <div id="dot-friends-desktop" class="notif-dot" style="display: none;"></div>
+            <div class="sidebar-item" data-view="missoes" onclick="app.navigate('missoes')" title="Missões">
+                <i data-lucide="target"></i>
+                <div id="dot-missoes-desktop" class="notif-dot" style="display: none;"></div>
             </div>
             <div class="sidebar-item" data-view="perfil" onclick="app.navigate('perfil')" title="Meu Perfil" style="position: relative;">
                 <i data-lucide="user"></i>

@@ -4631,10 +4631,20 @@
             
             // Combina e remove duplicatas (priorizando dados da rede se disponíveis)
             const combined = [...networkUsers, ...localUsers, ...usuariosVanilla];
+            if (this.currentUser) combined.push(this.currentUser); // Garante que o usuário logado esteja na lista
+
             const usersMap = new Map();
             combined.forEach(u => {
                 if (!u || !u.username) return;
+                
+                // Se for o usuário logado, sempre usa o estado atual em memória (mais fresco)
+                if (this.currentUser && u.username === this.currentUser.username) {
+                    usersMap.set(u.username, { ...this.currentUser });
+                    return;
+                }
+
                 const existing = usersMap.get(u.username);
+                // Prioriza quem tem mais vendas ou dados de compras/vendas (purchases)
                 if (!existing || (u.purchases && !existing.purchases) || (Number(u.sales) > Number(existing.sales))) {
                     usersMap.set(u.username, u);
                 }
@@ -6579,30 +6589,23 @@
                     let height = img.height;
 
                     if (width > height) {
-                        if (width > MAX_SIZE) {
-                            height *= MAX_SIZE / width;
-                            width = MAX_SIZE;
+                        if (width >                     if (this.currentUser) {
+                        this.currentUser.avatar = avatarData;
+                        this.saveSession(this.currentUser); 
+                        
+                        // Sincronização imediata
+                        this.syncUserToNetwork(this.currentUser); 
+                        
+                        // Atualização Instantânea no Hall da Fama e cache local
+                        if (this.networkUsers) {
+                            const netIdx = this.networkUsers.findIndex(u => u.username === this.currentUser.username);
+                            if (netIdx !== -1) {
+                                this.networkUsers[netIdx].avatar = avatarData;
+                                localStorage.setItem('dito_network_users', JSON.stringify(this.networkUsers));
+                            }
+                            if (this.currentView === 'hall') this.renderHallOfFame();
                         }
-                    } else {
-                        if (height > MAX_SIZE) {
-                            width *= MAX_SIZE / height;
-                            height = MAX_SIZE;
-                        }
-                    }
-
-                    const canvas = document.createElement('canvas');
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-
-                    // Converte para JPG leve
-                    const avatarData = canvas.toDataURL('image/jpeg', 0.7);
-                    
-                    const cont = document.getElementById('profile-avatar-container');
-                    if (cont) cont.innerHTML = `<img src="${avatarData}" style="width: 100%; height: 100%; object-fit: cover;">`;
-                    
-                    if (this.currentUser) {
+                    } (this.currentUser) {
                         this.currentUser.avatar = avatarData;
                         this.saveSession(this.currentUser); // Usa o método centralizado e passa o user
                         await this.syncUserToNetwork(this.currentUser); // Garante envio pra rede

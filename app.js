@@ -7312,8 +7312,17 @@
                 
                 // Campos de Curso (Módulos e Aulas)
                 if (p.type === 'Curso') {
-                    this.courseStructure = Array.isArray(p.content) ? [...p.content] : [];
-                    this.renderCourseStructure();
+                    // Tenta resgatar de 'content' ou 'modules' com parsing robusto
+                    const rawContent = p.content || p.modules || [];
+                    let parsed = [];
+                    if (Array.isArray(rawContent)) {
+                        parsed = rawContent;
+                    } else if (typeof rawContent === 'string' && rawContent.startsWith('[')) {
+                        try { parsed = JSON.parse(rawContent); } catch(e) { parsed = []; }
+                    }
+                    this.courseStructure = JSON.parse(JSON.stringify(parsed));
+                    console.log("📦 Estrutura de curso resgatada:", this.courseStructure.length, "módulos");
+                    setTimeout(() => this.renderCourseStructure(), 400);
                 } else {
                     this.courseStructure = [];
                 }
@@ -7368,6 +7377,11 @@
                     if (document.getElementById('curso-upload')) document.getElementById('curso-upload').style.display = (this.selectedProductType === 'Curso') ? 'flex' : 'none';
                     if (document.getElementById('mentoria-fields')) document.getElementById('mentoria-fields').style.display = (this.selectedProductType === 'Mentoria') ? 'flex' : 'none';
                     if (document.getElementById('fisico-fields')) document.getElementById('fisico-fields').style.display = (this.selectedProductType === 'Fisico') ? 'flex' : 'none';
+                    
+                    // Garante renderização da estrutura se for curso
+                    if (this.selectedProductType === 'Curso') {
+                        setTimeout(() => this.renderCourseStructure(), 50);
+                    }
                 }
                 if (step === 5 && step5) step5.style.display = 'flex';
             }

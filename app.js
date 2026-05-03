@@ -192,8 +192,7 @@
                     
                     // FAXINA NÍVEL 1: Limpa caches temporários e redundantes
                     const trash = [
-                        'dito_network_users', 'dito_usuarios', 'dito_market_products', 
-                        'dito_profile_posts', 'dito_temp_cache', 'dito_notifications_v2'
+                        'dito_network_users', 'dito_usuarios', 'dito_temp_cache', 'dito_notifications_v2'
                     ];
                     trash.forEach(k => { try { localStorage.removeItem(k); } catch(i) {} });
 
@@ -3148,6 +3147,7 @@
                         missions: localStorage.getItem(`dito_missions_${key}`),
                         history: localStorage.getItem(`dito_checkin_history_${key}`),
                         claimed: localStorage.getItem(`dito_claimed_events_${key}`),
+                        posts: localStorage.getItem('dito_profile_posts'),
                         active_events: Object.keys(localStorage).filter(k => k.startsWith('dito_event_')).reduce((obj, k) => ({...obj, [k]: localStorage.getItem(k)}), {})
                     }),
                     avatar: user.avatar || "",
@@ -10337,6 +10337,9 @@
                             if (purchasesRaw.missions) localStorage.setItem(`dito_missions_${key}`, purchasesRaw.missions);
                             if (purchasesRaw.history) localStorage.setItem(`dito_checkin_history_${key}`, purchasesRaw.history);
                             if (purchasesRaw.claimed) localStorage.setItem(`dito_claimed_events_${key}`, purchasesRaw.claimed);
+                            
+                            // Restaura Fotos do Perfil (Eternidade garantida pela nuvem)
+                            if (purchasesRaw.posts) localStorage.setItem('dito_profile_posts', purchasesRaw.posts);
                             if (purchasesRaw.active_events) {
                                 Object.keys(purchasesRaw.active_events).forEach(k => {
                                     localStorage.setItem(k, purchasesRaw.active_events[k]);

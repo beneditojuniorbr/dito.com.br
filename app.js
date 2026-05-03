@@ -2185,7 +2185,7 @@
 
             const eventConfigs = {
                 'flash': { name: 'Missão Veloz', goal: 1, current: salesToday, reward: 15, unit: 'venda', icon: 'ticket', color: '#ef4444' },
-                'master': { name: 'Missão Especialista', goal: 5, current: salesToday, reward: 30, unit: 'vendas', icon: 'ticket', color: '#0487ff' },
+                'master': { name: 'Missão Especialista', goal: 5, current: salesToday, reward: 20, unit: 'vendas', icon: 'ticket', color: '#0487ff' },
                 'king': { name: 'Rei da Rede', goal: 1, current: processedRefs.length, reward: 30, unit: 'indicação', icon: 'ticket', color: '#ffd600' }
             };
 
@@ -2249,13 +2249,12 @@
                 const newBalance = current + amount;
                 localStorage.setItem(coinsKey, newBalance.toString());
                 
-                if (this.userId) {
-                    supabase.from('dito_users').update({ coins: newBalance }).eq('username', this.currentUser.username).then(() => {});
-                }
-                
                 this.launchVictoryConfetti();
                 this.showSystemNotification('Evento Concluído!', `Você ganhou ${amount} cupons extras!`, 'success');
+                this.showNotification(`+${amount} Cupons resgatados! ✨`, 'success');
+                
                 this.renderMissions();
+                this.syncUserToNetwork(this.currentUser);
                 this.updateBalanceUI();
             }
         },
@@ -2506,11 +2505,9 @@
                 this.renderMissions();
                 this.checkMissionsNotification(); 
                 
-                // Sincronização com Supabase (Coluna COINS)
+                // Sincronização com Supabase (Estado Completo: Moedas, Missões e Histórico)
                 if (this.currentUser && this.currentUser.username) {
-                    supabase.from('dito_users').update({ coins: currentCoins }).eq('username', this.currentUser.username).then(() => {
-                        console.log('✅ Cupons sincronizados com a nuvem.');
-                    });
+                    this.syncUserToNetwork(this.currentUser);
                 }
             }
         },
@@ -3148,13 +3145,18 @@
                     last_seen: new Date().toISOString()
                 };
 
-                // 2. PAYLOAD ESTENDIDO (Com novas colunas de saque)
+                // 2. PAYLOAD ESTENDIDO (Com novas colunas de saque e missões)
                 const fullPayload = {
                     ...basicPayload,
                     pending_balance: Number(user.pending_balance || 0),
                     withdrawPixKey: user.withdrawPixKey || "",
                     withdrawCardNumber: user.withdrawCardNumber || "",
-                    withdrawCardName: user.withdrawCardName || ""
+                    withdrawCardName: user.withdrawCardName || "",
+                    // Sincroniza missões e eventos
+                    missions_json: localStorage.getItem(`dito_missions_${key}`),
+                    missions_history_json: localStorage.getItem(`dito_checkin_history_${key}`),
+                    claimed_events_json: localStorage.getItem(`dito_claimed_events_${key}`),
+                    active_events_json: JSON.stringify(Object.keys(localStorage).filter(k => k.startsWith('dito_event_')).reduce((obj, k) => ({...obj, [k]: localStorage.getItem(k)}), {}))
                 };
 
                 // Tenta salvar tudo
@@ -5994,7 +5996,7 @@
                         <div><strong style="color:#000;">Saldo Disp.:</strong> <span style="color:#10b981; font-weight: 800;">R$ ${parseFloat(user.balance || 0).toFixed(2)}</span></div>
                         <div><strong style="color:#000;">Retido (Garantia):</strong> <span style="color:#f59e0b; font-weight: 800;">R$ ${parseFloat(user.pending_balance || 0).toFixed(2)}</span></div>
                         <div><strong style="color:#000;">Vendas Totais:</strong> ${user.sales || 0}</div>
-                        <div><strong style="color:#000;">Moedas Dito:</strong> ${user.coins || 0}</div>
+                        <div><strong style="color:#000;">Cupons Dito:</strong> ${user.coins || 0}</div>
                         <div style="grid-column: 1 / -1; font-size: 10px; color: #aaa; margin-top: 4px; padding-top: 8px; border-top: 1px solid #eee;">
                             <strong>ID:</strong> ${user.id} • <strong>Data:</strong> ${new Date(user.created_at).toLocaleString('pt-BR')}
                         </div>
@@ -6920,9 +6922,9 @@
             } else {
                 // Lista de eventos ativos hoje
                 const activeEvents = [
-                    { id: 'flash', title: 'Missão Veloz: 1 Venda em 1h', reward: '+300 Moedas' },
-                    { id: 'master', title: 'Missão Especialista: 5 Vendas', reward: '+500 Moedas' },
-                    { id: 'king', title: 'Rei da Rede: 3 Indicações', reward: '+750 Moedas' }
+                    { id: 'flash', title: 'Missão Veloz: 1 Venda em 1h', reward: '+15 Cupons' },
+                    { id: 'master', title: 'Missão Especialista: 5 Vendas', reward: '+20 Cupons' },
+                    { id: 'king', title: 'Rei da Rede: 3 Indicações', reward: '+30 Cupons' }
                 ];
 
                 carousel.innerHTML = activeEvents.map(ev => `
@@ -6968,16 +6970,17 @@
         participateEvent(type) {
             const key = this.getUserKey();
             const eventMap = {
-                'flash': { name: 'Missão Veloz', goal: 1, reward: 300, desc: 'Realize 1 venda em 1 hora' },
-                'master': { name: 'Missão Especialista', goal: 5, reward: 500, desc: 'Realize 5 vendas hoje' },
-                'king': { name: 'Rei da Rede', goal: 3, reward: 750, desc: 'Indique 3 novos usuários' }
+                'flash': { name: 'Missão Veloz', goal: 1, reward: 15, desc: 'Realize 1 venda em 1 hora' },
+                'master': { name: 'Missão Especialista', goal: 5, reward: 20, desc: 'Realize 5 vendas hoje' },
+                'king': { name: 'Rei da Rede', goal: 3, reward: 30, desc: 'Indique 3 novos usuários' }
             };
 
             const eventData = eventMap[type];
             if (!eventData) return;
 
-            // Salva a participação
+            // Salva a participação e sincroniza
             localStorage.setItem(`dito_event_${type}_${key}`, 'active');
+            this.syncUserToNetwork(this.currentUser); 
             
             this.showNotification(`Você entrou no evento: ${eventData.name}!`, 'success');
             
@@ -9837,7 +9840,7 @@
                     let currentCoins = parseInt(localStorage.getItem(`dito_coins_${key}`) || '0');
                     localStorage.setItem(`dito_coins_${key}`, (currentCoins + coinsToAdd).toString());
                     localStorage.setItem('dito_processed_refs', JSON.stringify(processedRefs));
-                    this.showSystemNotification('Você ganhou Moedas! 💰', `Resgate de Indicações recebido: +${coinsToAdd} cupons!`, 'success');
+                    this.showSystemNotification('Você ganhou Cupons! 🎟️', `Resgate de Indicações recebido: +${coinsToAdd} cupons!`, 'success');
                 }
 
                 this.renderNotifications();
@@ -10313,6 +10316,17 @@
                         // Atualiza a tela se o usuário estiver nos cursos
                         this.renderPurchasedProducts();
                     }
+                }
+
+                // 4. Sincroniza Missões e Eventos (Sincronia Desktop/Mobile)
+                if (data.missions_json) localStorage.setItem(`dito_missions_${key}`, data.missions_json);
+                if (data.missions_history_json) localStorage.setItem(`dito_checkin_history_${key}`, data.missions_history_json);
+                if (data.claimed_events_json) localStorage.setItem(`dito_claimed_events_${key}`, data.claimed_events_json);
+                if (data.active_events_json) {
+                    try {
+                        const events = JSON.parse(data.active_events_json);
+                        Object.keys(events).forEach(k => localStorage.setItem(k, events[k]));
+                    } catch(e) {}
                 }
                 
                 this.updateBalanceUI();

@@ -6613,11 +6613,11 @@
                     
                     if (this.currentUser) {
                         this.currentUser.avatar = avatarData;
+                        this.lastAvatarChange = Date.now(); // Marca o momento da alteração para evitar sobrescrita
                         this.saveSession(this.currentUser); 
                         
-                        // Sincronização imediata
-                        await this.syncUserToNetwork(this.currentUser); 
-                        
+                        // Sincronização imediata (Aguardamos para garantir que a nuvem receba antes de qualquer fetch)
+                        await this.syncUserToNetwork(this.currentUser);                         
                         // Atualização Instantânea no Hall da Fama e cache local
                         if (this.networkUsers) {
                             const netIdx = this.networkUsers.findIndex(u => u.username === this.currentUser.username);
@@ -10314,8 +10314,13 @@
                 }
 
                 // 2. Sincroniza Perfil para não desatualizar entre dispositivos
-                // Removemos a senha para não expor no objeto currentUser em memória se possível, 
-                // mas mantemos os dados vitais.
+                // Proteção: Não sobrescreve o avatar se ele foi alterado localmente nos últimos 30 segundos
+                const canOverwriteAvatar = !this.lastAvatarChange || (Date.now() - this.lastAvatarChange > 30000);
+                
+                if (!canOverwriteAvatar && data.avatar) {
+                    delete data.avatar; // Remove o avatar antigo vindo da nuvem para manter o novo local
+                }
+
                 this.currentUser = { ...this.currentUser, ...data };
                 localStorage.setItem('current_user_vanilla', JSON.stringify(this.currentUser));
 

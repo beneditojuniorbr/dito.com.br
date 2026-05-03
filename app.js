@@ -4772,6 +4772,7 @@
         },
 
         showSystemNotification(title, message, type = 'info') {
+            if (type !== 'error') return;
             let container = document.querySelector('.system-notif-container');
             if (!container) {
                 container = document.createElement('div');
@@ -8196,6 +8197,9 @@
         },
 
         showNotification(msg, type = 'default') {
+            // Regra: Mostrar apenas erros
+            if (type !== 'error') return;
+
             const container = document.getElementById('notification-container');
             if (!container) {
                 const newContainer = document.createElement('div');

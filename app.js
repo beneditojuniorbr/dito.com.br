@@ -9601,10 +9601,13 @@
 
     app.recalculateCheckoutTotal = function() {
         const totalBase = this.cart.reduce((acc, i) => acc + parseFloat(i.price || 0), 0);
+        const hasPhysical = this.cart.some(i => i.type === 'Fisico');
         
-        // Regra: 1 cupom = 1% de desconto (Max 100%)
+        // Regra: 1 cupom = 1% de desconto. 
+        // Produtos Físicos: Max 3%. Outros: Max 100%
+        const maxDiscount = hasPhysical ? 3 : 100;
         const couponsUsed = this.selectedCouponsForPurchase || 0;
-        const discountPercentage = Math.min(couponsUsed, 100);
+        const discountPercentage = Math.min(couponsUsed, maxDiscount);
         const discountAmount = totalBase * (discountPercentage / 100);
         
         let final = Math.max(0.01, totalBase - discountAmount); // Mínimo de 1 centavo
@@ -9622,14 +9625,22 @@
         
         const key = this.getUserKey();
         const currentCoins = parseInt(localStorage.getItem(`dito_coins_${key}`) || '0');
+        const hasPhysical = this.cart.some(i => i.type === 'Fisico');
+        const maxAllowed = hasPhysical ? 3 : 100;
         
         const saldoEl = document.getElementById('seletor-saldo-atual');
         const input = document.getElementById('input-seletor-cupons');
         
         if (saldoEl) saldoEl.innerText = currentCoins.toLocaleString();
         if (input) {
-            input.max = Math.min(currentCoins, 100);
-            input.value = this.selectedCouponsForPurchase || 0;
+            input.max = Math.min(currentCoins, maxAllowed);
+            input.value = Math.min(this.selectedCouponsForPurchase || 0, maxAllowed);
+        }
+
+        // Aviso de limite para produtos físicos
+        const warning = document.getElementById('physical-coupon-warning');
+        if (warning) {
+            warning.style.display = hasPhysical ? 'block' : 'none';
         }
         
         this.updateCouponSelectorLabel();
@@ -9643,11 +9654,11 @@
         const labelTotal = document.getElementById('label-total-final');
         
         if (input && label && labelDesconto && labelTotal) {
-            const val = parseInt(input.value);
-            label.innerText = val;
-            
             const totalBase = this.cart.reduce((acc, i) => acc + parseFloat(i.price || 0), 0);
-            const discountPercentage = Math.min(val, 100);
+            const hasPhysical = this.cart.some(i => i.type === 'Fisico');
+            const maxAllowed = hasPhysical ? 3 : 100;
+
+            const discountPercentage = Math.min(val, maxAllowed);
             const discountAmount = totalBase * (discountPercentage / 100);
             const finalPrice = Math.max(0.01, totalBase - discountAmount);
             

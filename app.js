@@ -174,20 +174,13 @@
         // Helper para salvar no localStorage com segurança (evita QuotaExceeded e otimiza imagens)
         safeLocalStorageSet(key, value) {
             try {
-                // OTIMIZAÇÃO: Apenas limpa se for algo ABSURDO (evita quebra do app)
-                if (value.length > 2000000) { // 2MB
+                // OTIMIZAÇÃO PREVENTIVA: Se for o cache de rede, garante que não passe de 1.5MB
+                if (key === 'dito_network_users' && value.length > 1500000) {
                     try {
-                        let parsed = JSON.parse(value);
-                        if (Array.isArray(parsed)) {
-                            parsed = parsed.map(item => {
-                                // Apenas limpa galeria se for extremamente pesada no cache local
-                                if (item.images && item.images.length > 5 && value.length > 4000000) {
-                                    return { ...item, images: ["stripped_for_cache"] };
-                                }
-                                return item;
-                            });
-                            value = JSON.stringify(parsed);
-                        }
+                        let users = JSON.parse(value);
+                        // Remove avatares de quem não é top 10 para salvar espaço
+                        users = users.map((u, idx) => idx > 10 ? { ...u, avatar: "" } : u);
+                        value = JSON.stringify(users);
                     } catch(e) {}
                 }
 
@@ -195,24 +188,26 @@
                 return true;
             } catch (e) {
                 if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
-                    console.error("🚨 [Storage] Memória cheia! Limpando agressivamente...");
-                    // Faxina Nível 2
+                    console.error("🚨 [Storage] Memória cheia! Executando faxina profunda...");
+                    
+                    // FAXINA NÍVEL 1: Limpa caches temporários e redundantes
                     const trash = [
                         'dito_network_users', 'dito_usuarios', 'dito_market_products', 
-                        'dito_profile_posts', 'dito_last_p_hash', 'dito_real_sales_history',
-                        'dito_notifications_v2', 'dito_market_notifications', 'dito_temp_cache'
+                        'dito_profile_posts', 'dito_temp_cache', 'dito_notifications_v2'
                     ];
-                    trash.forEach(k => {
-                        try { localStorage.removeItem(k); } catch(i) {}
-                    });
-                    
+                    trash.forEach(k => { try { localStorage.removeItem(k); } catch(i) {} });
+
+                    // FAXINA NÍVEL 2: Se ainda falhar, tenta limpar o valor atual de imagens pesadas
                     try {
+                        if (value.includes('data:image')) {
+                            console.warn("⚠️ [Storage] Removendo imagens do payload para salvar dados vitais.");
+                            value = value.replace(/\"avatar\":\"data:image\/[^"]+\"/g, '\"avatar\":\"\"');
+                            value = value.replace(/\"url\":\"data:image\/[^"]+\"/g, '\"url\":\"\"');
+                        }
                         localStorage.setItem(key, value);
                         return true;
                     } catch (retryErr) {
-                        console.error("🚨 [Storage] Espaço insuficiente mesmo após limpeza.", retryErr);
-                        // Tenta salvar pelo menos o status de login para não deslogar
-                        if(key === 'is_logged_in_vanilla') localStorage.setItem(key, value);
+                        console.error("🚨 [Storage] Falha crítica de espaço.", retryErr);
                         return false;
                     }
                 }
@@ -3035,7 +3030,14 @@
                 ]);
 
                 if (hallRes && hallRes.data) {
-                    this.networkUsers = hallRes.data.map(u => this.cleanPublicProfile(u));
+                    this.networkUsers = hallRes.data.map((u, idx) => {
+                        const clean = this.cleanPublicProfile(u);
+                        // OTIMIZAÇÃO: Mantém avatares no cache apenas para o TOP 20 para poupar memória local
+                        if (idx > 20 && (!this.currentUser || u.username !== this.currentUser.username)) {
+                            clean.avatar = ""; 
+                        }
+                        return clean;
+                    });
                     this.safeLocalStorageSet('dito_network_users', JSON.stringify(this.networkUsers));
                     if (this.currentView === 'hall') this.renderHallOfFame();
                     if (this.currentView === 'admin-contas') this.renderAdminUsers(true); 

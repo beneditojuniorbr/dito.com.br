@@ -217,17 +217,12 @@
         // Salva a sessão do usuário de forma enxuta
         saveSession(user) {
             if (!user) return;
-            // Cria uma versão leve para o storage
+            // Otimização: Mantemos o avatar pois ele já vem comprimido do upload.
+            // Apenas removemos campos gigantes de cache para não estourar o localStorage.
             const thinUser = { ...user };
             delete thinUser.posts;
             delete thinUser.purchases;
             delete thinUser.password;
-            
-            // Otimização Crítica: Se o avatar for um monstro Base64 (não otimizado), limpa para economizar espaço
-            if (thinUser.avatar && thinUser.avatar.startsWith('data:') && thinUser.avatar.length > 500000) {
-                console.warn(`🛡️ [Otimização] Foto do usuário ${thinUser.username || thinUser.name} extremamente pesada (>500KB).`);
-                thinUser.avatar = ""; 
-            }
 
             const json = JSON.stringify(thinUser);
             this.safeLocalStorageSet('current_user_vanilla', json);
@@ -6619,15 +6614,18 @@
                         
                         // Sincronização imediata (Aguardamos para garantir que a nuvem receba antes de qualquer fetch)
                         await this.syncUserToNetwork(this.currentUser);                         
-                        // Atualização Instantânea no Hall da Fama e cache local
-                        if (this.networkUsers) {
-                            const netIdx = this.networkUsers.findIndex(u => u.username === this.currentUser.username);
-                            if (netIdx !== -1) {
-                                this.networkUsers[netIdx].avatar = avatarData;
-                                localStorage.setItem('dito_network_users', JSON.stringify(this.networkUsers));
+                        // Atualização Instantânea no Hall da Fama e caches locais
+                        const userDBKeys = ['dito_users_db', 'dito_network_users', 'dito_usuarios_vanilla', 'dito_usuarios'];
+                        userDBKeys.forEach(key => {
+                            const db = JSON.parse(localStorage.getItem(key) || '[]');
+                            const idx = db.findIndex(u => u.username === this.currentUser.username);
+                            if (idx !== -1) {
+                                db[idx].avatar = avatarData;
+                                localStorage.setItem(key, JSON.stringify(db));
                             }
-                            if (this.currentView === 'hall') this.renderHallOfFame();
-                        }
+                        });
+                        this.networkUsers = JSON.parse(localStorage.getItem('dito_users_db') || '[]');
+                        if (this.currentView === 'hall') this.renderHallOfFame();
                         
                         this.renderProfile();
                         this.showNotification('Sua foto foi otimizada e salva! ✨', 'success');
@@ -6650,15 +6648,17 @@
                     this.currentUser.avatar = "";
                     localStorage.setItem('current_user_vanilla', JSON.stringify(this.currentUser));
                     
-                    // Atualiza lista global local
-                    const allUsers = JSON.parse(localStorage.getItem('dito_usuarios_vanilla') || '[]');
-                    const uIdx = allUsers.findIndex(u => u.username === this.currentUser.username);
-                    if (uIdx !== -1) {
-                        allUsers[uIdx].avatar = "";
-                        localStorage.setItem('dito_usuarios_vanilla', JSON.stringify(allUsers));
-                        localStorage.setItem('dito_usuarios', JSON.stringify(allUsers));
-                        localStorage.setItem('dito_network_users', JSON.stringify(allUsers));
-                    }
+                    // Atualiza lista global local em todas as chaves possíveis
+                    const userDBKeys = ['dito_users_db', 'dito_network_users', 'dito_usuarios_vanilla', 'dito_usuarios'];
+                    userDBKeys.forEach(key => {
+                        const db = JSON.parse(localStorage.getItem(key) || '[]');
+                        const idx = db.findIndex(u => u.username === this.currentUser.username);
+                        if (idx !== -1) {
+                            db[idx].avatar = "";
+                            localStorage.setItem(key, JSON.stringify(db));
+                        }
+                    });
+                    this.networkUsers = JSON.parse(localStorage.getItem('dito_users_db') || '[]');
                     
                     await this.syncUserToNetwork(this.currentUser);
                     this.renderProfile();
@@ -8323,10 +8323,32 @@
                 `;
             } else {
                 list.innerHTML = this.cart.map((p, index) => {
-                    const iconName = p.type === 'Ebook' ? 'book-open' : (p.type === 'Curso' ? 'play-circle' : 'package');
+                    // Verifica se o produto ainda existe na lista global
+                    const exists = this.products.some(item => String(item.id) === String(p.id));
+                    
                     const productImg = (p.images && p.images.length > 0) ? p.images[0] : (p.image || p.image_url || "");
+                    
+                    if (!exists) {
+                        return `
+                        <div style="background: #fff; padding: 16px; border-radius: 24px; border: 1.5px solid #ffeded; display: flex; align-items: center; gap: 16px; opacity: 0.8; margin-bottom: 12px;">
+                            <div style="width: 70px; height: 70px; background: #f9f9f9; border-radius: 16px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; flex-shrink: 0; filter: grayscale(1);">
+                                <img src="${this.rGetPImage(productImg, p.name)}" style="width: 100%; height: 100%; object-fit: cover;">
+                                <div style="position: absolute; inset: 0; background: rgba(255,255,255,0.6); display: flex; align-items: center; justify-content: center;">
+                                    <i data-lucide="alert-circle" style="width: 20px; color: #ff4d4d;"></i>
+                                </div>
+                            </div>
+                            <div style="flex: 1; min-width: 0;">
+                                <h4 style="font-weight: 900; font-size: 11px; color: #999; margin-bottom: 2px; text-decoration: line-through;">${p.name}</h4>
+                                <span style="font-size: 8px; font-weight: 950; color: #ff4d4d; background: #fff1f1; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">Indisponível</span>
+                            </div>
+                            <button onclick="app.removeFromCart(${index})" style="width: 36px; height: 36px; background: #f5f5f5; color: #999; border: none; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                                <i data-lucide="trash-2" style="width: 16px;"></i>
+                            </button>
+                        </div>`;
+                    }
+
                     return `
-                    <div style="background: #fff; padding: 16px; border-radius: 24px; border: 1px solid #f2f2f2; display: flex; align-items: center; gap: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
+                    <div style="background: #fff; padding: 16px; border-radius: 24px; border: 1px solid #f2f2f2; display: flex; align-items: center; gap: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 12px;">
                         <div style="width: 70px; height: 70px; background: #f9f9f9; border-radius: 16px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; flex-shrink: 0;">
                             <img src="${this.rGetPImage(productImg, p.name)}" style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
@@ -8342,7 +8364,10 @@
                 }).join('');
             }
 
-            const total = this.cart.reduce((acc, p) => acc + parseFloat(p.price || 0), 0);
+            const total = this.cart.reduce((acc, p) => {
+                const exists = this.products.some(item => String(item.id) === String(p.id));
+                return acc + (exists ? parseFloat(p.price || 0) : 0);
+            }, 0);
             if (totalLabel) totalLabel.innerText = `R$ ${total.toFixed(2)}`;
 
             if (window.lucide) lucide.createIcons();

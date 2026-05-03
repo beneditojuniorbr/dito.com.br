@@ -3140,32 +3140,34 @@
                     fans: Number(user.fans || 0),
                     balance: Number(user.balance || 0),
                     coins: Number(localStorage.getItem(`dito_coins_${key}`) || 0),
-                    purchases: JSON.stringify(this.purchasedProducts),
+                    // Sincronia unificada: Guardamos tudo em 'purchases' para evitar erros de colunas ausentes
+                    purchases: JSON.stringify({
+                        products: this.purchasedProducts,
+                        missions: localStorage.getItem(`dito_missions_${key}`),
+                        history: localStorage.getItem(`dito_checkin_history_${key}`),
+                        claimed: localStorage.getItem(`dito_claimed_events_${key}`),
+                        active_events: Object.keys(localStorage).filter(k => k.startsWith('dito_event_')).reduce((obj, k) => ({...obj, [k]: localStorage.getItem(k)}), {})
+                    }),
                     avatar: user.avatar || "",
                     last_seen: new Date().toISOString()
                 };
 
-                // 2. PAYLOAD ESTENDIDO (Com novas colunas de saque e missões)
+                // 2. PAYLOAD ESTENDIDO (Com novas colunas de saque)
                 const fullPayload = {
                     ...basicPayload,
                     pending_balance: Number(user.pending_balance || 0),
                     withdrawPixKey: user.withdrawPixKey || "",
                     withdrawCardNumber: user.withdrawCardNumber || "",
-                    withdrawCardName: user.withdrawCardName || "",
-                    // Sincroniza missões e eventos
-                    missions_json: localStorage.getItem(`dito_missions_${key}`),
-                    missions_history_json: localStorage.getItem(`dito_checkin_history_${key}`),
-                    claimed_events_json: localStorage.getItem(`dito_claimed_events_${key}`),
-                    active_events_json: JSON.stringify(Object.keys(localStorage).filter(k => k.startsWith('dito_event_')).reduce((obj, k) => ({...obj, [k]: localStorage.getItem(k)}), {}))
+                    withdrawCardName: user.withdrawCardName || ""
                 };
 
                 // Tenta salvar tudo
                 const { error } = await supabase.from('dito_users').upsert([fullPayload], { onConflict: 'username' });
                 
                 if (error) {
-                    // Se o erro for de coluna inexistente, tenta o básico para não quebrar o app
-                    if (error.message.includes('column') && (error.message.includes('does not exist') || error.code === '42703')) {
-                        console.warn("⚠️ [Sync] Colunas financeiras ausentes no Supabase. Sincronizando apenas dados básicos.");
+                    // Se o erro for de coluna inexistente (42703 ou PGRST204), tenta o básico
+                    if (error.code === '42703' || error.code === 'PGRST204' || (error.message && error.message.includes('column'))) {
+                        console.warn("⚠️ [Sync] Fallback ativado por erro de esquema:", error.message);
                         const { error: basicError } = await supabase.from('dito_users').upsert([basicPayload], { onConflict: 'username' });
                         if (basicError) throw basicError;
                     } else {
@@ -10299,32 +10301,47 @@
                 this.currentUser = { ...this.currentUser, ...data };
                 localStorage.setItem('current_user_vanilla', JSON.stringify(this.currentUser));
 
-                // 3. Sincroniza Compras/Acessos
+                // 3. Sincroniza Compras/Acessos e Missões (Unificado em 'purchases')
                 if (data.purchases) {
-                    let cloudPurchases = typeof data.purchases === 'string' ? JSON.parse(data.purchases) : data.purchases;
-                    
-                    if (Array.isArray(cloudPurchases) && cloudPurchases.length > 0) {
-                        // Sanitiza para evitar 'undefined' no nome ou tipo
-                        this.purchasedProducts = cloudPurchases.map(p => ({
-                            ...p,
-                            name: p.name || 'Produto Adquirido',
-                            type: p.type || 'Acesso'
-                        }));
+                    try {
+                        const purchasesRaw = typeof data.purchases === 'string' ? JSON.parse(data.purchases) : data.purchases;
                         
-                        localStorage.setItem(`dito_purchased_products_${key}`, JSON.stringify(this.purchasedProducts));
+                        // Detecta se é o novo formato (objeto) ou o antigo (array)
+                        if (purchasesRaw && typeof purchasesRaw === 'object' && !Array.isArray(purchasesRaw)) {
+                            // Novo formato unificado
+                            if (purchasesRaw.products) {
+                                this.purchasedProducts = purchasesRaw.products;
+                                this.safeLocalStorageSet(`dito_purchased_products_${key}`, JSON.stringify(this.purchasedProducts));
+                            }
+                            
+                            // Restaura Missões
+                            if (purchasesRaw.missions) localStorage.setItem(`dito_missions_${key}`, purchasesRaw.missions);
+                            if (purchasesRaw.history) localStorage.setItem(`dito_checkin_history_${key}`, purchasesRaw.history);
+                            if (purchasesRaw.claimed) localStorage.setItem(`dito_claimed_events_${key}`, purchasesRaw.claimed);
+                            if (purchasesRaw.active_events) {
+                                Object.keys(purchasesRaw.active_events).forEach(k => {
+                                    localStorage.setItem(k, purchasesRaw.active_events[k]);
+                                });
+                            }
+                        } else if (Array.isArray(purchasesRaw)) {
+                            // Formato antigo (apenas array de produtos)
+                            this.purchasedProducts = purchasesRaw;
+                            this.safeLocalStorageSet(`dito_purchased_products_${key}`, JSON.stringify(this.purchasedProducts));
+                        }
                         
-                        // Atualiza a tela se o usuário estiver nos cursos
                         this.renderPurchasedProducts();
+                    } catch(e) {
+                        console.error("❌ Erro ao processar sincronia de compras/missões:", e);
                     }
                 }
 
-                // 4. Sincroniza Missões e Eventos (Sincronia Desktop/Mobile)
+                // 4. Fallback para colunas legadas (se existirem no banco)
                 if (data.missions_json) localStorage.setItem(`dito_missions_${key}`, data.missions_json);
                 if (data.missions_history_json) localStorage.setItem(`dito_checkin_history_${key}`, data.missions_history_json);
                 if (data.claimed_events_json) localStorage.setItem(`dito_claimed_events_${key}`, data.claimed_events_json);
                 if (data.active_events_json) {
                     try {
-                        const events = JSON.parse(data.active_events_json);
+                        const events = typeof data.active_events_json === 'string' ? JSON.parse(data.active_events_json) : data.active_events_json;
                         Object.keys(events).forEach(k => localStorage.setItem(k, events[k]));
                     } catch(e) {}
                 }

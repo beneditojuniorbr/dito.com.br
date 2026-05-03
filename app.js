@@ -6578,23 +6578,43 @@
             const file = e.target.files[0];
             if (!file) return;
 
-            // Compressor de Imagem (Para evitar QuotaExceededError)
             const reader = new FileReader();
             reader.onload = (event) => {
                 const img = new Image();
                 img.onload = async () => {
-                    // Define o tamanho máximo (Ex: 256px para perfil)
                     const MAX_SIZE = 256;
                     let width = img.width;
                     let height = img.height;
 
                     if (width > height) {
-                        if (width >                     if (this.currentUser) {
+                        if (width > MAX_SIZE) {
+                            height *= MAX_SIZE / width;
+                            width = MAX_SIZE;
+                        }
+                    } else {
+                        if (height > MAX_SIZE) {
+                            width *= MAX_SIZE / height;
+                            height = MAX_SIZE;
+                        }
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const avatarData = canvas.toDataURL('image/jpeg', 0.7);
+                    
+                    const cont = document.getElementById('profile-avatar-container');
+                    if (cont) cont.innerHTML = `<img src="${avatarData}" style="width: 100%; height: 100%; object-fit: cover;">`;
+                    
+                    if (this.currentUser) {
                         this.currentUser.avatar = avatarData;
                         this.saveSession(this.currentUser); 
                         
                         // Sincronização imediata
-                        this.syncUserToNetwork(this.currentUser); 
+                        await this.syncUserToNetwork(this.currentUser); 
                         
                         // Atualização Instantânea no Hall da Fama e cache local
                         if (this.networkUsers) {
@@ -6605,31 +6625,14 @@
                             }
                             if (this.currentView === 'hall') this.renderHallOfFame();
                         }
-                    } (this.currentUser) {
-                        this.currentUser.avatar = avatarData;
-                        this.saveSession(this.currentUser); // Usa o método centralizado e passa o user
-                        await this.syncUserToNetwork(this.currentUser); // Garante envio pra rede
-                        
-                        // Atualização Instantânea no Hall da Fama (Sem esperar rede)
-                        if (this.networkUsers) {
-                            const netIdx = this.networkUsers.findIndex(u => u.username === this.currentUser.username);
-                            if (netIdx !== -1) {
-                                this.networkUsers[netIdx].avatar = avatarData;
-                                if (this.currentView === 'hall') this.renderHallOfFame();
-                            }
-                        }
-                        
-                        // Atualiza no Banco de Dados Local proativamente
-                        this.syncUserToNetwork(this.currentUser);
-                        
-                        // Limpa caches antigos de usuários para abrir espaço
-                        this.optimizeStorageOnNavigation();
                         
                         this.renderProfile();
                         this.showNotification('Sua foto foi otimizada e salva! ✨', 'success');
                         
-                        // Atualização Global: Força todos os elementos que usam a foto do usuário a atualizar
-                        this.refreshUserAvatarsGlobally(this.currentUser.username, avatarData);
+                        // Atualização Global
+                        if (typeof this.refreshUserAvatarsGlobally === 'function') {
+                            this.refreshUserAvatarsGlobally(this.currentUser.username, avatarData);
+                        }
                     }
                 };
                 img.src = event.target.result;

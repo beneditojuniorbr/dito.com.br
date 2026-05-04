@@ -3709,7 +3709,7 @@
             }
 
             this.paymentMethod = 'pix'; // Reset para Pix
-
+            this.selectedCouponsForPurchase = 0; // Reset cupons
             this.recalculateCheckoutTotal();
 
             // Sincroniza o preenchimento inicial do slider
@@ -3752,7 +3752,7 @@
                 }
 
                 try {
-                    const total = this.cart.reduce((sum, p) => sum + p.price, 0);
+                    const total = this.recalculateCheckoutTotal(); // Pega o total real com desconto
                     const productId = productWithLink ? productWithLink.id : 'global';
                     const email = this.currentUser?.email || 'cliente@dito.com.br';
                     const userId = this.currentUser?.username || 'visitante';
@@ -9650,6 +9650,7 @@
     };
 
     app.applyCoinDiscount = function(sliderValue) {
+        this.selectedCouponsForPurchase = parseInt(sliderValue);
         const slider = document.getElementById('coin-discount-slider');
         const label = document.getElementById('coins-to-use-label');
         if (label) label.innerText = sliderValue;
@@ -9657,7 +9658,6 @@
         if (slider) {
             const max = parseInt(slider.max) || 1;
             const percentage = (parseInt(sliderValue) / max) * 100;
-            // Altera a variável de CSS para pintar o rastro
             slider.style.setProperty('--range-progress', percentage + '%');
         }
 
@@ -9668,18 +9668,19 @@
         const totalBase = this.cart.reduce((acc, i) => acc + parseFloat(i.price || 0), 0);
         const hasPhysical = this.cart.some(i => i.type === 'Fisico');
         
-        // Regra: 1 cupom = 1% de desconto. 
-        // Produtos Físicos: Max 3%. Outros: Max 100%
         const maxDiscount = hasPhysical ? 3 : 100;
         const couponsUsed = this.selectedCouponsForPurchase || 0;
         const discountPercentage = Math.min(couponsUsed, maxDiscount);
         const discountAmount = totalBase * (discountPercentage / 100);
         
-        let final = Math.max(0.01, totalBase - discountAmount); // Mínimo de 1 centavo
+        let final = Math.max(0.01, totalBase - discountAmount);
         
         const disp = document.getElementById('checkout-total-value');
-        if (disp) disp.innerText = 'R$ ' + final.toFixed(2);
+        if (disp) disp.innerText = `R$ ${final.toFixed(2)}`;
         
+        const discountDisp = document.getElementById('checkout-discount-amount');
+        if (discountDisp) discountDisp.innerText = `- R$ ${discountAmount.toFixed(2)}`;
+
         return final;
     };
 

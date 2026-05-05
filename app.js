@@ -7437,7 +7437,7 @@
             });
             
             // Select effect: Background white + Gradient Border + Deep Luxury Shadow
-            btn.style.background = 'linear-gradient(#fff, #fff) padding-box, linear-gradient(90deg, #ff005c 0%, #0094ff 100%) border-box';
+            btn.style.background = 'linear-gradient(#fff, #fff) padding-box, linear-gradient(90deg, #006eff 0%, #ffba09 100%) border-box';
             btn.style.border = '2px solid transparent';
             btn.style.transform = 'scale(1.1)';
             

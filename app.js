@@ -1236,7 +1236,7 @@
                                             ${u.avatar ? `<img src="${u.avatar}" style="width: 100%; height: 100%; object-fit: cover;">` : `<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #ccc;"><i data-lucide="user" style="width: 20px;"></i></div>`}
                                         </div>
                                         ${isOnline ? `<div style="position: absolute; bottom: 2px; right: 2px; width: 12px; height: 12px; background: #22c55e; border-radius: 50%; border: 2.5px solid #fff;"></div>` : ''}
-                                        ${hasUnread ? '<div style="position: absolute; top: -2px; left: -2px; width: 14px; height: 14px; background: #FFD600; border-radius: 50%; border: 2px solid #fff; z-index: 10;"></div>' : ''}
+                                        ${hasUnread ? '<div style="position: absolute; top: -2px; left: -2px; width: 14px; height: 14px; background: #006eff; border-radius: 50%; border: 2px solid #fff; z-index: 10;"></div>' : ''}
                                     </div>
                                     <div style="overflow: hidden;">
                                         <p style="font-weight: 900; font-size: 15px; color: ${color}; display: flex; align-items: center; gap: 4px; margin-bottom: 2px;">
@@ -2409,10 +2409,10 @@
 
             const hasAnythingToReceive = hasPendingCheckin || hasPendingDaily;
             
-            const dot = document.getElementById('mission-dot-scroll');
-            if (dot) {
-                dot.style.display = hasAnythingToReceive ? 'block' : 'none';
-            }
+            const dot = document.getElementById('dot-missoes');
+            const dotDesktop = document.getElementById('dot-missoes-desktop');
+            if (dot) dot.style.display = hasAnythingToReceive ? 'block' : 'none';
+            if (dotDesktop) dotDesktop.style.display = hasAnythingToReceive ? 'block' : 'none';
         },
 
         checkSalesNotification() {
@@ -4849,8 +4849,10 @@
 
                 // Limpa bolinhas de notificação ao entrar nas telas
                 if (view === 'missoes') {
-                    const mDot = document.getElementById('mission-dot-scroll');
+                    const mDot = document.getElementById('dot-missoes');
+                    const mDotDesktop = document.getElementById('dot-missoes-desktop');
                     if (mDot) mDot.style.display = 'none';
+                    if (mDotDesktop) mDotDesktop.style.display = 'none';
                 }
                 if (view === 'mensagens' || view === 'chat-global') {
                     const cDot = document.getElementById('chat-dot');
@@ -10234,7 +10236,7 @@
         if (this.hasPendingSocietyRequests) {
             listHtml += `
                 <div onclick="app.navigate('sociedade'); app.toggleNotifDrawer(false);" style="padding: 16px; background: #fffdf0; border-radius: 20px; border: 1.5px solid #ffd600; display: flex; gap: 14px; position: relative; margin-bottom: 12px; cursor: pointer;">
-                    <div style="position: absolute; top: 12px; right: 12px; width: 8px; height: 8px; background: #ffd600; border-radius: 50%;"></div>
+                    <div style="position: absolute; top: 12px; right: 12px; width: 8px; height: 8px; background: #006eff; border-radius: 50%;"></div>
                     <div style="width: 44px; height: 44px; background: #ffd60020; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                         <i data-lucide="users" style="width: 20px; color: #b8860b;"></i>
                     </div>

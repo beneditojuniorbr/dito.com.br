@@ -27,10 +27,10 @@
 .notif-dot {
     width: 6px;
     height: 6px;
-    background: #ffd600;
+    background: #006eff;
     border-radius: 50%;
     position: relative;
-    box-shadow: 0 0 5px rgba(255, 214, 0, 0.3);
+    box-shadow: 0 0 5px rgba(0, 110, 255, 0.3);
 }
 
 * {

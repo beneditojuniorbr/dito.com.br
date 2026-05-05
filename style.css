@@ -202,6 +202,13 @@ input::placeholder, textarea::placeholder {
     overscroll-behavior-x: none;
 }
 
+.benefit-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    width: 100%;
+}
+
 /* Login Screen */
 .login-screen {
     min-height: 100vh;
@@ -860,27 +867,7 @@ input::placeholder, textarea::placeholder {
     transition: all 0.3s ease;
 }
 
-@media (min-width: 501px) and (max-width: 1023px) {
-    .app-container {
-        max-width: 500px;
-        margin: 0 auto;
-        border-left: 1px solid var(--border);
-        border-right: 1px solid var(--border);
-        box-shadow: 0 0 40px rgba(0,0,0,0.05);
-    }
-    
-    .bottom-nav {
-        max-width: 500px;
-        left: 50%;
-        transform: translateX(-50%);
-    }
-
-    .modal-content {
-        max-width: 450px;
-        margin: 0 auto;
-        border-radius: 24px;
-    }
-}
+/* Tablet layout removed to favor full-screen on all mobile/tablet devices */
 
 /* DESKTOP PREMIUM (Telas maiores que 1024px) */
 @media (min-width: 1024px) {

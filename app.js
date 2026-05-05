@@ -151,8 +151,8 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <defs>
                             <linearGradient id="grad-${type}" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#ff005c;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#0487ff;stop-opacity:1" />
+                <stop offset="0%" style="stop-color:#006eff;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#ffba09;stop-opacity:1" />
                             </linearGradient>
                         </defs>
                         <rect x="0" y="0" width="24" height="24" fill="#ffffff" />

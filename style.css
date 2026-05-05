@@ -296,23 +296,39 @@ input::placeholder, textarea::placeholder {
         display: flex;
         flex-direction: column;
         align-items: center;
+        text-align: center !important; /* Force centering */
     }
     .landing-features-section > div {
         max-width: 1100px;
         width: 100%;
         margin-left: auto;
         margin-right: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .landing-features-section .benefit-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 40px !important;
+        text-align: left !important;
+        margin-top: 40px;
+        width: 100%;
+        max-width: 1100px;
     }
     .landing-features-section h2 {
         font-size: 64px !important;
+        text-align: center !important;
     }
     .landing-features-section p {
         font-size: 20px !important;
+        text-align: center !important;
     }
 }
 
 .login-header {
     margin-bottom: 48px;
+    text-align: center;
 }
 
 .login-header h1 {
@@ -610,6 +626,11 @@ input::placeholder, textarea::placeholder {
     font-weight: 500;
 }
 
+.benefit-grid {
+    display: grid;
+    gap: 24px;
+    width: 100%;
+}
 /* Hall of Fame */
 .hall-of-fame-btn {
     margin: 0 24px 32px;

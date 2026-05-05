@@ -168,7 +168,7 @@
         },
 
         rGetMentoriaBg(img) {
-            return `linear-gradient(white, white) padding-box, linear-gradient(45deg, #ff005c, #7000ff) border-box`;
+            return `linear-gradient(white, white) padding-box, linear-gradient(45deg, #006eff, #ffba09) border-box`;
         },
 
         // Helper para salvar no localStorage com segurança (evita QuotaExceeded e otimiza imagens)
@@ -932,7 +932,7 @@
                     particleCount: 150,
                     spread: 70,
                     origin: { y: 0.6 },
-                    colors: ['#ff005c', '#0487ff', '#ffd600']
+                    colors: ['#006eff', '#ffba09', '#ffd600']
                 });
             } else {
                 console.log("🎉 [Confetti] Ativo!");
@@ -1459,7 +1459,7 @@
             bubbleDiv.style.display = 'flex';
             bubbleDiv.style.justifyContent = isMe ? 'flex-end' : 'flex-start';
             bubbleDiv.innerHTML = `
-                <div style="max-width: 75%; padding: 12px 16px; border-radius: 20px; font-weight: 700; font-size: 14px; line-height: 1.4; position: relative; ${isMe ? 'background: #ff005c; color: #fff; border-bottom-right-radius: 4px;' : 'background: #fff; border: 1px solid #eee; color: #000; border-bottom-left-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);'}">
+                <div style="max-width: 75%; padding: 12px 16px; border-radius: 20px; font-weight: 700; font-size: 14px; line-height: 1.4; position: relative; ${isMe ? 'background: #006eff; color: #fff; border-bottom-right-radius: 4px;' : 'background: #fff; border: 1px solid #eee; color: #000; border-bottom-left-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);'}">
                     ${msg.content}
                     <div style="font-size: 9px; margin-top: 4px; text-align: right; opacity: 0.6; font-weight: 800;">${new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
                 </div>
@@ -1893,7 +1893,7 @@
                     overlay.style.cssText = `
                         position: fixed; bottom: 100px; right: 20px; width: 120px; height: 160px; 
                         background: #000; border-radius: 20px; overflow: hidden; 
-                        box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 1000; border: 2px solid #ff005c;
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 1000; border: 2px solid #006eff;
                         display: flex; flex-direction: column;
                     `;
                     document.body.appendChild(overlay);
@@ -2031,7 +2031,7 @@
                 // Vou mostrar o valor que ela ganharia SE fizesse hoje.
                 
                 return `
-                <div style="scroll-snap-align: start; min-width: 70px; display: flex; flex-direction: column; align-items: center; text-align: center; justify-content: space-between; padding: 12px 6px; border-radius: 12px; border: ${isToday ? '1.5px solid transparent' : '1px solid #f0f0f0'}; background: ${isToday ? 'linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #ff005c 0%, #0487ff 100%) border-box' : '#fff'}; transition: 0.3s; box-shadow: ${isToday ? '0 4px 15px rgba(255, 0, 92, 0.1)' : '0 4px 10px rgba(0,0,0,0.02)'};">
+                <div style="scroll-snap-align: start; min-width: 70px; display: flex; flex-direction: column; align-items: center; text-align: center; justify-content: space-between; padding: 12px 6px; border-radius: 12px; border: ${isToday ? '1.5px solid transparent' : '1px solid #f0f0f0'}; background: ${isToday ? 'linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #006eff 0%, #ffba09 100%) border-box' : '#fff'}; transition: 0.3s; box-shadow: ${isToday ? '0 4px 15px rgba(0, 110, 255, 0.1)' : '0 4px 10px rgba(0,0,0,0.02)'};">
                     <p style="font-weight: 950; font-size: 11px; margin-bottom: 4px; color: ${past && !item.checked ? '#ccc' : '#000'};">${item.dayName}</p>
                     
                     <div style="width: 24px; height: 24px; border-radius: 50%; background: ${item.checked ? '#fff' : (past && !item.checked ? 'transparent' : (isToday ? '#fbbf24' : '#f9f9f9'))}; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; border: ${past && !item.checked ? '1px dashed #eee' : 'none'};">
@@ -2051,7 +2051,7 @@
                     ` : (isToday ? `
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
                             <div style="display: flex; align-items: center; gap: 2px; color: #000; font-size: 10px; font-weight: 950; margin-bottom: 4px;">
-                                <i data-lucide="ticket" style="width: 10px; color: #ff005c;"></i> +${potentialReward}
+                                <i data-lucide="ticket" style="width: 10px; color: #006eff;"></i> +${potentialReward}
                             </div>
                             <button onclick="app.claimDailyCheckin(${i})" style="background: #fbbf24; color: #000; border: none; border-radius: 20px; padding: 6px 14px; font-size: 10px; font-weight: 950; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                                  Receber
@@ -2139,7 +2139,7 @@
                     </div>
                     <div>
                         <p style="font-weight: 950; font-size: 14px; color: #000; margin-bottom: 2px;">Fazer uma venda</p>
-                        <p style="font-size: 11px; font-weight: 950; background: linear-gradient(135deg, #ff005c 0%, #0487ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px;">+27 Cupons</p>
+                        <p style="font-size: 11px; font-weight: 950; background: linear-gradient(135deg, #006eff 0%, #ffba09 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px;">+27 Cupons</p>
                         <p style="font-size: 10px; font-weight: 800; color: #999; line-height: 1.3;">Realize 1 venda hoje para ganhar.</p>
                     </div>
                     <div style="margin-top: 10px;">
@@ -2174,7 +2174,7 @@
 
             const eventConfigs = {
                 'flash': { name: 'Missão Veloz', goal: 1, current: salesToday, reward: 15, unit: 'venda', icon: 'ticket', color: '#ef4444' },
-                'master': { name: 'Missão Especialista', goal: 5, current: salesToday, reward: 20, unit: 'vendas', icon: 'ticket', color: '#0487ff' },
+                'master': { name: 'Missão Especialista', goal: 5, current: salesToday, reward: 20, unit: 'vendas', icon: 'ticket', color: '#ffba09' },
                 'king': { name: 'Rei da Rede', goal: 1, current: processedRefs.length, reward: 30, unit: 'indicação', icon: 'ticket', color: '#ffd600' }
             };
 
@@ -2202,7 +2202,7 @@
                     </div>
                     <div>
                         <p style="font-weight: 950; font-size: 14px; color: #000; margin-bottom: 2px;">${evt.name}</p>
-                        <p style="font-size: 11px; font-weight: 950; background: linear-gradient(135deg, #ff005c 0%, #0487ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px;">+${evt.reward} Cupons</p>
+                        <p style="font-size: 11px; font-weight: 950; background: linear-gradient(135deg, #006eff 0%, #ffba09 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px;">+${evt.reward} Cupons</p>
                         <p style="font-size: 10px; font-weight: 700; color: #999;">Meta: ${evt.goal} ${evt.unit}</p>
                     </div>
                     <div style="margin-top: 5px;">
@@ -2335,7 +2335,7 @@
 
                 return `
                 <div style="scroll-snap-align: start; min-width: 170px; background: #fff; padding: 20px; border-radius: 24px; border: 1px solid #eee; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); position: relative;">
-                    <div style="position: absolute; top: 12px; right: 12px; background: rgba(255, 0, 92, 0.05); color: #ff005c; font-size: 9px; font-weight: 950; padding: 4px 10px; border-radius: 50px;">+${activeStage.reward}</div>
+                    <div style="position: absolute; top: 12px; right: 12px; background: rgba(0, 110, 255, 0.05); color: #006eff; font-size: 9px; font-weight: 950; padding: 4px 10px; border-radius: 50px;">+${activeStage.reward}</div>
                     <div style="width: 48px; height: 48px; background: #f8f8f8; border-radius: 14px; display: flex; align-items: center; justify-content: center;">
                         <i data-lucide="${cfg.icon}" style="width: 24px; color: #000;"></i>
                     </div>
@@ -2345,7 +2345,7 @@
                     </div>
                     <div style="margin-top: 5px;">
                         <div style="width: 100%; height: 6px; background: #f0f0f0; border-radius: 10px; overflow: hidden; margin-bottom: 12px;">
-                            <div style="width: ${Math.min((cfg.currentVal / activeStage.goal) * 100, 100)}%; height: 100%; background: linear-gradient(90deg, #ff005c, #0487ff); transition: 0.5s;"></div>
+                            <div style="width: ${Math.min((cfg.currentVal / activeStage.goal) * 100, 100)}%; height: 100%; background: linear-gradient(90deg, #006eff, #ffba09); transition: 0.5s;"></div>
                         </div>
                         ${isClaimed ? 
                             `<div style="background: #f0fdf4; color: #16a34a; padding: 10px; border-radius: 14px; font-size: 10px; font-weight: 950; text-align: center;">CONCLUÍDO</div>` :
@@ -2876,7 +2876,7 @@
                         ${avatarHtml}
                     </div>
                     <div style="flex: 1; line-height: 1.4;">
-                        <span onclick="app.viewPublicProfile('${msg.sender}')" style="cursor: pointer; color: ${isMe ? '#ff005c' : channelColor}; font-weight: 950; font-size: 13px;">${msg.sender}</span>
+                        <span onclick="app.viewPublicProfile('${msg.sender}')" style="cursor: pointer; color: ${isMe ? '#006eff' : channelColor}; font-weight: 950; font-size: 13px;">${msg.sender}</span>
                         <span style="font-weight: 600; color: #333; font-size: 13px; margin-left: 2px;">${cleanContent}</span>
                     </div>
                 </div>
@@ -4123,7 +4123,7 @@
                     <div style="text-align: center; padding: 60px 20px; color: #ccc;">
                         <i data-lucide="shopping-bag" style="width: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
                         <p style="font-weight: 800; font-size: 14px;">Nenhuma compra visível.</p>
-                        ${trash.length > 0 ? `<button onclick="app.renderPurchasedTrash()" style="margin-top: 10px; background: none; border: none; color: #ff005c; font-weight: 900; font-size: 11px; cursor: pointer; text-decoration: underline;">VER LIXEIRA (${trash.length})</button>` : ''}
+                        ${trash.length > 0 ? `<button onclick="app.renderPurchasedTrash()" style="margin-top: 10px; background: none; border: none; color: #006eff; font-weight: 900; font-size: 11px; cursor: pointer; text-decoration: underline;">VER LIXEIRA (${trash.length})</button>` : ''}
                         <br>
                         <button onclick="app.navigate('mercado')" style="margin-top: 20px; background: #000; color: #fff; border: none; padding: 14px 32px; border-radius: 40px; font-weight: 900; font-size: 11px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;">Ir para o Mercado</button>
                     </div>
@@ -4781,7 +4781,7 @@
             let badgeIcon = 'bell';
             let badgeBg = '#000';
             if (type === 'sale') { badgeIcon = 'shopping-bag'; badgeBg = '#22c55e'; }
-            if (type === 'fan') { badgeIcon = 'star'; badgeBg = '#ff005c'; }
+            if (type === 'fan') { badgeIcon = 'star'; badgeBg = '#006eff'; }
             if (type === 'error') { badgeIcon = 'alert-circle'; badgeBg = '#ef4444'; }
             if (type === 'success') { badgeIcon = 'check-circle'; badgeBg = '#22c55e'; }
 
@@ -5192,7 +5192,7 @@
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
                         <div>
                             <h3 style="font-size: 19px; font-weight: 950; letter-spacing: -1px; display: flex; align-items: center; gap: 8px;">
-                                ${s.name} <i data-lucide="${isAdmin ? 'shield-check' : 'users'}" style="width: 17px; color: ${isAdmin ? '#ff005c' : '#000'};"></i>
+                                ${s.name} <i data-lucide="${isAdmin ? 'shield-check' : 'users'}" style="width: 17px; color: ${isAdmin ? '#006eff' : '#000'};"></i>
                             </h3>
                             <p style="font-size: 10px; font-weight: 900; color: #ccc; text-transform: uppercase;">GESTOR: ${s.owner}</p>
                         </div>
@@ -5547,7 +5547,7 @@
                         <div style="width: 40px; height: 40px; background: #f9f9f9; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; color: #000;">${m.username[0].toUpperCase()}</div>
                         <div>
                             <p style="font-size: 13px; font-weight: 900; color: #000;">${m.username}</p>
-                            <p style="font-size: 9px; color: ${m.role === 'Gestor' ? '#ff005c' : '#999'}; font-weight: 900; text-transform: uppercase;">${m.role}</p>
+                            <p style="font-size: 9px; color: ${m.role === 'Gestor' ? '#006eff' : '#999'}; font-weight: 900; text-transform: uppercase;">${m.role}</p>
                         </div>
                     </div>
                     ${isAdmin && m.username !== this.currentUser.username ? `
@@ -6321,7 +6321,7 @@
                 if (removeBtn) {
                     removeBtn.style.display = 'none';
                     removeBtn.style.transform = 'scale(1)';
-                    removeBtn.style.background = '#ff005c';
+                    removeBtn.style.background = '#006eff';
                 }
             }
             if (window.lucide) lucide.createIcons();
@@ -6482,7 +6482,7 @@
                             <img src="${p.url}" style="width: 100%; height: 100%; object-fit: cover;">
                             <!-- Overlay de Exclusão -->
                             <div class="post-overlay" onclick="app.deletePost(${index}, event)" style="position: absolute; inset: 0; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.2s; z-index: 10;">
-                                <div style="width: 32px; height: 32px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ff005c; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                                <div style="width: 32px; height: 32px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #006eff; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
                                     <i data-lucide="trash-2" style="width: 14px;"></i>
                                 </div>
                             </div>
@@ -6945,7 +6945,7 @@
                                 <span class="event-timer" style="font-size: 10px; font-weight: 950; color: #000; background: #f5f5f5; padding: 4px 10px; border-radius: 10px;">00:00:00</span>
                             </div>
                             <h4 style="font-size: 15px; font-weight: 950; line-height: 1.2; margin-bottom: 4px; color: #000;">${ev.title}</h4>
-                            <p style="font-size: 12px; font-weight: 950; background: linear-gradient(135deg, #ff005c 0%, #00a2ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; display: inline-block;">Prêmio: ${ev.reward}</p>
+                            <p style="font-size: 12px; font-weight: 950; background: linear-gradient(135deg, #006eff 0%, #ffba09 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; display: inline-block;">Prêmio: ${ev.reward}</p>
                         </div>
                         <button onclick="app.participateEvent('${ev.id}')" style="width: 100%; height: 44px; background: #000; color: #fff; border: none; border-radius: 15px; font-size: 11px; font-weight: 950; cursor: pointer; margin-top: 16px; letter-spacing: 0.5px;">QUERO PARTICIPAR</button>
                     </div>
@@ -7068,8 +7068,8 @@
                     vitrineImg.style.borderBottom = 'none';
                     vitrineImg.style.padding = '12px';
                     vitrineImg.innerHTML = `
-                        <div style="aspect-ratio: 1; width: 100%; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #ff005c, #7000ff); display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 4px 15px rgba(255,0,92,0.3);">
-                            <span style="position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); background: #ff005c; color: white; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 6px; border: 2px solid #fff; letter-spacing: 1px; z-index: 2; white-space: nowrap;">AO VIVO</span>
+                        <div style="aspect-ratio: 1; width: 100%; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #006eff, #7000ff); display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 4px 15px rgba(255,0,92,0.3);">
+                            <span style="position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); background: #006eff; color: white; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 6px; border: 2px solid #fff; letter-spacing: 1px; z-index: 2; white-space: nowrap;">AO VIVO</span>
                             <div style="width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: #fff; border: 2px solid #fff; display: flex; align-items: center; justify-content: center; background-size: cover; background-position: center; background-image: url('${img || ''}')">
                                 ${!img ? '<i data-lucide="users" style="width: 32px; color: #eee;"></i>' : ''}
                             </div>
@@ -7546,7 +7546,7 @@
             const addBtn = document.createElement('div');
             addBtn.onclick = () => document.getElementById('prod-image-file').click();
             addBtn.style.cssText = `width: 60px; height: 60px; border-radius: 12px; background: #fbfbfb; border: 2px dashed #eee; flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s;`;
-            addBtn.onmouseover = () => addBtn.style.borderColor = '#ff005c';
+            addBtn.onmouseover = () => addBtn.style.borderColor = '#006eff';
             addBtn.onmouseout = () => addBtn.style.borderColor = '#eee';
             addBtn.innerHTML = `<i data-lucide="plus" style="width: 20px; color: #ccc;"></i>`;
             gallery.appendChild(addBtn);
@@ -8495,7 +8495,7 @@
                 container.innerHTML = `
                     <div style="padding: 80px 32px; text-align: center; background: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;">
                         <div style="width: 80px; height: 80px; background: #fdf2f8; border-radius: 30px; display: flex; align-items: center; justify-content: center; margin-bottom: 32px;">
-                            <i data-lucide="lock" style="width: 32px; height: 32px; color: #ff005c;"></i>
+                            <i data-lucide="lock" style="width: 32px; height: 32px; color: #006eff;"></i>
                         </div>
                         <h2 style="font-size: 26px; font-weight: 950; color: #000; margin-bottom: 12px; letter-spacing: -1px;">Área Exclusiva</h2>
                         <p style="color: #666; font-size: 14px; margin-bottom: 40px; font-weight: 600; line-height: 1.6; max-width: 280px;">Esta Mentoria é restrita a portadores de ingresso. Garanta o seu para liberar o acesso ao sinal ao vivo e o chat VIP.</p>
@@ -9014,7 +9014,7 @@
                 liveWrapper.style.display = activeLives.length > 0 ? 'block' : 'none';
                 liveContainer.innerHTML = activeLives.map(p => `
                     <div onclick="app.enterMentorshipRoom('${p.id}')" style="display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; flex-shrink: 0; width: 72px;">
-                        <div style="width: 72px; height: 72px; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #ff005c, #7000ff); display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 4px 15px rgba(255,0,92,0.3);">
+                        <div style="width: 72px; height: 72px; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #006eff, #7000ff); display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 4px 15px rgba(255,0,92,0.3);">
                             <div style="width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: #fff; border: 2px solid #fff; display: flex; align-items: center; justify-content: center;">
                                 <img src="${this.rGetPImage(p.image, p.name, p.type)}" style="width: 100%; height: 100%; object-fit: cover;">
                             </div>
@@ -9032,8 +9032,8 @@
                 hContainer.innerHTML = arrival.map(p => {
                     const isMentoria = p.type === 'Mentoria';
                     const imgContainer = isMentoria ? `
-                        <div style="aspect-ratio: 1; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #ff005c, #7000ff); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; position: relative; box-shadow: 0 4px 15px rgba(255,0,92,0.3); overflow: visible; flex-shrink: 0;">
-                            <span style="position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); background: #ff005c; color: white; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 6px; border: 2px solid #fff; letter-spacing: 1px; z-index: 2;">AO VIVO</span>
+                        <div style="aspect-ratio: 1; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #006eff, #7000ff); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; position: relative; box-shadow: 0 4px 15px rgba(255,0,92,0.3); overflow: visible; flex-shrink: 0;">
+                            <span style="position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); background: #006eff; color: white; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 6px; border: 2px solid #fff; letter-spacing: 1px; z-index: 2;">AO VIVO</span>
                             <div style="width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: #fff; border: 2px solid #fff; display: flex; align-items: center; justify-content: center; background-size: cover; background-position: center;">
                                 <img src="${this.rGetPImage(p.image, p.name, p.type)}" style="width: 100%; height: 100%; object-fit: cover;">
                             </div>
@@ -9053,7 +9053,7 @@
                         ` : `
                         <div style="width: 100%; aspect-ratio: 1; background: #f9f9f9; overflow: hidden; position: relative; border-bottom: 2px solid #f2f2f2;">
                             ${p.hasLimit && (p.stockLimit - (p.sales || 0)) <= 10 ? `
-                                <div style="position: absolute; top: 8px; right: 8px; background: #ff005c; color: #fff; font-size: 8px; font-weight: 950; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">ÚLTIMAS ${(p.stockLimit - (p.sales || 0))}</div>
+                                <div style="position: absolute; top: 8px; right: 8px; background: #006eff; color: #fff; font-size: 8px; font-weight: 950; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">ÚLTIMAS ${(p.stockLimit - (p.sales || 0))}</div>
                             ` : ''}
                             <img src="${this.rGetPImage(p.image, p.name, p.type)}" style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
@@ -9068,7 +9068,7 @@
                                 <span style="font-size: 8px; font-weight: 900; color: #bbb;">(${this.getProductRating(p.id).count})</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
-                                <span style="font-weight: 900; font-size: 14px; color: #ff005c;">R$ ${parseFloat(p.price || 0).toFixed(2)}</span>
+                                <span style="font-weight: 900; font-size: 14px; color: #006eff;">R$ ${parseFloat(p.price || 0).toFixed(2)}</span>
                                 <span style="font-size: 8px; font-weight: 800; color: #ccc;">${isMentoria ? 'Transmitindo' : `${p.sales || 0} v.`}</span>
                             </div>
                         </div>
@@ -9082,8 +9082,8 @@
             feed.innerHTML = all.map(p => {
                 const isMentoria = p.type === 'Mentoria';
                 const imgContainer = isMentoria ? `
-                    <div style="aspect-ratio: 1; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #ff005c, #7000ff); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; position: relative; box-shadow: 0 4px 15px rgba(255,0,92,0.3); overflow: visible;">
-                        <span style="position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); background: #ff005c; color: white; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 6px; border: 2px solid #fff; letter-spacing: 1px; z-index: 2;">AO VIVO</span>
+                    <div style="aspect-ratio: 1; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #006eff, #7000ff); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; position: relative; box-shadow: 0 4px 15px rgba(255,0,92,0.3); overflow: visible;">
+                        <span style="position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); background: #006eff; color: white; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 6px; border: 2px solid #fff; letter-spacing: 1px; z-index: 2;">AO VIVO</span>
                         <div style="width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: #fff; border: 2px solid #fff; display: flex; align-items: center; justify-content: center;">
                             <img src="${this.rGetPImage(p.image, p.name, p.type)}" style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
@@ -9103,7 +9103,7 @@
                     ` : `
                         <div style="width: 100%; aspect-ratio: 1; background: #f9f9f9; overflow: hidden; position: relative; border-bottom: 2px solid #f2f2f2;">
                             ${p.hasLimit && (p.stockLimit - (p.sales || 0)) <= 15 ? `
-                                <div style="position: absolute; top: 12px; right: 12px; background: #ff005c; color: #fff; font-size: 8px; font-weight: 950; padding: 4px 10px; border-radius: 6px; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">RESTAM ${(p.stockLimit - (p.sales || 0))}</div>
+                                <div style="position: absolute; top: 12px; right: 12px; background: #006eff; color: #fff; font-size: 8px; font-weight: 950; padding: 4px 10px; border-radius: 6px; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">RESTAM ${(p.stockLimit - (p.sales || 0))}</div>
                             ` : ''}
                             <img src="${this.rGetPImage(p.image, p.name, p.type)}" style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
@@ -10259,11 +10259,11 @@
                 let icon = 'bell';
                 let color = '#000';
                 if (n.type === 'sale') { icon = 'shopping-bag'; color = '#22c55e'; }
-                if (n.type === 'fan') { icon = 'star'; color = '#ff005c'; }
+                if (n.type === 'fan') { icon = 'star'; color = '#006eff'; }
                 
                 return `
                     <div style="padding: 16px; background: ${n.read ? '#fff' : '#fafafa'}; border-radius: 20px; border: 1px solid ${n.read ? '#eee' : '#f0f0f0'}; display: flex; gap: 14px; position: relative; transition: 0.3s;">
-                        ${!n.read ? `<div style="position: absolute; top: 12px; right: 12px; width: 6px; height: 6px; background: #ff005c; border-radius: 50%;"></div>` : ''}
+                        ${!n.read ? `<div style="position: absolute; top: 12px; right: 12px; width: 6px; height: 6px; background: #006eff; border-radius: 50%;"></div>` : ''}
                         <div style="width: 44px; height: 44px; background: ${color}10; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                             <i data-lucide="${icon}" style="width: 20px; color: ${color};"></i>
                         </div>
@@ -10520,7 +10520,7 @@
                     </div>
                     <div style="flex: 1; overflow: hidden;">
                         <h4 style="font-size: 14px; font-weight: 950; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px;">${p.name}</h4>
-                        <p style="font-size: 10px; font-weight: 700; color: #0487ff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: none;">/${p.slug || p.id}</p>
+                        <p style="font-size: 10px; font-weight: 700; color: #ffba09; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: none;">/${p.slug || p.id}</p>
                     </div>
                     <div style="display: flex; gap: 8px;">
                         <button onclick="app.copyToClipboard('${shareUrl}', 'Link de Venda copiado!', this)" title="Copiar link para clientes" style="width: 40px; height: 40px; border-radius: 12px; background: #000; color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;">

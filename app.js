@@ -3254,7 +3254,16 @@
                     // 3. FONTE DE VERDADE: CLOUD
                     const synchronized = data.map(net => {
                         const contentData = net.content ? (typeof net.content === 'string' ? JSON.parse(net.content) : net.content) : null;
-                        return { ...net, id: String(net.id), price: Number(net.price), content: contentData };
+                        const processed = { ...net, id: String(net.id), price: Number(net.price), content: contentData };
+                        
+                        // Restaura campos da vitrine mentoria se estiverem no content
+                        if (contentData && typeof contentData === 'object') {
+                            if (contentData.mentoria_link) processed.mentoria_link = contentData.mentoria_link;
+                            if (contentData.mentoria_name) processed.mentoria_name = contentData.mentoria_name;
+                            if (contentData.mentoria_image) processed.mentoria_image = contentData.mentoria_image;
+                        }
+                        
+                        return processed;
                     });
 
                     this.products = synchronized;

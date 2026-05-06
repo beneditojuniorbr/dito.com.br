@@ -1994,9 +1994,6 @@
 
             // SINCRONIZAÇÃO DE SEGURANÇA: Verifica o histórico real para evitar o bug de "Perdeu" em dias já feitos
             const historyKey = `dito_checkin_history_${key}`;
-            const history = JSON.parse(localStorage.getItem(historyKey) || '[]');
-            const currentWeek = this.getWeekNumber();
-            
             let changed = false;
             checklist.forEach((item, idx) => {
                 if (!item.checked) {
@@ -2007,7 +2004,26 @@
                     }
                 }
             });
-            if (changed) localStorage.setItem(storageKey, JSON.stringify(checklist));
+
+            // NOVO: Regra de Reset de Streak (Se perder um dia, reinicia tudo)
+            const todayIdx = new Date().getDay();
+            const hasMissedPast = checklist.some((item, i) => i < todayIdx && !item.checked);
+            
+            if (hasMissedPast) {
+                let resetHappened = false;
+                checklist.forEach(item => {
+                    if (item.checked) {
+                        item.checked = false;
+                        resetHappened = true;
+                    }
+                });
+                if (resetHappened) {
+                    localStorage.setItem(storageKey, JSON.stringify(checklist));
+                    this.showNotification("Putz! Você perdeu o check-in e seu progresso reiniciou.", "error");
+                }
+            } else if (changed) {
+                localStorage.setItem(storageKey, JSON.stringify(checklist));
+            }
 
             // Atualiza saldo de cupons na barra superior
             const currentCoins = parseInt(localStorage.getItem(`dito_coins_${key}`) || '0');
@@ -2186,7 +2202,11 @@
             };
 
             types.forEach(type => {
-                if (localStorage.getItem(`dito_event_${type}_${key}`) === 'active') {
+                const isActive = localStorage.getItem(`dito_event_${type}_${key}`) === 'active';
+                const isClaimed = claimedEvents.includes(type);
+                
+                // Remova se não for ativo OU se já tiver sido resgatado
+                if (isActive && !isClaimed) {
                     activeEvents.push({ type, ...eventConfigs[type] });
                 }
             });
@@ -7122,7 +7142,7 @@
                     vitrineImg.style.borderBottom = 'none';
                     vitrineImg.style.padding = '12px';
                     vitrineImg.innerHTML = `
-                        <div style="aspect-ratio: 1; width: 100%; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #006eff, #7000ff); display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 4px 15px rgba(255,0,92,0.3);">
+                        <div style="aspect-ratio: 1; width: 100%; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #006eff, #7000ff); display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
                             <span style="position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); background: #006eff; color: white; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 6px; border: 2px solid #fff; letter-spacing: 1px; z-index: 2; white-space: nowrap;">AO VIVO</span>
                             <div style="width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: #fff; border: 2px solid #fff; display: flex; align-items: center; justify-content: center; background-size: cover; background-position: center; background-image: url('${img || ''}')">
                                 ${!img ? '<i data-lucide="users" style="width: 32px; color: #eee;"></i>' : ''}
@@ -7429,6 +7449,7 @@
                     if (document.getElementById('ebook-upload')) document.getElementById('ebook-upload').style.display = (this.selectedProductType === 'Ebook') ? 'block' : 'none';
                     if (document.getElementById('curso-upload')) document.getElementById('curso-upload').style.display = (this.selectedProductType === 'Curso') ? 'flex' : 'none';
                     if (document.getElementById('mentoria-fields')) document.getElementById('mentoria-fields').style.display = (this.selectedProductType === 'Mentoria') ? 'flex' : 'none';
+                    if (document.getElementById('mentoria-presentation-fields')) document.getElementById('mentoria-presentation-fields').style.display = (this.selectedProductType === 'Mentoria') ? 'flex' : 'none';
                     if (document.getElementById('fisico-fields')) document.getElementById('fisico-fields').style.display = (this.selectedProductType === 'Fisico') ? 'flex' : 'none';
                     
                     // Garante renderização da estrutura se for curso
@@ -9074,7 +9095,7 @@
                 liveWrapper.style.display = activeLives.length > 0 ? 'block' : 'none';
                 liveContainer.innerHTML = activeLives.map(p => `
                     <div onclick="app.enterMentorshipRoom('${p.id}')" style="display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; flex-shrink: 0; width: 72px;">
-                        <div style="width: 72px; height: 72px; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #006eff, #7000ff); display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 4px 15px rgba(255,0,92,0.3);">
+                        <div style="width: 72px; height: 72px; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #006eff, #7000ff); display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
                             <div style="width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: #fff; border: 2px solid #fff; display: flex; align-items: center; justify-content: center;">
                                 <img src="${this.rGetPImage(p.image, p.name, p.type)}" style="width: 100%; height: 100%; object-fit: cover;">
                             </div>
@@ -9092,7 +9113,7 @@
                 hContainer.innerHTML = arrival.map(p => {
                     const isMentoria = p.type === 'Mentoria';
                     const imgContainer = isMentoria ? `
-                        <div style="aspect-ratio: 1; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #006eff, #7000ff); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; position: relative; box-shadow: 0 4px 15px rgba(255,0,92,0.3); overflow: visible; flex-shrink: 0;">
+                        <div style="aspect-ratio: 1; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #006eff, #7000ff); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.08); overflow: visible; flex-shrink: 0;">
                             <span style="position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); background: #006eff; color: white; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 6px; border: 2px solid #fff; letter-spacing: 1px; z-index: 2;">AO VIVO</span>
                             <div style="width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: #fff; border: 2px solid #fff; display: flex; align-items: center; justify-content: center; background-size: cover; background-position: center;">
                                 <img src="${this.rGetPImage(p.image, p.name, p.type)}" style="width: 100%; height: 100%; object-fit: cover;">
@@ -9142,7 +9163,7 @@
             feed.innerHTML = all.map(p => {
                 const isMentoria = p.type === 'Mentoria';
                 const imgContainer = isMentoria ? `
-                    <div style="aspect-ratio: 1; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #006eff, #7000ff); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; position: relative; box-shadow: 0 4px 15px rgba(255,0,92,0.3); overflow: visible;">
+                    <div style="aspect-ratio: 1; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #006eff, #7000ff); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.08); overflow: visible;">
                         <span style="position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); background: #006eff; color: white; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 6px; border: 2px solid #fff; letter-spacing: 1px; z-index: 2;">AO VIVO</span>
                         <div style="width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: #fff; border: 2px solid #fff; display: flex; align-items: center; justify-content: center;">
                             <img src="${this.rGetPImage(p.image, p.name, p.type)}" style="width: 100%; height: 100%; object-fit: cover;">

@@ -3897,7 +3897,7 @@
                 const sellerName = product.author || product.seller;
                 if (sellerName && sellerName !== 'Ditão' && sellerName !== 'Visitante') {
                     console.log(`💰 [Financeiro] Creditando R$ ${product.price} para o vendedor: ${sellerName}`);
-                    await this.creditSeller(sellerName, product.price, product.name);
+                    await this.creditSeller(sellerName, product.price, product.name, product);
                 }
             }
 
@@ -3985,9 +3985,19 @@
 
                     this.sendNetworkNotification(sellerUsername, 'venda', isGuaranteed ? 'Venda Garantida 🔒' : 'Dinheiro na Mão! ⚡', msg);
                     
-                    // Adicional para Produtos Físicos
-                    if (prod && prod.type === 'Fisico') {
-                        this.sendNetworkNotification(sellerUsername, 'pedido_pendente', '📦 NOVO PEDIDO FÍSICO!', `Você recebeu um pedido de "${productName}". Organize a entrega com o cliente.`);
+                    // Adicional para Produtos Físicos: envia o endereço ao vendedor
+                    if (fullProduct && fullProduct.type === 'Fisico') {
+                        const addr = this.deliveryAddress;
+                        const addrText = addr
+                            ? `${addr.rua}, ${addr.numero}${addr.complemento ? ' ' + addr.complemento : ''} - ${addr.bairro}, ${addr.cidade}/${addr.uf} - CEP: ${addr.cep}`
+                            : 'Endereço não informado';
+                        const buyer = this.currentUser?.username || 'Comprador';
+                        this.sendNetworkNotification(
+                            sellerUsername,
+                            'pedido_pendente',
+                            '📦 Novo Pedido Físico!',
+                            `"${productName}" vendido para @${buyer}.\n\n📍 Entregar em:\n${addrText}`
+                        );
                     }
                 }
 
@@ -8441,6 +8451,7 @@
             if (this.marketView === 'cart') this.renderMarketCart(container);
             if (this.marketView === 'checkout') this.renderMarketCheckout(container);
             if (this.marketView === 'seletor-cupons') this.renderMarketCouponSelector(container);
+            if (this.marketView === 'endereco-entrega') this.renderMarketAddressScreen(container);
             if (this.marketView === 'live-room') this.renderMarketLiveRoom(container);
 
             
@@ -9751,8 +9762,54 @@
     };
 
     app.applyCouponsAndContinue = function() {
+        const hasPhysical = this.cart.some(i => i.type === 'Fisico');
+        if (hasPhysical) {
+            this.setMarketView('endereco-entrega', 'right');
+        } else {
+            this.setMarketView('checkout', 'right');
+        }
+    };
+
+    app.renderMarketAddressScreen = function(container) {
+        const temp = document.getElementById('template-endereco-entrega');
+        if (!temp) return;
+        container.innerHTML = temp.innerHTML;
+
+        // Preenche campos salvos se existirem
+        const saved = this.deliveryAddress || {};
+        const fields = ['cep', 'rua', 'numero', 'complemento', 'bairro', 'cidade', 'uf'];
+        fields.forEach(f => {
+            const el = document.getElementById(`addr-${f}`);
+            if (el && saved[f]) el.value = saved[f];
+        });
+
+        if (window.lucide) lucide.createIcons();
+    };
+
+    app.saveDeliveryAddress = function() {
+        const cep    = document.getElementById('addr-cep')?.value.trim();
+        const rua    = document.getElementById('addr-rua')?.value.trim();
+        const numero = document.getElementById('addr-numero')?.value.trim();
+        const bairro = document.getElementById('addr-bairro')?.value.trim();
+        const cidade = document.getElementById('addr-cidade')?.value.trim();
+        const uf     = document.getElementById('addr-uf')?.value.trim();
+        const complemento = document.getElementById('addr-complemento')?.value.trim();
+
+        if (!cep || !rua || !numero || !bairro || !cidade || !uf) {
+            this.showNotification('Preencha todos os campos obrigatórios.', 'error');
+            return;
+        }
+
+        this.deliveryAddress = { cep, rua, numero, complemento, bairro, cidade, uf };
         this.setMarketView('checkout', 'right');
     };
+
+    app.formatCEP = function(input) {
+        let v = input.value.replace(/\D/g, '').substring(0, 8);
+        if (v.length > 5) v = v.substring(0, 5) + '-' + v.substring(5);
+        input.value = v;
+    };
+
 
     app.renderMyProducts = function() {
         const list = document.getElementById('my-products-list');

@@ -1520,6 +1520,67 @@
         </div>
     </template>
 
+    <template id="template-endereco-entrega">
+        <div style="padding: 40px 24px; background: #fff; min-height: 100vh; display: flex; flex-direction: column;">
+            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 48px;">
+                <div onclick="app.setMarketView('seletor-cupons', 'left')" style="width: 44px; height: 44px; background: #f5f5f5; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;">
+                    <i data-lucide="arrow-left" style="width: 20px; color: #000;"></i>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 12px;">
+                <i data-lucide="map-pin" style="width: 36px; color: #000;"></i>
+            </div>
+            <h2 style="font-size: 28px; font-weight: 950; letter-spacing: -1.5px; margin-bottom: 8px; line-height: 1.1; color: #000;">Onde entregar?</h2>
+            <p style="font-size: 14px; color: #999; font-weight: 700; margin-bottom: 40px;">Informe o endereço de entrega do seu pedido.</p>
+
+            <div style="display: flex; flex-direction: column; gap: 24px; width: 100%; max-width: 400px;">
+
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 11px; font-weight: 950; color: #000; text-transform: uppercase; letter-spacing: 0.5px;">CEP</label>
+                    <input id="addr-cep" type="text" inputmode="numeric" maxlength="9" placeholder="00000-000" oninput="app.formatCEP(this)" style="border: none; border-bottom: 2px solid #eee; padding: 12px 0; font-size: 18px; font-weight: 800; color: #000; outline: none; background: transparent; width: 100%;">
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 11px; font-weight: 950; color: #000; text-transform: uppercase; letter-spacing: 0.5px;">Rua / Avenida</label>
+                    <input id="addr-rua" type="text" placeholder="Nome da rua" style="border: none; border-bottom: 2px solid #eee; padding: 12px 0; font-size: 16px; font-weight: 700; color: #000; outline: none; background: transparent; width: 100%;">
+                </div>
+
+                <div style="display: flex; gap: 16px;">
+                    <div style="display: flex; flex-direction: column; gap: 6px; width: 100px;">
+                        <label style="font-size: 11px; font-weight: 950; color: #000; text-transform: uppercase; letter-spacing: 0.5px;">Número</label>
+                        <input id="addr-numero" type="text" placeholder="123" style="border: none; border-bottom: 2px solid #eee; padding: 12px 0; font-size: 16px; font-weight: 700; color: #000; outline: none; background: transparent; width: 100%;">
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 6px; flex: 1;">
+                        <label style="font-size: 11px; font-weight: 950; color: #000; text-transform: uppercase; letter-spacing: 0.5px;">Complemento</label>
+                        <input id="addr-complemento" type="text" placeholder="Apto, bloco... (opcional)" style="border: none; border-bottom: 2px solid #eee; padding: 12px 0; font-size: 16px; font-weight: 700; color: #000; outline: none; background: transparent; width: 100%;">
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 11px; font-weight: 950; color: #000; text-transform: uppercase; letter-spacing: 0.5px;">Bairro</label>
+                    <input id="addr-bairro" type="text" placeholder="Nome do bairro" style="border: none; border-bottom: 2px solid #eee; padding: 12px 0; font-size: 16px; font-weight: 700; color: #000; outline: none; background: transparent; width: 100%;">
+                </div>
+
+                <div style="display: flex; gap: 16px;">
+                    <div style="display: flex; flex-direction: column; gap: 6px; flex: 1;">
+                        <label style="font-size: 11px; font-weight: 950; color: #000; text-transform: uppercase; letter-spacing: 0.5px;">Cidade</label>
+                        <input id="addr-cidade" type="text" placeholder="Cidade" style="border: none; border-bottom: 2px solid #eee; padding: 12px 0; font-size: 16px; font-weight: 700; color: #000; outline: none; background: transparent; width: 100%;">
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 6px; width: 60px;">
+                        <label style="font-size: 11px; font-weight: 950; color: #000; text-transform: uppercase; letter-spacing: 0.5px;">UF</label>
+                        <input id="addr-uf" type="text" maxlength="2" placeholder="SP" style="border: none; border-bottom: 2px solid #eee; padding: 12px 0; font-size: 16px; font-weight: 700; color: #000; outline: none; background: transparent; width: 100%; text-transform: uppercase;">
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="app.saveDeliveryAddress()" style="width: 100%; max-width: 400px; height: 64px; background: #000; color: #fff; border: none; border-radius: 100px; font-size: 15px; font-weight: 950; cursor: pointer; margin-top: auto; padding-top: 40px;">
+                Continuar para o pagamento
+            </button>
+        </div>
+    </template>
+
+
     <template id="template-checkout">
         <div style="padding: 24px; background: #fff; min-height: 100vh; padding-bottom: 120px;">
             <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 32px;">

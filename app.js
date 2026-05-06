@@ -3539,6 +3539,13 @@
                                 VAGAS ESGOTADAS
                             </button>
                         `;
+                    } else if (p.price === 0) {
+                        actionsContainer.innerHTML = `
+                            <button onclick="app.claimFreeMentoria('${p.id}')" style="width: 100%; height: 60px; background: #000; color: #fff; border: none; border-radius: 100px; font-size: 13px; font-weight: 900; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
+                                <i data-lucide="zap" style="width: 20px;"></i>
+                                ENTRAR GRATUITAMENTE
+                            </button>
+                        `;
                     } else {
                         actionsContainer.style.flexDirection = 'column';
                         actionsContainer.style.gap = '10px';
@@ -3621,6 +3628,12 @@
                     this.showNotification("Este produto está esgotado!", "error");
                     return;
                 }
+
+                // Se o preço for 0, usa a lógica de entrada direta
+                if (this.selectedProduct.price === 0 && this.selectedProduct.type === 'Mentoria') {
+                    return this.claimFreeMentoria(this.selectedProduct.id);
+                }
+
                 // Compras diretas geralmente focam no item selecionado
                 this.cart = [this.selectedProduct];
                 localStorage.setItem(`dito_cart_${this.getUserKey()}`, JSON.stringify(this.cart));
@@ -3633,6 +3646,37 @@
                     this.setMarketView('checkout', 'right');
                 }
             }
+        },
+
+        async claimFreeMentoria(productId) {
+            if (!this.currentUser || this.currentUser.isGuest) {
+                this.showNotification("Faça login para entrar na mentoria!", "info");
+                this.navigate('perfil'); // Leva pro login/cadastro
+                return;
+            }
+
+            const p = this.products.find(item => String(item.id) === String(productId));
+            if (!p) return;
+
+            // Simula sucesso de compra e adiciona aos adquiridos
+            if (!this.purchasedProducts.some(pp => String(pp.id) === String(p.id))) {
+                this.purchasedProducts.push(p);
+                localStorage.setItem(`dito_purchased_products_${this.getUserKey()}`, JSON.stringify(this.purchasedProducts));
+                
+                // Incrementa vendas no DB
+                p.sales = (p.sales || 0) + 1;
+                this.syncProductToNetwork(p);
+
+                // Notifica o autor
+                this.sendNetworkNotification(p.seller || p.author, 'sale', '✨ Nova Inscrição Grátis!', `${this.currentUser.username} entrou na sua mentoria.`);
+            }
+
+            this.showNotification("Inscrição gratuita realizada! 🎉", "success");
+            
+            // Entra na mentoria imediatamente
+            setTimeout(() => {
+                this.accessLiveDirectly(p.id);
+            }, 800);
         },
 
         async fetchAndRenderProductRating(productId) {

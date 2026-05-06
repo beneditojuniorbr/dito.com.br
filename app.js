@@ -3201,7 +3201,7 @@
                 // 2. BUSCA NO SUPABASE (Produtos + Avaliações)
                 const [pRes, rRes] = await Promise.all([
                     supabase.from('dito_market_products').select('*').order('created_at', { ascending: false }).limit(50),
-                    supabase.from('dito_product_ratings').select('product_id, score')
+                    supabase.from('dito_product_ratings').select('product_id, score, username')
                 ]);
 
                 const data = pRes.data;
@@ -3671,6 +3671,18 @@
 
                 if (!result.error) {
                     this.showNotification(newScore === 0 ? 'Avaliação removida.' : 'Avaliado com sucesso!', 'success');
+                    
+                    // Atualiza cache local de avaliações para persistência imediata na Home
+                    if (this.marketRatings) {
+                        const idx = this.marketRatings.findIndex(r => String(r.product_id) === String(productId) && r.username === this.currentUser.username);
+                        if (idx !== -1) {
+                            if (newScore === 0) this.marketRatings.splice(idx, 1);
+                            else this.marketRatings[idx].score = newScore;
+                        } else if (newScore > 0) {
+                            this.marketRatings.push({ product_id: productId, username: this.currentUser.username, score: newScore });
+                        }
+                    }
+
                     this.fetchAndRenderProductRating(productId);
                 } else {
                     console.error("Erro ao avaliar produto:", result.error);

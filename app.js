@@ -7234,7 +7234,8 @@
                     const mLink = document.getElementById('mentoria-prod-link')?.value || "";
                     const mImage = this.mentoriaPresentationImage || null;
 
-                    if (liveBoxName) liveBoxName.innerText = name;
+                    const mName = document.getElementById('mentoria-prod-name')?.value || name;
+                    if (liveBoxName) liveBoxName.innerText = mName;
                     if (liveBoxImg) {
                         liveBoxImg.style.backgroundImage = mImage ? `url(${mImage})` : 'none';
                         if (!mImage) liveBoxImg.style.backgroundColor = '#f5f5f5';
@@ -7805,6 +7806,7 @@
                     hasLimit: hasLimit,
                     stockLimit: hasLimit ? stockLimit : null,
                     slug: originalProd ? originalProd.slug : this.generateRandomSlug(),
+                    mentoria_name: this.selectedProductType === 'Mentoria' ? (document.getElementById('mentoria-prod-name')?.value || null) : null,
                     mentoria_link: this.selectedProductType === 'Mentoria' ? (document.getElementById('mentoria-prod-link')?.value || null) : null,
                     mentoria_image: this.selectedProductType === 'Mentoria' ? (this.mentoriaPresentationImage || null) : null,
                     fisico_deadline: this.selectedProductType === 'Fisico' ? (document.getElementById('prod-fisico-deadline')?.value || null) : null,

@@ -9723,7 +9723,7 @@
         const totalBase = this.cart.reduce((acc, i) => acc + parseFloat(i.price || 0), 0);
         const hasPhysical = this.cart.some(i => i.type === 'Fisico');
         
-        const maxDiscount = hasPhysical ? 3 : 100;
+        const maxDiscount = hasPhysical ? 0 : 100;
         const couponsUsed = this.selectedCouponsForPurchase || 0;
         const discountPercentage = Math.min(couponsUsed, maxDiscount);
         const discountAmount = totalBase * (discountPercentage / 100);
@@ -9747,7 +9747,7 @@
         const key = this.getUserKey();
         const currentCoins = parseInt(localStorage.getItem(`dito_coins_${key}`) || '0');
         const hasPhysical = this.cart.some(i => i.type === 'Fisico');
-        const maxAllowed = hasPhysical ? 3 : 100;
+        const maxAllowed = hasPhysical ? 0 : 100;
         
         const saldoEl = document.getElementById('seletor-saldo-atual');
         const input = document.getElementById('input-seletor-cupons');

@@ -2007,21 +2007,28 @@
                 }
             });
 
-            // NOVO: Regra de Reset de Streak (Se perder um dia, reinicia tudo)
+            // NOVO: Regra de Reset de Streak (Se perder um dia, reinicia o progresso anterior)
             const todayIdx = new Date().getDay();
-            const hasMissedPast = checklist.some((item, i) => i < todayIdx && !item.checked);
+            const hasMissedPast = checklist.some((item, i) => i < todayIdx && !item.checked && !item.resetHandled);
             
             if (hasMissedPast) {
                 let resetHappened = false;
-                checklist.forEach(item => {
-                    if (item.checked) {
+                checklist.forEach((item, i) => {
+                    // Resetamos dias anteriores que estavam marcados (quebra de streak)
+                    if (i < todayIdx && item.checked) {
                         item.checked = false;
                         resetHappened = true;
                     }
+                    // Marcamos o dia perdido como "já processado" para não resetar em loop
+                    if (i < todayIdx && !item.checked && !item.resetHandled) {
+                        item.resetHandled = true;
+                        resetHappened = true;
+                    }
                 });
+
                 if (resetHappened) {
                     localStorage.setItem(storageKey, JSON.stringify(checklist));
-                    this.showNotification("Putz! Você perdeu o check-in e seu progresso reiniciou.", "error");
+                    this.showNotification("Streak quebrada! Seu progresso reiniciou, mas você pode recomeçar de hoje.", "error");
                 }
             } else if (changed) {
                 localStorage.setItem(storageKey, JSON.stringify(checklist));

@@ -1161,11 +1161,15 @@
         },
 
         closeModal(e) {
-            if (e) e.stopPropagation();
+            if (e && e.target !== e.currentTarget && e.target.tagName !== 'BUTTON' && !e.target.closest('.modal-dialog')) return; 
+            
             const modal = document.getElementById('modal-container');
             if (modal) {
-                modal.style.display = 'none';
                 modal.classList.remove('active');
+                setTimeout(() => {
+                    modal.classList.remove('center-modal');
+                    modal.style.display = 'none';
+                }, 300);
             }
         },
 
@@ -8854,23 +8858,62 @@
             const p = this.products.find(item => String(item.id) === String(pId));
             if (!p) return;
 
-            const newLink = prompt("📍 [VITRINE LIVE] Cole o Link do seu produto ou oferta especial:", p.mentoria_link || "https://...");
-            if (newLink === null) return;
+            // NOVA JANELA CUSTOMIZADA
+            const modal = document.getElementById('modal-container');
+            const body = document.getElementById('modal-body');
+            if (!modal || !body) return;
 
-            p.mentoria_link = newLink;
-            p.mentoria_name = prompt("🏷️ Digite o nome chamativo para este produto:", p.mentoria_name || "PRODUTO EM DESTAQUE") || "PRODUTO EM DESTAQUE";
-            
-            const newImg = prompt("🖼️ [OPCIONAL] Cole o Link de uma imagem para a capa (ou deixe em branco para manter):", p.mentoria_image && p.mentoria_image.startsWith('http') ? p.mentoria_image : "");
-            if (newImg) p.mentoria_image = newImg;
-            
-            // Sincroniza e garante atualização do objeto selecionado
-            this.selectedProduct = p;
-            this.syncProductToNetwork(p); // Sincroniza em background
-            
-            this.showNotification("Vitrine atualizada para todos os participantes! 🎯", "success");
-            
-            // Força atualização IMEDIATA da UI
-            this.renderStore();
+            modal.style.display = 'flex';
+            modal.classList.add('active', 'center-modal');
+            body.innerHTML = `
+                <div class="modal-dialog">
+                    <h3 style="font-weight: 950; font-size: 20px; letter-spacing: -0.5px; margin-bottom: 8px;">Configurar Vitrine</h3>
+                    <p style="font-size: 13px; color: #666; font-weight: 700; margin-bottom: 24px;">Preencha os dados da sua oferta para os alunos.</p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <div>
+                            <label style="font-size: 11px; font-weight: 900; color: #bbb; text-transform: uppercase; margin-bottom: 8px; display: block;">Link do Produto</label>
+                            <input type="text" id="live-fix-link" value="${p.mentoria_link || ''}" placeholder="https://..." style="width: 100%; height: 48px; background: #f9f9f9; border: 1px solid #eee; border-radius: 12px; padding: 0 16px; font-weight: 800; font-size: 14px; outline: none;">
+                        </div>
+                        <div>
+                            <label style="font-size: 11px; font-weight: 900; color: #bbb; text-transform: uppercase; margin-bottom: 8px; display: block;">Nome do Produto</label>
+                            <input type="text" id="live-fix-name" value="${p.mentoria_name || ''}" placeholder="Ex: Ebook VIP" style="width: 100%; height: 48px; background: #f9f9f9; border: 1px solid #eee; border-radius: 12px; padding: 0 16px; font-weight: 800; font-size: 14px; outline: none;">
+                        </div>
+                        <div>
+                            <label style="font-size: 11px; font-weight: 900; color: #bbb; text-transform: uppercase; margin-bottom: 8px; display: block;">URL da Imagem (Opcional)</label>
+                            <input type="text" id="live-fix-img" value="${p.mentoria_image && p.mentoria_image.startsWith('http') ? p.mentoria_image : ''}" placeholder="Link da imagem..." style="width: 100%; height: 48px; background: #f9f9f9; border: 1px solid #eee; border-radius: 12px; padding: 0 16px; font-weight: 800; font-size: 14px; outline: none;">
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; margin-top: 32px;">
+                        <button onclick="app.closeModal()" style="flex: 1; height: 50px; background: #f5f5f5; color: #000; border: none; border-radius: 50px; font-weight: 950; font-size: 13px; cursor: pointer;">CANCELAR</button>
+                        <button id="btn-save-live-fix" style="flex: 2; height: 50px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 950; font-size: 13px; cursor: pointer;">SALVAR AGORA</button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('btn-save-live-fix').onclick = () => {
+                const link = document.getElementById('live-fix-link').value;
+                const name = document.getElementById('live-fix-name').value;
+                const img = document.getElementById('live-fix-img').value;
+
+                if (!link) {
+                    this.showNotification("O link é obrigatório!", "error");
+                    return;
+                }
+
+                p.mentoria_link = link;
+                p.mentoria_name = name || "PRODUTO EM DESTAQUE";
+                if (img) p.mentoria_image = img;
+
+                this.selectedProduct = p;
+                this.syncProductToNetwork(p);
+                this.closeModal();
+                this.showNotification("Vitrine atualizada com sucesso! 🎯", "success");
+                this.renderStore();
+            };
+
+            if (window.lucide) lucide.createIcons();
         },
 
         async updateLiveLink(productId) {

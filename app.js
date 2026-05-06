@@ -9713,8 +9713,11 @@
             warning.style.display = hasPhysical ? 'block' : 'none';
         }
         
-        this.updateCouponSelectorLabel();
-        if (window.lucide) lucide.createIcons();
+        // setTimeout garante que o DOM está pronto antes de calcular os valores
+        setTimeout(() => {
+            this.updateCouponSelectorLabel();
+            if (window.lucide) lucide.createIcons();
+        }, 50);
     };
 
     app.updateCouponSelectorLabel = function() {
@@ -9723,20 +9726,28 @@
         const labelDesconto = document.getElementById('label-desconto-valor');
         const labelTotal = document.getElementById('label-total-final');
         
-        if (input && label && labelDesconto && labelTotal) {
-            const totalBase = this.cart.reduce((acc, i) => acc + parseFloat(i.price || 0), 0);
-            const hasPhysical = this.cart.some(i => i.type === 'Fisico');
-            const maxAllowed = hasPhysical ? 3 : 100;
+        if (!input) return;
 
-            const discountPercentage = Math.min(val, maxAllowed);
-            const discountAmount = totalBase * (discountPercentage / 100);
-            const finalPrice = Math.max(0.01, totalBase - discountAmount);
-            
-            labelDesconto.innerText = `- R$ ${discountAmount.toFixed(2)}`;
-            labelTotal.innerText = `R$ ${finalPrice.toFixed(2)}`;
-            
-            this.selectedCouponsForPurchase = val;
+        const totalBase = this.cart.reduce((acc, i) => acc + parseFloat(i.price || 0), 0);
+        const hasPhysical = this.cart.some(i => i.type === 'Fisico');
+        const maxAllowed = hasPhysical ? 3 : 100;
+
+        let val = parseInt(input.value) || 0;
+        // Garante que não ultrapasse o limite
+        if (val > maxAllowed) {
+            val = maxAllowed;
+            input.value = val;
         }
+
+        const discountPercentage = Math.min(val, maxAllowed);
+        const discountAmount = totalBase * (discountPercentage / 100);
+        const finalPrice = Math.max(0.01, totalBase - discountAmount);
+
+        if (label) label.innerText = discountPercentage;
+        if (labelDesconto) labelDesconto.innerText = `- R$ ${discountAmount.toFixed(2)}`;
+        if (labelTotal) labelTotal.innerText = `R$ ${finalPrice.toFixed(2)}`;
+        
+        this.selectedCouponsForPurchase = val;
     };
 
     app.applyCouponsAndContinue = function() {

@@ -8749,10 +8749,14 @@
 
                 if (hasProduct) {
                     relatedContainer.style.display = 'flex';
-                    if (isOwner) {
-                        relatedContainer.style.cursor = 'pointer';
-                        relatedContainer.title = "Clique para editar vitrine";
-                        relatedContainer.onclick = () => this.fixProductLive();
+                    
+                    const mentorControls = document.getElementById('live-mentor-controls');
+                    if (mentorControls) {
+                        mentorControls.innerHTML = isOwner ? `
+                            <button onclick="app.fixProductLive()" style="background: rgba(0,0,0,0.05); color: #000; border: none; padding: 8px 14px; border-radius: 50px; font-size: 9px; font-weight: 950; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;">
+                                EDITAR
+                            </button>
+                        ` : '';
                     }
                     
                     if (relatedImg) {
@@ -8780,18 +8784,20 @@
                 } else if (isOwner) {
                     // Dono vê placeholder se estiver vazio - Adicionando clique para cadastrar na hora
                     relatedContainer.style.display = 'flex';
-                    relatedContainer.style.cursor = 'pointer';
-                    relatedContainer.onclick = () => this.fixProductLive();
-                    
                     if (relatedImg) {
                         relatedImg.style.backgroundImage = 'none';
                         relatedImg.style.backgroundColor = '#f9f9f9';
                         relatedImg.innerHTML = '<i data-lucide="plus" style="width: 24px; color: #006eff;"></i>';
                     }
                     if (relatedName) {
-                        relatedName.innerHTML = `<span style="color: #006eff;">+ Adicionar Produto</span><br><span style="font-size: 10px; color: #999; font-weight: 700;">Sua vitrine está vazia</span>`;
+                        relatedName.innerHTML = `<span style="font-size: 11px; color: #999; font-weight: 700;">Sua vitrine está vazia</span>`;
                     }
-                    if (relatedLink) relatedLink.style.display = 'none';
+                    if (relatedLink) {
+                        relatedLink.style.display = 'inline-flex';
+                        relatedLink.innerHTML = `ADICIONAR PRODUTO <i data-lucide="plus" style="width: 12px;"></i>`;
+                        relatedLink.href = "#";
+                        relatedLink.onclick = (e) => { e.preventDefault(); this.fixProductLive(); };
+                    }
                     if (window.lucide) lucide.createIcons();
                 } else {
                     relatedContainer.style.display = 'none';

@@ -3541,8 +3541,7 @@
                         `;
                     } else if (p.price === 0) {
                         actionsContainer.innerHTML = `
-                            <button onclick="app.claimFreeMentoria('${p.id}')" style="width: 100%; height: 60px; background: #000; color: #fff; border: none; border-radius: 100px; font-size: 13px; font-weight: 900; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
-                                <i data-lucide="zap" style="width: 20px;"></i>
+                            <button onclick="app.claimFreeMentoria('${p.id}')" style="width: 100%; height: 60px; background: #000; color: #fff; border: none; border-radius: 100px; font-size: 13px; font-weight: 900; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
                                 ENTRAR GRATUITAMENTE
                             </button>
                         `;

@@ -3267,6 +3267,7 @@
                     });
 
                     this.products = synchronized;
+                    this.checkNewProducts();
                     
                     if (this.currentView === 'mercado' && this.marketView === 'home') {
                         this.renderMarketHome();
@@ -5073,7 +5074,13 @@
                         this.checkAdminNotifications();
                         this.startEventsCarousel();
                         break;
-                    case 'mercado': setTimeout(() => this.renderStore(), 10); break;
+                    case 'mercado': 
+                        localStorage.setItem('dito_market_last_seen', Date.now().toString());
+                        setTimeout(() => {
+                            this.renderStore();
+                            this.checkNewProducts();
+                        }, 10); 
+                        break;
                     case 'sociedade': this.fetchSocieties(); break;
                 case 'sociedade-detalhe': this.renderSocietyDetail(); break;
                     case 'hall': this.renderHallOfFame(); break;
@@ -8547,24 +8554,29 @@
         },
 
         checkNewProducts() {
-            // Se for a primeira vez, simula que a última vista foi há 1 hora para mostrar novidades
-            if (!localStorage.getItem('dito_market_last_seen')) {
-                localStorage.setItem('dito_market_last_seen', (Date.now() - 3600000).toString());
-            }
-
             const lastSeen = parseInt(localStorage.getItem('dito_market_last_seen') || '0');
-            const p1 = JSON.parse(localStorage.getItem('dito_products') || '[]');
-            const p2 = JSON.parse(localStorage.getItem('dito_products_vanilla') || '[]');
-            const all = [...p1, ...p2];
+            const all = this.products || [];
             
-            // Força um produto a ser novo para demonstração se não houver nenhum
-            if (all.length > 0 && !all.some(p => (p.createdAt || 0) > lastSeen)) {
-                all[0].createdAt = Date.now() + 5000;
-            }
+            // 1. Tem algum produto novo (postado após a última visita)?
+            const hasNewProduct = all.some(p => {
+                const pDate = p.created_at ? new Date(p.created_at).getTime() : 0;
+                return pDate > lastSeen;
+            });
+            
+            // 2. Tem alguma mentoria com link ativo (Ao vivo)?
+            const hasLive = all.some(p => p.type === 'Mentoria' && p.mentoria_link);
 
-            const hasNew = all.some(p => (p.createdAt || 0) > lastSeen);
             const dot = document.getElementById('dot-mercado');
-            if (dot) dot.style.display = hasNew ? 'block' : 'none';
+            if (dot) {
+                if (hasNewProduct || hasLive) {
+                    dot.style.display = 'block';
+                    // Vermelho se for live, Azul se for apenas produto novo
+                    dot.style.background = hasLive ? '#ff4757' : '#006eff'; 
+                    dot.style.boxShadow = hasLive ? '0 0 10px rgba(255, 71, 87, 0.5)' : '0 0 10px rgba(0, 110, 255, 0.3)';
+                } else {
+                    dot.style.display = 'none';
+                }
+            }
         },
 
         renderStore() {

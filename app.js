@@ -8607,23 +8607,21 @@
 
             const isOwner = this.currentUser && (this.currentUser.username === p.seller || this.currentUser.username === p.author);
             
-            // Busca dados (pode estar na raiz ou dentro de content)
-            // Se estiver vazio, usa os dados da própria mentoria como padrão (Fluidez solicitada pelo usuário)
-            const mLink = p.mentoria_link || (p.content && p.content.mentoria_link) || (window.location.origin + '/?p=' + p.id);
-            const mName = p.mentoria_name || (p.content && p.content.mentoria_name) || p.name;
-            const mImage = p.mentoria_image || (p.content && p.content.mentoria_image) || p.image || p.image_url;
+            // Busca dados específicos da mentoria
+            const mLink = p.mentoria_link;
+            const mImage = p.mentoria_image;
+            const mName = p.mentoria_name || "Recomendação do Mentor";
             
-            // Agora a vitrine é considerada "sempre pronta" se for uma mentoria
-            const hasProduct = true; 
+            const hasProduct = !!mLink; 
 
             if (relatedContainer) {
-                if (hasProduct || isOwner) {
+                if (hasProduct) {
                     relatedContainer.style.display = 'flex';
-                    const finalImage = mImage || p.image || p.image_url;
                     
                     if (relatedImg) {
-                        if (hasProduct && finalImage) {
-                            relatedImg.style.backgroundImage = `url(${this.rGetPImage(finalImage)})`;
+                        relatedImg.innerHTML = ''; // Limpa ícones antigos
+                        if (mImage) {
+                            relatedImg.style.backgroundImage = `url(${this.rGetPImage(mImage)})`;
                         } else {
                             relatedImg.style.backgroundImage = 'none';
                             relatedImg.style.backgroundColor = '#f9f9f9';
@@ -8632,16 +8630,26 @@
                     }
 
                     if (relatedName) {
-                        relatedName.innerText = hasProduct ? (mName || "Recomendado pelo Mentor") : "Sua Vitrine está vazia";
+                        relatedName.innerText = mName;
                     }
 
                     if (relatedLink) {
-                        relatedLink.href = mLink || '#';
-                        relatedLink.innerHTML = hasProduct ? `ADQUIRIR AGORA <i data-lucide="external-link" style="width: 12px;"></i>` : `AGUARDANDO PRODUTO...`;
+                        relatedLink.href = mLink;
+                        relatedLink.innerHTML = `ACESSAR AGORA <i data-lucide="external-link" style="width: 12px;"></i>`;
                         relatedLink.style.display = 'inline-flex';
-                        relatedLink.style.opacity = hasProduct ? '1' : '0.3';
-                        relatedLink.style.pointerEvents = hasProduct ? 'all' : 'none';
                     }
+                    
+                    if (window.lucide) lucide.createIcons();
+                } else if (isOwner) {
+                    // Dono vê placeholder se estiver vazio
+                    relatedContainer.style.display = 'flex';
+                    if (relatedImg) {
+                        relatedImg.style.backgroundImage = 'none';
+                        relatedImg.innerHTML = '<i data-lucide="plus" style="width: 24px; color: #ccc;"></i>';
+                    }
+                    if (relatedName) relatedName.innerText = "Sua vitrine está vazia";
+                    if (relatedLink) relatedLink.style.display = 'none';
+                    if (window.lucide) lucide.createIcons();
                 } else {
                     relatedContainer.style.display = 'none';
                 }

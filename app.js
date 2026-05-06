@@ -8653,6 +8653,10 @@
             const hasProduct = !!mLink; 
 
             if (relatedContainer) {
+                // Reset de estado para evitar conflitos de cliques
+                relatedContainer.onclick = null;
+                relatedContainer.style.cursor = 'default';
+
                 if (hasProduct) {
                     relatedContainer.style.display = 'flex';
                     
@@ -8858,14 +8862,12 @@
             
             // Sincroniza e garante atualização do objeto selecionado
             this.selectedProduct = p;
-            await this.syncProductToNetwork(p);
+            this.syncProductToNetwork(p); // Sincroniza em background
             
             this.showNotification("Vitrine atualizada para todos os participantes! 🎯", "success");
             
-            // Atualiza localmente
-            setTimeout(() => {
-                this.renderMarketLiveRoom(document.getElementById('market-container'));
-            }, 100);
+            // Força atualização IMEDIATA da UI
+            this.renderStore();
         },
 
         async updateLiveLink(productId) {

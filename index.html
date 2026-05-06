@@ -1332,11 +1332,23 @@
                         </div>
                     </div>
 
-                    <!-- Link de Apresentação (Aparece por último para Mentoria) -->
-                    <div id="mentoria-presentation-fields" style="display: none; flex-direction: column; gap: 28px; margin-top: 0; border-top: 1px dashed #eee; padding-top: 24px;">
+                    <div style="display: flex; gap: 12px; margin-top: 40px; padding-bottom: 20px;">
+                        <button onclick="app.setProductCreateStep(3)" style="width: 80px; height: 56px; background: #fff; border: 1.5px solid #eee; border-radius: 50px; cursor: pointer; display: flex; align-items: center; justify-content: center;"><i data-lucide="arrow-left" style="width: 20px;"></i></button>
+                        <button onclick="app.setProductCreateStep(5)" style="flex: 1; height: 56px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 950; font-size: 14px; text-transform: uppercase; cursor: pointer; letter-spacing: 0.5px;">Próximo Passo</button>
+                    </div>
+                </div>
+
+                <!-- STEP 5: PRODUTO DE APRESENTAÇÃO (MENTORIA) -->
+                <div id="product-step-5" style="display: none; flex-direction: column; gap: 32px;">
+                    <div style="text-align: center; margin-bottom: 8px;">
+                        <h4 style="font-size: 18px; font-weight: 950; color: #000; letter-spacing: -0.5px;">Vitrine da Mentoria</h4>
+                        <p style="font-size: 11px; font-weight: 800; color: #999; text-transform: uppercase; margin-top: 4px;">Promova um produto durante sua live</p>
+                    </div>
+
+                    <div id="mentoria-presentation-fields" style="display: flex; flex-direction: column; gap: 28px; margin-top: 0; padding-top: 0;">
                         <div>
                             <label style="display: block; font-size: 11px; font-weight: 850; color: #777; margin-bottom: 0; margin-left: 10px; text-transform: uppercase; line-height: 1;">Link do Produto de Apresentação</label>
-                            <input type="text" id="mentoria-prod-link" placeholder="" style="width: 100%; margin-top: 0; padding: 2px 10px 0; background: transparent; border: none; border-bottom: 2px solid #eee; border-radius: 0; font-weight: 800; font-size: 15px; outline: none; transition: 0.3s; line-height: 0.8; height: 28px;">
+                            <input type="text" id="mentoria-prod-link" placeholder="Cole o link aqui" style="width: 100%; margin-top: 0; padding: 2px 10px 0; background: transparent; border: none; border-bottom: 2px solid #eee; border-radius: 0; font-weight: 800; font-size: 15px; outline: none; transition: 0.3s; line-height: 0.8; height: 28px;">
                         </div>
                         <div>
                             <label style="display: block; font-size: 11px; font-weight: 850; color: #777; margin-bottom: 12px; margin-left: 10px; text-transform: uppercase;">Imagem do Produto de Apresentação</label>
@@ -1349,13 +1361,13 @@
                     </div>
 
                     <div style="display: flex; gap: 12px; margin-top: 40px; padding-bottom: 20px;">
-                        <button onclick="app.setProductCreateStep(3)" style="width: 80px; height: 56px; background: #fff; border: 1.5px solid #eee; border-radius: 50px; cursor: pointer; display: flex; align-items: center; justify-content: center;"><i data-lucide="arrow-left" style="width: 20px;"></i></button>
-                        <button onclick="app.setProductCreateStep(5)" style="flex: 1; height: 56px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 950; font-size: 14px; text-transform: uppercase; cursor: pointer; letter-spacing: 0.5px;">Ver Prévia Final</button>
+                        <button onclick="app.setProductCreateStep(4)" style="width: 80px; height: 56px; background: #fff; border: 1.5px solid #eee; border-radius: 50px; cursor: pointer; display: flex; align-items: center; justify-content: center;"><i data-lucide="arrow-left" style="width: 20px;"></i></button>
+                        <button onclick="app.setProductCreateStep(6)" style="flex: 1; height: 56px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 950; font-size: 14px; text-transform: uppercase; cursor: pointer; letter-spacing: 0.5px;">Ver Prévia Final</button>
                     </div>
                 </div>
 
-                <!-- STEP 5: PREVIEW FINAL -->
-                <div id="product-step-5" style="display: none; flex-direction: column; gap: 40px;">
+                <!-- STEP 6: PREVIEW FINAL -->
+                <div id="product-step-6" style="display: none; flex-direction: column; gap: 40px;">
                     <header style="text-align: center; margin-bottom: 8px;">
                         <h4 style="font-size: 20px; font-weight: 950; color: #000; letter-spacing: -1px;">Tudo pronto? Confira sua obra.</h4>
                         <p style="font-size: 11px; font-weight: 800; color: #999; text-transform: uppercase; margin-top: 4px;">Veja como seu produto aparecerá para o mundo</p>

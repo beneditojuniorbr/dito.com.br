@@ -7425,13 +7425,27 @@
             const step3 = document.getElementById('product-step-3');
             const step4 = document.getElementById('product-step-4');
             const step5 = document.getElementById('product-step-5');
+            const step6 = document.getElementById('product-step-6');
             const progressContainer = document.getElementById('create-product-progress-container');
             const form = document.getElementById('create-product-form');
             
             if (!step1) return;
 
+            // Lógica de Pulo: Se não for Mentoria, o passo 5 é ignorado
+            if (step === 5 && this.selectedProductType !== 'Mentoria') {
+                // Se estiver indo pra frente, pula pro 6. Se tiver voltando, pula pro 4.
+                if (this.lastStep < 5) {
+                    this.setProductCreateStep(6);
+                    return;
+                } else {
+                    this.setProductCreateStep(4);
+                    return;
+                }
+            }
+            this.lastStep = step;
+
             // Esconder tudo
-            [step1, step2, step3, step4, step5].forEach(s => { if(s) s.style.display = 'none'; });
+            [step1, step2, step3, step4, step5, step6].forEach(s => { if(s) s.style.display = 'none'; });
             
             if (step === 1) {
                 step1.style.display = 'block';
@@ -7445,19 +7459,15 @@
                 if (step === 3 && step3) step3.style.display = 'flex';
                 if (step === 4 && step4) {
                     step4.style.display = 'flex';
-                    // Toggle sub-campos específicos baseados no tipo
                     if (document.getElementById('ebook-upload')) document.getElementById('ebook-upload').style.display = (this.selectedProductType === 'Ebook') ? 'block' : 'none';
                     if (document.getElementById('curso-upload')) document.getElementById('curso-upload').style.display = (this.selectedProductType === 'Curso') ? 'flex' : 'none';
                     if (document.getElementById('mentoria-fields')) document.getElementById('mentoria-fields').style.display = (this.selectedProductType === 'Mentoria') ? 'flex' : 'none';
-                    if (document.getElementById('mentoria-presentation-fields')) document.getElementById('mentoria-presentation-fields').style.display = (this.selectedProductType === 'Mentoria') ? 'flex' : 'none';
                     if (document.getElementById('fisico-fields')) document.getElementById('fisico-fields').style.display = (this.selectedProductType === 'Fisico') ? 'flex' : 'none';
                     
-                    // Garante renderização da estrutura se for curso
-                    if (this.selectedProductType === 'Curso') {
-                        setTimeout(() => this.renderCourseStructure(), 50);
-                    }
+                    if (this.selectedProductType === 'Curso') setTimeout(() => this.renderCourseStructure(), 50);
                 }
                 if (step === 5 && step5) step5.style.display = 'flex';
+                if (step === 6 && step6) step6.style.display = 'flex';
             }
 
             this.updateProductProgress();
@@ -7473,13 +7483,12 @@
             if (!bar) return;
 
             const step = this.currentProductStep || 1;
-            // Se o usuário está no passo 2, ele CONCLUIU 1 etapa.
+            const total = 6;
             const completed = step - 1;
-            const total = 5;
-            const pct = (completed / total) * 100;
+            const pct = (completed / (total - 1)) * 100;
             
             bar.style.width = `${pct}%`;
-            if (text) text.innerText = `${completed} de ${total} etapas concluídas`;
+            if (text) text.innerText = `Etapa ${step} de ${total}`;
             if (pctText) pctText.innerText = `${Math.round(pct)}%`;
         },
 

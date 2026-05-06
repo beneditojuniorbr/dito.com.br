@@ -8384,6 +8384,11 @@
             }, 0);
             if (totalLabel) totalLabel.innerText = `R$ ${total.toFixed(2)}`;
 
+            // Esconde o footer (total + botão) se a sacola estiver vazia ou sem itens disponíveis
+            const cartFooter = document.getElementById('cart-footer');
+            const hasAvailable = this.cart.some(p => this.products.some(item => String(item.id) === String(p.id)));
+            if (cartFooter) cartFooter.style.display = (this.cart.length === 0 || !hasAvailable) ? 'none' : 'block';
+
             if (window.lucide) lucide.createIcons();
         },
 

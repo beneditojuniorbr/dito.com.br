@@ -3256,6 +3256,9 @@
                         const contentData = net.content ? (typeof net.content === 'string' ? JSON.parse(net.content) : net.content) : null;
                         const processed = { ...net, id: String(net.id), price: Number(net.price), content: contentData };
                         
+                        // Extrai timestamps para notificação
+                        processed.updatedAtTime = net.updated_at ? new Date(net.updated_at).getTime() : (net.created_at ? new Date(net.created_at).getTime() : 0);
+                        
                         // Restaura campos da vitrine mentoria se estiverem no content
                         if (contentData && typeof contentData === 'object') {
                             if (contentData.mentoria_link) processed.mentoria_link = contentData.mentoria_link;
@@ -3377,7 +3380,8 @@
                     stockLimit: product.stockLimit,
                     sales: product.sales,
                     slug: product.slug,
-                    content: JSON.stringify(metadata)
+                    content: JSON.stringify(metadata),
+                    updated_at: new Date().toISOString()
                 }, { onConflict: 'id' });
                 
                 if (error) console.error("❌ Erro Sync Produto:", error.message);
@@ -8557,22 +8561,18 @@
             const lastSeen = parseInt(localStorage.getItem('dito_market_last_seen') || '0');
             const all = this.products || [];
             
-            // 1. Tem algum produto novo (postado após a última visita)?
-            const hasNewProduct = all.some(p => {
-                const pDate = p.created_at ? new Date(p.created_at).getTime() : 0;
-                return pDate > lastSeen;
+            // Verifica se há QUALQUER produto novo ou ATUALIZADO (incluindo lives iniciadas)
+            const hasUpdate = all.some(p => {
+                const ts = p.updatedAtTime || 0;
+                return ts > lastSeen;
             });
-            
-            // 2. Tem alguma mentoria com link ativo (Ao vivo)?
-            const hasLive = all.some(p => p.type === 'Mentoria' && p.mentoria_link);
 
             const dot = document.getElementById('dot-mercado');
             if (dot) {
-                if (hasNewProduct || hasLive) {
+                if (hasUpdate) {
                     dot.style.display = 'block';
-                    // Vermelho se for live, Azul se for apenas produto novo
-                    dot.style.background = hasLive ? '#ff4757' : '#006eff'; 
-                    dot.style.boxShadow = hasLive ? '0 0 10px rgba(255, 71, 87, 0.5)' : '0 0 10px rgba(0, 110, 255, 0.3)';
+                    dot.style.background = '#006eff'; 
+                    dot.style.boxShadow = '0 0 10px rgba(0, 110, 255, 0.3)';
                 } else {
                     dot.style.display = 'none';
                 }

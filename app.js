@@ -7214,6 +7214,20 @@
                     </div>
                 `).join('');
             }
+
+            // 4. MENTORIA LIVE PREVIEW
+            if (this.selectedProductType === 'Mentoria') {
+                const liveBoxName = document.getElementById('live-preview-box-name');
+                const liveBoxImg = document.getElementById('live-preview-box-img');
+                const mLink = document.getElementById('mentoria-prod-link')?.value || "";
+                const mImage = this.mentoriaPresentationImage || null;
+
+                if (liveBoxName) liveBoxName.innerText = mLink ? "Link detectado!" : "Nome do Produto";
+                if (liveBoxImg) {
+                    liveBoxImg.style.backgroundImage = mImage ? `url(${mImage})` : 'none';
+                    if (!mImage) liveBoxImg.style.backgroundColor = '#f5f5f5';
+                }
+            }
             
             if (window.lucide) lucide.createIcons();
         },
@@ -7594,13 +7608,12 @@
             const reader = new FileReader();
             reader.onload = (e) => {
                 this.mentoriaPresentationImage = e.target.result;
-                const preview = document.getElementById('mentoria-prod-img-preview');
-                if (preview) {
-                    preview.style.backgroundImage = `url(${e.target.result})`;
-                    preview.style.backgroundSize = 'cover';
-                    preview.style.backgroundPosition = 'center';
-                    preview.innerHTML = ''; // Limpa ícone e texto
+                const inner = document.getElementById('mentoria-img-inner-preview');
+                if (inner) {
+                    inner.style.backgroundImage = `url(${e.target.result})`;
+                    inner.style.display = 'block';
                 }
+                this.updateProductPreview();
             };
             reader.readAsDataURL(file);
         },

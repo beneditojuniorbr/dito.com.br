@@ -7637,6 +7637,28 @@
             reader.readAsDataURL(file);
         },
 
+        handleLiveFixImage(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const maxSize = 500 * 1024; // 500kb para live fix
+            if (file.size > maxSize) {
+                this.showNotification("Imagem muito pesada. Limite: 500kb.", "error");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.tempLiveFixImage = e.target.result;
+                const inner = document.getElementById('live-fix-inner-preview');
+                if (inner) {
+                    inner.style.backgroundImage = `url(${e.target.result})`;
+                    inner.style.display = 'block';
+                }
+            };
+            reader.readAsDataURL(file);
+        },
+
 
         renderProductImageGallery() {
             const gallery = document.getElementById('product-images-gallery-preview');
@@ -8663,6 +8685,11 @@
 
                 if (hasProduct) {
                     relatedContainer.style.display = 'flex';
+                    if (isOwner) {
+                        relatedContainer.style.cursor = 'pointer';
+                        relatedContainer.title = "Clique para editar vitrine";
+                        relatedContainer.onclick = () => this.fixProductLive();
+                    }
                     
                     if (relatedImg) {
                         relatedImg.innerHTML = ''; // Limpa ícones antigos
@@ -8858,7 +8885,8 @@
             const p = this.products.find(item => String(item.id) === String(pId));
             if (!p) return;
 
-            // NOVA JANELA CUSTOMIZADA
+            this.tempLiveFixImage = p.mentoria_image || null;
+
             const modal = document.getElementById('modal-container');
             const body = document.getElementById('modal-body');
             if (!modal || !body) return;
@@ -8871,6 +8899,16 @@
                     <p style="font-size: 13px; color: #666; font-weight: 700; margin-bottom: 24px;">Preencha os dados da sua oferta para os alunos.</p>
                     
                     <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 8px;">
+                            <label style="font-size: 11px; font-weight: 900; color: #bbb; text-transform: uppercase; display: block; width: 100%;">Capa do Produto (Foto)</label>
+                            <div onclick="document.getElementById('live-fix-file').click()" id="live-fix-preview" style="width: 80px; height: 80px; background: #f9f9f9; border: 1.5px dashed #eee; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; background-size: cover; background-position: center; overflow: hidden; position: relative;">
+                                <i data-lucide="image" style="width: 20px; color: #ccc;"></i>
+                                <div id="live-fix-inner-preview" style="position: absolute; inset: 0; background-size: cover; background-position: center; display: ${p.mentoria_image ? 'block' : 'none'}; background-image: ${p.mentoria_image ? `url(${this.rGetPImage(p.mentoria_image)})` : 'none'};"></div>
+                            </div>
+                            <input type="file" id="live-fix-file" accept="image/*" style="display: none;" onchange="app.handleLiveFixImage(this)">
+                            <span style="font-size: 9px; color: #bbb; font-weight: 700;">Clique para carregar foto</span>
+                        </div>
+
                         <div>
                             <label style="font-size: 11px; font-weight: 900; color: #bbb; text-transform: uppercase; margin-bottom: 8px; display: block;">Link do Produto</label>
                             <input type="text" id="live-fix-link" value="${p.mentoria_link || ''}" placeholder="https://..." style="width: 100%; height: 48px; background: #f9f9f9; border: 1px solid #eee; border-radius: 12px; padding: 0 16px; font-weight: 800; font-size: 14px; outline: none;">
@@ -8878,10 +8916,6 @@
                         <div>
                             <label style="font-size: 11px; font-weight: 900; color: #bbb; text-transform: uppercase; margin-bottom: 8px; display: block;">Nome do Produto</label>
                             <input type="text" id="live-fix-name" value="${p.mentoria_name || ''}" placeholder="Ex: Ebook VIP" style="width: 100%; height: 48px; background: #f9f9f9; border: 1px solid #eee; border-radius: 12px; padding: 0 16px; font-weight: 800; font-size: 14px; outline: none;">
-                        </div>
-                        <div>
-                            <label style="font-size: 11px; font-weight: 900; color: #bbb; text-transform: uppercase; margin-bottom: 8px; display: block;">URL da Imagem (Opcional)</label>
-                            <input type="text" id="live-fix-img" value="${p.mentoria_image && p.mentoria_image.startsWith('http') ? p.mentoria_image : ''}" placeholder="Link da imagem..." style="width: 100%; height: 48px; background: #f9f9f9; border: 1px solid #eee; border-radius: 12px; padding: 0 16px; font-weight: 800; font-size: 14px; outline: none;">
                         </div>
                     </div>
 
@@ -8895,7 +8929,6 @@
             document.getElementById('btn-save-live-fix').onclick = () => {
                 const link = document.getElementById('live-fix-link').value;
                 const name = document.getElementById('live-fix-name').value;
-                const img = document.getElementById('live-fix-img').value;
 
                 if (!link) {
                     this.showNotification("O link é obrigatório!", "error");
@@ -8904,7 +8937,7 @@
 
                 p.mentoria_link = link;
                 p.mentoria_name = name || "PRODUTO EM DESTAQUE";
-                if (img) p.mentoria_image = img;
+                p.mentoria_image = this.tempLiveFixImage;
 
                 this.selectedProduct = p;
                 this.syncProductToNetwork(p);

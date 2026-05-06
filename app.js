@@ -1994,6 +1994,8 @@
 
             // SINCRONIZAÇÃO DE SEGURANÇA: Verifica o histórico real para evitar o bug de "Perdeu" em dias já feitos
             const historyKey = `dito_checkin_history_${key}`;
+            const history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+            const currentWeek = this.getWeekNumber();
             let changed = false;
             checklist.forEach((item, idx) => {
                 if (!item.checked) {

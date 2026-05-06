@@ -142,6 +142,9 @@
                 } else if (type === 'Mentoria') {
                     // Ícone de Usuários
                     iconPath = `<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>`;
+                } else if (type === 'Vantagem') {
+                    // Ícone de Ticket/Cupom (Igual tela de cupons)
+                    iconPath = `<path d="M2 9V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 0 0 4v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-4a2 2 0 0 0 0-4Z"/><path d="M15 3v18"/><path d="M15 8h.01"/><path d="M15 12h.01"/><path d="M15 16h.01"/>`;
                 } else { // Curso
                     // Ícone de Play Circle
                     iconPath = `<circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon>`;
@@ -6841,8 +6844,7 @@
             this.cart = [virtualProd];
             this.safeLocalStorageSet(`dito_cart_${this.getUserKey()}`, JSON.stringify(this.cart));
             this.marketView = 'checkout';
-            this.navigate('mercado');
-            setTimeout(() => this.renderStore(), 50);
+            this.navigate('checkout-direto');
         },
 
         buyBooster(type, price) {
@@ -6863,8 +6865,7 @@
             this.cart = [virtualProd];
             this.safeLocalStorageSet(`dito_cart_${this.getUserKey()}`, JSON.stringify(this.cart));
             this.marketView = 'checkout';
-            this.navigate('mercado');
-            setTimeout(() => this.renderStore(), 50);
+            this.navigate('checkout-direto');
         },
 
         updateBoosterUI() {

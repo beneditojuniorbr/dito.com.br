@@ -70,31 +70,38 @@ CREATE TABLE IF NOT EXISTS dito_societies (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- 6. TABELA DE AVALIAÇÕES (Ratings)
+CREATE TABLE IF NOT EXISTS dito_product_ratings (
+    id BIGSERIAL PRIMARY KEY,
+    product_id TEXT NOT NULL,
+    username TEXT NOT NULL,
+    score INTEGER NOT NULL CHECK (score >= 0 AND score <= 5),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- ==========================================================
 -- 📡 CONFIGURAÇÃO DE REALTIME (MUITO IMPORTANTE!)
 -- ==========================================================
 
 -- Habilita o Realtime para as tabelas essenciais
--- Se estas tabelas não estiverem aqui, o celular não sincroniza com o PC
 BEGIN;
-  -- Remove publicações antigas se existirem para evitar erro
   DROP PUBLICATION IF EXISTS supabase_realtime;
-  
-  -- Cria a publicação para Realtime
   CREATE PUBLICATION supabase_realtime FOR TABLE 
     dito_users, 
     dito_market_products, 
     dito_notifications,
-    dito_world_chat;
+    dito_world_chat,
+    dito_product_ratings;
 COMMIT;
 
 -- ==========================================================
--- 🔐 SEGURANÇA (RLS) - Opcional para facilitar testes
--- Para o Dito funcionar via Anon Key sem complicações iniciais:
+-- 🔐 SEGURANÇA (RLS) - Liberado para facilitar o Dito
+-- ==========================================================
 ALTER TABLE dito_users DISABLE ROW LEVEL SECURITY;
 ALTER TABLE dito_market_products DISABLE ROW LEVEL SECURITY;
 ALTER TABLE dito_notifications DISABLE ROW LEVEL SECURITY;
 ALTER TABLE dito_world_chat DISABLE ROW LEVEL SECURITY;
 ALTER TABLE dito_societies DISABLE ROW LEVEL SECURITY;
+ALTER TABLE dito_product_ratings DISABLE ROW LEVEL SECURITY;
 
 -- ✅ SUCESSO: Agora seu banco de dados está pronto para o Dito!

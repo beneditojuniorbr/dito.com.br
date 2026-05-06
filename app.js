@@ -2063,7 +2063,7 @@
                 // Vou mostrar o valor que ela ganharia SE fizesse hoje.
                 
                 return `
-                <div style="scroll-snap-align: start; min-width: 70px; display: flex; flex-direction: column; align-items: center; text-align: center; justify-content: space-between; padding: 12px 6px; border-radius: 12px; border: ${isToday ? '1.5px solid transparent' : '1px solid #f0f0f0'}; background: ${isToday ? 'linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #006eff 0%, #ffba09 100%) border-box' : '#fff'}; transition: 0.3s; box-shadow: ${isToday ? '0 4px 15px rgba(0, 110, 255, 0.1)' : '0 4px 10px rgba(0,0,0,0.02)'};">
+                <div style="scroll-snap-align: start; min-width: 70px; display: flex; flex-direction: column; align-items: center; text-align: center; justify-content: space-between; padding: 12px 6px; border-radius: 12px; border: ${isToday ? '3px solid transparent' : '3px solid #f0f0f0'}; background: ${isToday ? 'linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #006eff 0%, #ffba09 100%) border-box' : '#fff'}; transition: 0.3s; box-shadow: ${isToday ? '0 4px 15px rgba(0, 110, 255, 0.1)' : '0 4px 10px rgba(0,0,0,0.02)'};">
                     <p style="font-weight: 950; font-size: 11px; margin-bottom: 4px; color: ${past && !item.checked ? '#ccc' : '#000'};">${item.dayName}</p>
                     
                     <div style="width: 24px; height: 24px; border-radius: 50%; background: ${item.checked ? '#fff' : (past && !item.checked ? 'transparent' : (isToday ? '#fbbf24' : '#f9f9f9'))}; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; border: ${past && !item.checked ? '1px dashed #eee' : 'none'};">

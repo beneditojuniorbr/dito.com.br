@@ -7340,8 +7340,7 @@
 
                 // Campos de Mentoria
                 if (p.type === 'Mentoria') {
-                    const mentoriaPresFields = document.getElementById('mentoria-presentation-fields');
-                    if (mentoriaPresFields) mentoriaPresFields.style.display = 'flex';
+                    if(document.getElementById('mentoria-prod-link')) document.getElementById('mentoria-prod-link').value = p.mentoria_link || '';
                     
                     if(document.getElementById('mentoria-prod-link')) document.getElementById('mentoria-prod-link').value = p.mentoria_link || '';
                     
@@ -7502,9 +7501,7 @@
             if(mentoriaFields) mentoriaFields.style.display = type === 'Mentoria' ? 'flex' : 'none';
             if(document.getElementById('fisico-fields')) document.getElementById('fisico-fields').style.display = type === 'Fisico' ? 'flex' : 'none';
             
-            // Mostrar campos de apresentação na etapa 2 se for Mentoria
-            const mentoriaPresFields = document.getElementById('mentoria-presentation-fields');
-            if (mentoriaPresFields) mentoriaPresFields.style.display = type === 'Mentoria' ? 'flex' : 'none';
+
 
             // Avança para o passo 2 automaticamente após um pequeno delay para feedback visual
             setTimeout(() => this.setProductCreateStep(2), 400);

@@ -7225,7 +7225,7 @@
                     const mLink = document.getElementById('mentoria-prod-link')?.value || "";
                     const mImage = this.mentoriaPresentationImage || null;
 
-                    if (liveBoxName) liveBoxName.innerText = mLink ? "Link detectado!" : "Nome do Produto";
+                    if (liveBoxName) liveBoxName.innerText = name;
                     if (liveBoxImg) {
                         liveBoxImg.style.backgroundImage = mImage ? `url(${mImage})` : 'none';
                         if (!mImage) liveBoxImg.style.backgroundColor = '#f5f5f5';
@@ -7484,6 +7484,11 @@
                     if (document.getElementById('mentoria-fields')) document.getElementById('mentoria-fields').style.display = (this.selectedProductType === 'Mentoria') ? 'flex' : 'none';
                     if (document.getElementById('fisico-fields')) document.getElementById('fisico-fields').style.display = (this.selectedProductType === 'Fisico') ? 'flex' : 'none';
                     
+                    const btn4 = document.getElementById('btn-next-step-4');
+                    if (btn4) {
+                        btn4.innerText = (this.selectedProductType === 'Mentoria') ? 'Próximo Passo' : 'Ver Prévia Final';
+                    }
+
                     if (this.selectedProductType === 'Curso') setTimeout(() => this.renderCourseStructure(), 50);
                 }
                 if (step === 5 && step5) step5.style.display = 'flex';

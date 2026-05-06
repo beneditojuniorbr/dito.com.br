@@ -3509,7 +3509,7 @@
                 if (isMentoria) {
                     if (hasAccess) {
                         actionsContainer.innerHTML = `
-                            <button onclick="app.accessLiveDirectly('${p.id}')" style="width: 100%; height: 60px; background: #10b981; color: #fff; border: none; border-radius: 100px; font-size: 13px; font-weight: 900; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 10px 25px rgba(16,185,129,0.3);">
+                            <button onclick="app.accessLiveDirectly('${p.id}')" style="width: 100%; height: 60px; background: #000; color: #fff; border: none; border-radius: 100px; font-size: 13px; font-weight: 900; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
                                 <i data-lucide="check-circle" style="width: 20px;"></i>
                                 ENTRAR NA MENTORIA
                             </button>
@@ -7396,8 +7396,7 @@
 
                 // Campos de Mentoria
                 if (p.type === 'Mentoria') {
-                    if(document.getElementById('mentoria-prod-link')) document.getElementById('mentoria-prod-link').value = p.mentoria_link || '';
-                    
+                    if(document.getElementById('mentoria-prod-name')) document.getElementById('mentoria-prod-name').value = p.mentoria_name || '';
                     if(document.getElementById('mentoria-prod-link')) document.getElementById('mentoria-prod-link').value = p.mentoria_link || '';
                     
                     this.mentoriaPresentationImage = p.mentoria_image || null;
@@ -7494,11 +7493,6 @@
                     if (document.getElementById('mentoria-fields')) document.getElementById('mentoria-fields').style.display = (this.selectedProductType === 'Mentoria') ? 'flex' : 'none';
                     if (document.getElementById('fisico-fields')) document.getElementById('fisico-fields').style.display = (this.selectedProductType === 'Fisico') ? 'flex' : 'none';
                     
-                    const btn4 = document.getElementById('btn-next-step-4');
-                    if (btn4) {
-                        btn4.innerText = (this.selectedProductType === 'Mentoria') ? 'Próximo Passo' : 'Ver Prévia Final';
-                    }
-
                     if (this.selectedProductType === 'Curso') setTimeout(() => this.renderCourseStructure(), 50);
                 }
                 if (step === 5 && step5) step5.style.display = 'flex';
@@ -7806,9 +7800,9 @@
                     hasLimit: hasLimit,
                     stockLimit: hasLimit ? stockLimit : null,
                     slug: originalProd ? originalProd.slug : this.generateRandomSlug(),
-                    mentoria_name: this.selectedProductType === 'Mentoria' ? (document.getElementById('mentoria-prod-name')?.value || null) : null,
-                    mentoria_link: this.selectedProductType === 'Mentoria' ? (document.getElementById('mentoria-prod-link')?.value || null) : null,
-                    mentoria_image: this.selectedProductType === 'Mentoria' ? (this.mentoriaPresentationImage || null) : null,
+                    mentoria_name: (this.selectedProductType === 'Mentoria') ? (document.getElementById('mentoria-prod-name')?.value || (originalProd ? originalProd.mentoria_name : null)) : null,
+                    mentoria_link: (this.selectedProductType === 'Mentoria') ? (document.getElementById('mentoria-prod-link')?.value || (originalProd ? originalProd.mentoria_link : null)) : null,
+                    mentoria_image: (this.selectedProductType === 'Mentoria') ? (this.mentoriaPresentationImage || (originalProd ? originalProd.mentoria_image : null)) : null,
                     fisico_deadline: this.selectedProductType === 'Fisico' ? (document.getElementById('prod-fisico-deadline')?.value || null) : null,
                     fisico_specs: this.selectedProductType === 'Fisico' ? (document.getElementById('prod-fisico-specs')?.value || null) : null,
                     content: this.selectedProductType === 'Curso' ? this.courseStructure : (originalProd ? originalProd.content : null)
@@ -8685,13 +8679,19 @@
                     
                     if (window.lucide) lucide.createIcons();
                 } else if (isOwner) {
-                    // Dono vê placeholder se estiver vazio
+                    // Dono vê placeholder se estiver vazio - Adicionando clique para cadastrar na hora
                     relatedContainer.style.display = 'flex';
+                    relatedContainer.style.cursor = 'pointer';
+                    relatedContainer.onclick = () => this.fixProductLive();
+                    
                     if (relatedImg) {
                         relatedImg.style.backgroundImage = 'none';
-                        relatedImg.innerHTML = '<i data-lucide="plus" style="width: 24px; color: #ccc;"></i>';
+                        relatedImg.style.backgroundColor = '#f9f9f9';
+                        relatedImg.innerHTML = '<i data-lucide="plus" style="width: 24px; color: #006eff;"></i>';
                     }
-                    if (relatedName) relatedName.innerText = "Sua vitrine está vazia";
+                    if (relatedName) {
+                        relatedName.innerHTML = `<span style="color: #006eff;">+ Adicionar Produto</span><br><span style="font-size: 10px; color: #999; font-weight: 700;">Sua vitrine está vazia</span>`;
+                    }
                     if (relatedLink) relatedLink.style.display = 'none';
                     if (window.lucide) lucide.createIcons();
                 } else {

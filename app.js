@@ -8860,6 +8860,9 @@
             p.mentoria_link = newLink;
             p.mentoria_name = prompt("🏷️ Digite o nome chamativo para este produto:", p.mentoria_name || "PRODUTO EM DESTAQUE") || "PRODUTO EM DESTAQUE";
             
+            const newImg = prompt("🖼️ [OPCIONAL] Cole o Link de uma imagem para a capa (ou deixe em branco para manter):", p.mentoria_image && p.mentoria_image.startsWith('http') ? p.mentoria_image : "");
+            if (newImg) p.mentoria_image = newImg;
+            
             // Sincroniza e garante atualização do objeto selecionado
             this.selectedProduct = p;
             this.syncProductToNetwork(p); // Sincroniza em background

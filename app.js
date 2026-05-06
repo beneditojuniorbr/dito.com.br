@@ -9013,12 +9013,6 @@
             // Fecha o menu após selecionar
             this.toggleMarketFilter();
             
-            // Atualiza o texto do botão de gatilho para mostrar o filtro atual
-            const triggerText = document.querySelector('#market-filter-trigger span');
-            if (triggerText) {
-                triggerText.innerText = category === 'Todas' ? 'Filtro' : category;
-            }
-
             // Renderiza novamente a Home do Mercado com o filtro
             const container = document.getElementById('market-actual-content');
             if (container) this.renderMarketHome(container);
@@ -9035,6 +9029,13 @@
             if (!temp) return;
             container.innerHTML = temp.innerHTML;
             
+            // Atualiza o texto do filtro no UI recém-renderizado
+            const currentCat = this.marketCategory || 'Todas';
+            const triggerText = document.querySelector('#market-filter-trigger span');
+            if (triggerText) {
+                triggerText.innerText = currentCat === 'Todas' ? 'Filtro' : currentCat;
+            }
+
             const feed = document.getElementById('main-market-feed');
             const hContainer = document.getElementById('ebooks-horizontal-list');
             const hWrapper = document.getElementById('ebooks-carousel-container');
@@ -9050,7 +9051,6 @@
             all = all.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
 
             // --- FILTRO POR NICHO (NOVO) ---
-            const currentCat = this.marketCategory || 'Todas';
             if (currentCat !== 'Todas') {
                 all = all.filter(p => p.category === currentCat);
             }

@@ -687,7 +687,11 @@
             console.log("💰 [Debug] Valor total calculado:", total);
 
             if (total <= 0) {
-                this.showNotification('Carrinho vazio ou valor zerado.', 'error');
+                // Se for gratuito (Mentoria), libera acesso direto sem chamar MP
+                this.showLoading(true, 'Liberando seu acesso gratuito...');
+                setTimeout(() => {
+                    this.finalizeSuccessfulPurchase();
+                }, 1500);
                 return;
             }
 
@@ -3517,7 +3521,8 @@
                                 <i data-lucide="shopping-bag" style="width: 20px;"></i> ADICIONAR À SACOLA
                             </button>
                             <button onclick="app.buyNowFromDetail()" style="width: 100%; height: 60px; background: #000; color: #fff; border: none; border-radius: 100px; font-size: 13px; font-weight: 900; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
-                                COMPRAR AGORA
+                                <i data-lucide="${p.price <= 0 ? 'check-circle' : 'shopping-cart'}" style="width: 20px;"></i>
+                                ${p.price <= 0 ? 'ENTRAR GRATUITAMENTE' : 'COMPRAR AGORA'}
                             </button>
                         `;
                     }
@@ -3740,7 +3745,8 @@
                             </div>
                         ` : ''}
                         <button id="btn-pix-checkout" onclick="app.processPaymentCheckout()" style="width: 100%; height: 60px; background: #000; color: #fff; border: none; border-radius: 100px; font-weight: 900; font-size: 14px; margin-top: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                            <i data-lucide="diamond" style="width: 18px;"></i> ${this.currentUser && this.currentUser.isGuest ? 'CADASTRAR E GERAR PIX' : 'GERAR PIX AGORA'}
+                            <i data-lucide="${this.recalculateCheckoutTotal() <= 0 ? 'check-circle' : 'diamond'}" style="width: 18px;"></i> 
+                            ${this.currentUser && this.currentUser.isGuest ? 'CADASTRAR E CONCLUIR' : (this.recalculateCheckoutTotal() <= 0 ? 'CONCLUIR E ACESSAR AGORA' : 'GERAR PIX AGORA')}
                         </button>
                     </div>
                 `;
@@ -7694,8 +7700,10 @@
                 return;
             }
 
-            if (!name || price <= 0) {
-                this.showNotification("Preencha o nome e o preço corretamente.", "error");
+            const isFreeAllowed = (this.selectedProductType === 'Mentoria');
+            
+            if (!name || (price <= 0 && !isFreeAllowed)) {
+                this.showNotification("Preencha o nome e o preço corretamente (mínimo R$ 0,01).", "error");
                 return;
             }
 

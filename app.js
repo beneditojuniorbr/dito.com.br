@@ -2261,11 +2261,9 @@
                 const newBalance = current + amount;
                 localStorage.setItem(coinsKey, newBalance.toString());
                 
-                // --- SINCRONIZA COM SUPABASE (NUVEM) ---
-                if (this.userId) {
-                    supabase.from('dito_users').update({ coins: newBalance }).eq('username', this.currentUser.username).then(() => {
-                        console.log('✅ Bônus diário salvo na nuvem.');
-                    });
+                // --- SINCRONIZA COM SUPABASE (ESTADO COMPLETO) ---
+                if (this.currentUser && !this.currentUser.isGuest) {
+                    this.syncUserToNetwork(this.currentUser);
                 }
                 
                 this.showSystemNotification('Desafio Concluido', `Você resgatou +${amount} cupons pelo desafio do dia!`, 'success');
@@ -3142,6 +3140,7 @@
                         missions: localStorage.getItem(`dito_missions_${key}`),
                         history: localStorage.getItem(`dito_checkin_history_${key}`),
                         claimed: localStorage.getItem(`dito_claimed_events_${key}`),
+                        daily_claims: Object.keys(localStorage).filter(k => k.startsWith('dito_claimed_daily_')).reduce((obj, k) => ({...obj, [k]: localStorage.getItem(k)}), {}),
                         posts: localStorage.getItem('dito_profile_posts'),
                         active_events: Object.keys(localStorage).filter(k => k.startsWith('dito_event_')).reduce((obj, k) => ({...obj, [k]: localStorage.getItem(k)}), {})
                     }),
@@ -3644,20 +3643,37 @@
             this.updateStarsUI(newScore);
 
             try {
-                const { error } = await supabase
+                // Busca se já existe uma avaliação deste usuário para este produto
+                const { data: existing } = await supabase
                     .from('dito_product_ratings')
-                    .upsert({
-                        product_id: String(productId),
-                        username: this.currentUser.username,
-                        score: newScore
-                    }, { onConflict: 'product_id,username' });
+                    .select('id')
+                    .eq('product_id', String(productId))
+                    .eq('username', this.currentUser.username)
+                    .maybeSingle();
 
-                if (!error) {
+                let result;
+                if (existing) {
+                    // Update
+                    result = await supabase
+                        .from('dito_product_ratings')
+                        .update({ score: newScore })
+                        .eq('id', existing.id);
+                } else {
+                    // Insert
+                    result = await supabase
+                        .from('dito_product_ratings')
+                        .insert({
+                            product_id: String(productId),
+                            username: this.currentUser.username,
+                            score: newScore
+                        });
+                }
+
+                if (!result.error) {
                     this.showNotification(newScore === 0 ? 'Avaliação removida.' : 'Avaliado com sucesso!', 'success');
                     this.fetchAndRenderProductRating(productId);
                 } else {
-                    console.error("Erro ao avaliar produto (PostgREST):", error);
-                    // Reverte se der erro
+                    console.error("Erro ao avaliar produto:", result.error);
                     this.fetchAndRenderProductRating(productId);
                 }
             } catch (e) {
@@ -3674,12 +3690,19 @@
             const list = document.getElementById('checkout-items-list');
             if (!list) return;
 
-            list.innerHTML = this.cart.map(item => `
-                <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
-                    <span style="color: #666; font-weight: 500;">${item.name}</span>
-                    <span style="font-weight: 800; color: #000;">R$ ${parseFloat(item.price || 0).toFixed(2)}</span>
+            list.innerHTML = this.cart.map(item => {
+                const productImg = (item.images && item.images.length > 0) ? item.images[0] : (item.image || item.image_url || "");
+                return `
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px; background: #fff; padding: 4px; border-radius: 12px;">
+                    <div style="width: 50px; height: 50px; background: #f9f9f9; border-radius: 12px; overflow: hidden; flex-shrink: 0;">
+                        <img src="${this.rGetPImage(productImg, item.name)}" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div style="flex: 1; min-width: 0;">
+                        <p style="font-weight: 850; font-size: 13px; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0;">${item.name}</p>
+                        <p style="font-weight: 950; font-size: 14px; color: #000; margin-top: 2px;">R$ ${parseFloat(item.price || 0).toFixed(2)}</p>
+                    </div>
                 </div>
-            `).join('');
+            `}).join('');
 
             // Renderiza Ação Final (Botão Pix e Cadastro) em Container Dedicado
             const dynamicActions = document.getElementById('checkout-dynamic-actions');
@@ -3709,7 +3732,6 @@
             }
 
             this.paymentMethod = 'pix'; // Reset para Pix
-            this.selectedCouponsForPurchase = 0; // Reset cupons
             this.recalculateCheckoutTotal();
 
             // Sincroniza o preenchimento inicial do slider
@@ -10473,10 +10495,19 @@
                                 this.safeLocalStorageSet(`dito_purchased_products_${key}`, JSON.stringify(this.purchasedProducts));
                             }
                             
-                            // Restaura Missões
+                            // Restaura Missões e Desafios
                             if (purchasesRaw.missions) localStorage.setItem(`dito_missions_${key}`, purchasesRaw.missions);
                             if (purchasesRaw.history) localStorage.setItem(`dito_checkin_history_${key}`, purchasesRaw.history);
                             if (purchasesRaw.claimed) localStorage.setItem(`dito_claimed_events_${key}`, purchasesRaw.claimed);
+                            
+                            // Restaura Desafios Diários
+                            if (purchasesRaw.daily_claims) {
+                                Object.keys(purchasesRaw.daily_claims).forEach(k => {
+                                    localStorage.setItem(k, purchasesRaw.daily_claims[k]);
+                                });
+                            }
+
+                            if (this.currentView === 'missoes') this.renderMissions();
                             
                             // Restaura Fotos do Perfil (Eternidade garantida pela nuvem)
                             if (purchasesRaw.posts) localStorage.setItem('dito_profile_posts', purchasesRaw.posts);

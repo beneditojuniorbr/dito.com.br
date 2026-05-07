@@ -3261,8 +3261,9 @@
                         const contentData = net.content ? (typeof net.content === 'string' ? JSON.parse(net.content) : net.content) : null;
                         const processed = { ...net, id: String(net.id), price: Number(net.price), content: contentData };
                         
-                        // Extrai timestamps para notificação
-                        processed.updatedAtTime = net.updated_at ? new Date(net.updated_at).getTime() : (net.created_at ? new Date(net.created_at).getTime() : 0);
+                        // Extrai timestamps para notificação - Fallback para contentData se a coluna não existir
+                        const rawUpdate = net.updated_at || (contentData ? contentData.updated_at : null) || net.created_at;
+                        processed.updatedAtTime = rawUpdate ? new Date(rawUpdate).getTime() : 0;
                         
                         // Restaura campos da vitrine mentoria se estiverem no content
                         if (contentData && typeof contentData === 'object') {
@@ -3367,6 +3368,7 @@
                 metadata.mentoria_name = product.mentoria_name;
                 metadata.mentoria_image = product.mentoria_image;
                 metadata.app_link = product.app_link;
+                metadata.updated_at = new Date().toISOString();
 
                 // ATUALIZAÇÃO LOCAL: Salva o objeto processado de volta no produto para uso imediato
                 product.content = metadata;
@@ -3387,8 +3389,7 @@
                     stockLimit: product.stockLimit,
                     sales: product.sales,
                     slug: product.slug,
-                    content: JSON.stringify(metadata),
-                    updated_at: new Date().toISOString()
+                    content: JSON.stringify(metadata)
                 }, { onConflict: 'id' });
                 
                 if (error) console.error("❌ Erro Sync Produto:", error.message);

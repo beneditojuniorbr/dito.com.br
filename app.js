@@ -6737,7 +6737,6 @@
                     posts.splice(index, 1);
                 
                 // Salva localmente
-                const key = this.getUserKey();
                 localStorage.setItem(`dito_profile_posts_${key}`, JSON.stringify(posts));
                 
                 // Sincroniza com o objeto do usuário e nuvem
@@ -6777,7 +6776,6 @@
                     posts.unshift(newPost);
                     
                     // Salva localmente
-                    const key = this.getUserKey();
                     localStorage.setItem(`dito_profile_posts_${key}`, JSON.stringify(posts));
                     
                     // Sincroniza com o objeto do usuário e nuvem

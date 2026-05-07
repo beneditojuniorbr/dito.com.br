@@ -3263,6 +3263,7 @@
                             if (contentData.mentoria_link) processed.mentoria_link = contentData.mentoria_link;
                             if (contentData.mentoria_name) processed.mentoria_name = contentData.mentoria_name;
                             if (contentData.mentoria_image) processed.mentoria_image = contentData.mentoria_image;
+                            if (contentData.app_link) processed.app_link = contentData.app_link;
                         }
                         
                         return processed;
@@ -3359,6 +3360,7 @@
                 metadata.mentoria_link = product.mentoria_link;
                 metadata.mentoria_name = product.mentoria_name;
                 metadata.mentoria_image = product.mentoria_image;
+                metadata.app_link = product.app_link;
 
                 // ATUALIZAÇÃO LOCAL: Salva o objeto processado de volta no produto para uso imediato
                 product.content = metadata;
@@ -7558,6 +7560,7 @@
                     if (document.getElementById('curso-upload')) document.getElementById('curso-upload').style.display = (this.selectedProductType === 'Curso') ? 'flex' : 'none';
                     if (document.getElementById('mentoria-fields')) document.getElementById('mentoria-fields').style.display = (this.selectedProductType === 'Mentoria') ? 'flex' : 'none';
                     if (document.getElementById('fisico-fields')) document.getElementById('fisico-fields').style.display = (this.selectedProductType === 'Fisico') ? 'flex' : 'none';
+                    if (document.getElementById('app-fields')) document.getElementById('app-fields').style.display = (this.selectedProductType === 'App') ? 'flex' : 'none';
                     
                     if (this.selectedProductType === 'Curso') setTimeout(() => this.renderCourseStructure(), 50);
                 }
@@ -7597,11 +7600,6 @@
         },
 
         selectProductType(type, btn) {
-            if (type === 'App') {
-                this.showNotification("📱 A criação de Apps está temporariamente bloqueada.", "info");
-                this.setProductCreateStep(1);
-                return;
-            }
             this.selectedProductType = type;
             
             // Visual logic for selection - Reset others
@@ -7631,6 +7629,7 @@
             if(cursoUpload) cursoUpload.style.display = type === 'Curso' ? 'flex' : 'none';
             if(mentoriaFields) mentoriaFields.style.display = type === 'Mentoria' ? 'flex' : 'none';
             if(document.getElementById('fisico-fields')) document.getElementById('fisico-fields').style.display = type === 'Fisico' ? 'flex' : 'none';
+            if(document.getElementById('app-fields')) document.getElementById('app-fields').style.display = type === 'App' ? 'flex' : 'none';
             
 
 
@@ -7891,6 +7890,7 @@
                     mentoria_name: (this.selectedProductType === 'Mentoria') ? (document.getElementById('mentoria-prod-name')?.value || (originalProd ? originalProd.mentoria_name : null)) : null,
                     mentoria_link: (this.selectedProductType === 'Mentoria') ? (document.getElementById('mentoria-prod-link')?.value || (originalProd ? originalProd.mentoria_link : null)) : null,
                     mentoria_image: (this.selectedProductType === 'Mentoria') ? (this.mentoriaPresentationImage || (originalProd ? originalProd.mentoria_image : null)) : null,
+                    app_link: (this.selectedProductType === 'App') ? (document.getElementById('prod-app-link')?.value || (originalProd ? originalProd.app_link : null)) : null,
                     fisico_deadline: this.selectedProductType === 'Fisico' ? (document.getElementById('prod-fisico-deadline')?.value || null) : null,
                     fisico_specs: this.selectedProductType === 'Fisico' ? (document.getElementById('prod-fisico-specs')?.value || null) : null,
                     content: this.selectedProductType === 'Curso' ? this.courseStructure : (originalProd ? originalProd.content : null)

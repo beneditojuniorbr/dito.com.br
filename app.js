@@ -2203,6 +2203,16 @@
             const container = document.getElementById('event-missions-container');
             if (!container || !section) return;
 
+            const now = new Date();
+            const day = now.getDate();
+            const isEventDay = (day % 2 !== 0);
+
+            // Se não for dia de evento, oculta a seção de missões de evento
+            if (!isEventDay) {
+                section.style.display = 'none';
+                return;
+            }
+
             const key = this.getUserKey();
             const today = new Date().toDateString();
             const types = ['flash', 'master', 'king'];

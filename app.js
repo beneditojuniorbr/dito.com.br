@@ -4285,7 +4285,8 @@
 
             const key = this.getUserKey();
             const trash = JSON.parse(localStorage.getItem(`dito_purchased_trash_${key}`) || '[]');
-            const visibleProducts = (this.purchasedProducts || []).filter(p => !trash.includes(p.id));
+            // Força comparação por String para evitar erro de tipo (número vs string)
+            const visibleProducts = (this.purchasedProducts || []).filter(p => !trash.some(tid => String(tid) === String(p.id)));
 
             if (visibleProducts.length === 0) {
                 list.innerHTML = `
@@ -4354,8 +4355,9 @@
             if (!confirm("Deseja mover este produto para a lixeira? Você poderá restaurá-lo depois.")) return;
             const key = this.getUserKey();
             const trash = JSON.parse(localStorage.getItem(`dito_purchased_trash_${key}`) || '[]');
-            if (!trash.includes(id)) {
-                trash.push(id);
+            const sId = String(id);
+            if (!trash.some(tid => String(tid) === sId)) {
+                trash.push(sId);
                 localStorage.setItem(`dito_purchased_trash_${key}`, JSON.stringify(trash));
                 this.showNotification("Produto movido para a lixeira.", "info");
                 this.renderPurchasedProducts();
@@ -4394,9 +4396,14 @@
                             <h4 style="font-size: 14px; font-weight: 900; color: #000; margin-bottom: 2px;">${p.name}</h4>
                             <p style="font-size: 10px; color: #999; font-weight: 800;">Mover de volta para restaurar acesso.</p>
                         </div>
-                        <button onclick="app.restoreFromTrash('${p.id}')" title="Restaurar" style="width: 42px; height: 42px; background: #22c55e10; color: #22c55e; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                            <i data-lucide="rotate-ccw" style="width: 18px;"></i>
-                        </button>
+                        <div style="display:flex; gap:8px;">
+                            <button onclick="app.restoreFromTrash('${p.id}')" title="Restaurar" style="width: 42px; height: 42px; background: #22c55e10; color: #22c55e; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                                <i data-lucide="rotate-ccw" style="width: 18px;"></i>
+                            </button>
+                            <button onclick="app.permanentlyDeletePurchased('${p.id}')" title="Excluir Permanentemente" style="width: 42px; height: 42px; background: #ef444410; color: #ef4444; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                                <i data-lucide="trash-2" style="width: 18px;"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             `).join('');
@@ -4416,6 +4423,27 @@
             } else {
                 this.renderPurchasedProducts();
             }
+        },
+
+        permanentlyDeletePurchased(id) {
+            if (!confirm("⚠️ ATENÇÃO: Deseja EXCLUIR PERMANENTEMENTE este produto da sua conta? Esta ação não pode ser desfeita e você perderá o acesso.")) return;
+            
+            const key = this.getUserKey();
+            const sId = String(id);
+            
+            // Remove da lixeira
+            let trash = JSON.parse(localStorage.getItem(`dito_purchased_trash_${key}`) || '[]');
+            trash = trash.filter(tid => String(tid) !== sId);
+            localStorage.setItem(`dito_purchased_trash_${key}`, JSON.stringify(trash));
+
+            // Remove da lista de comprados
+            this.purchasedProducts = (this.purchasedProducts || []).filter(p => String(p.id) !== sId);
+            localStorage.setItem(`dito_purchased_products_${key}`, JSON.stringify(this.purchasedProducts));
+
+            this.showNotification("Produto removido permanentemente da sua conta.", "success");
+            
+            if (trash.length > 0) this.renderPurchasedTrash();
+            else this.renderPurchasedProducts();
         },
 
         async requestRefund(id) {

@@ -2776,11 +2776,37 @@
                         <div style="position: absolute; top: -10px; right: -10px; opacity: 0.1;">
                             <i data-lucide="package" style="width: 80px; height: 80px;"></i>
                         </div>
-                        <h3 style="font-size: 20px; font-weight: 950; margin-bottom: 8px;">Gerenciar Produtos</h3>
                         <p style="font-size: 12px; color: #777; font-weight: 700;">Monitore, edite ou remova produtos de
                             qualquer vendedor.</p>
                     </div>
+
+                    <!-- Card Auditoria de Vendas -->
+                    <div onclick="app.navigate('admin-vendas')"
+                        style="background: #10b981; padding: 32px; border-radius: 32px; color: #fff; cursor: pointer; position: relative; overflow: hidden; box-shadow: 0 10px 20px rgba(16,185,129,0.2);">
+                        <div style="position: absolute; top: -10px; right: -10px; opacity: 0.2;">
+                            <i data-lucide="shopping-cart" style="width: 80px; height: 80px;"></i>
+                        </div>
+                        <h3 style="font-size: 20px; font-weight: 950; margin-bottom: 8px;">Auditoria de Vendas</h3>
+                        <p style="font-size: 12px; color: rgba(255,255,255,0.8); font-weight: 700;">Visão global de todas as vendas ocorridas no app.</p>
+                    </div>
                 </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="template-admin-vendas">
+        <div style="padding: 24px; padding-bottom: 120px; background: #fff; min-height: 100vh;">
+            <header style="display: flex; align-items: center; gap: 16px; margin-bottom: 32px;">
+                <div onclick="app.navigate('admin-painel-unificado')"
+                    style="width: 44px; height: 44px; background: #f5f5f5; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                    <i data-lucide="arrow-left" style="width: 20px; color: #000;"></i>
+                </div>
+                <h2 style="font-weight: 950; font-size: 20px; letter-spacing: -1px;">Auditoria Global</h2>
+            </header>
+
+            <div id="admin-vendas-list" style="display: flex; flex-direction: column; gap: 12px;">
+                <!-- Carregado via JS -->
+                <div style="text-align: center; padding: 40px; color: #ccc; font-weight: 800;">Buscando transações...</div>
             </div>
         </div>
     </template>

@@ -10999,21 +10999,34 @@
     // ==========================================
 
     app.copyToClipboard = function(text, successMsg, btn) {
-        // Feedback visual tátil
+        // Feedback visual tátil e cromático (Novo estilo Dito)
         if (btn) {
+            const originalBg = btn.style.background || '#f5f5f5';
+            const originalColor = btn.style.color || '#000';
+            const icon = btn.querySelector('i');
+            const originalIcon = icon ? icon.getAttribute('data-lucide') : 'link';
+
+            // Estado de Sucesso
             btn.style.transform = 'scale(0.85)';
+            btn.style.background = '#22c55e'; // Verde de Sucesso
+            btn.style.color = '#fff';
+            
+            if (icon) {
+                icon.setAttribute('data-lucide', 'check');
+                if (window.lucide) lucide.createIcons();
+            }
+
+            // Retorno suave ao original
             setTimeout(() => {
                 btn.style.transform = 'scale(1)';
-                const icon = btn.querySelector('i');
-                if (icon) {
-                    const originalIcon = icon.getAttribute('data-lucide');
-                    icon.setAttribute('data-lucide', 'check');
-                    if (window.lucide) lucide.createIcons();
-                    setTimeout(() => {
+                setTimeout(() => {
+                    btn.style.background = originalBg;
+                    btn.style.color = originalColor;
+                    if (icon) {
                         icon.setAttribute('data-lucide', originalIcon);
                         if (window.lucide) lucide.createIcons();
-                    }, 2000);
-                }
+                    }
+                }, 1500);
             }, 150);
         }
 

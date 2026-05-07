@@ -3162,9 +3162,11 @@
 
 
         async syncUserToNetwork(user) {
-            if (!supabase) return;
+            if (!supabase || !user) return;
             try {
-                const key = this.getUserKey();
+                // CORREÇÃO CRÍTICA: Usa o username do usuário sendo sincronizado, 
+                // não o 'this.currentUser' global, para evitar vazamento de dados de 'guest'.
+                const key = user.username || 'guest';
                 
                 // 1. PAYLOAD BÁSICO (Colunas que sempre existem)
                 const basicPayload = {
@@ -3184,8 +3186,8 @@
                         missions: localStorage.getItem(`dito_missions_${key}`),
                         history: localStorage.getItem(`dito_checkin_history_${key}`),
                         claimed: localStorage.getItem(`dito_claimed_events_${key}`),
-                        daily_claims: Object.keys(localStorage).filter(k => k.startsWith('dito_claimed_daily_')).reduce((obj, k) => ({...obj, [k]: localStorage.getItem(k)}), {}),
-                        posts: localStorage.getItem('dito_profile_posts'),
+                        daily_claims: Object.keys(localStorage).filter(k => k.startsWith(`dito_claimed_daily_${key}_`)).reduce((obj, k) => ({...obj, [k]: localStorage.getItem(k)}), {}),
+                        posts: localStorage.getItem(`dito_profile_posts_${key}`),
                         active_events: Object.keys(localStorage).filter(k => k.startsWith('dito_event_')).reduce((obj, k) => ({...obj, [k]: localStorage.getItem(k)}), {})
                     }),
                     avatar: user.avatar || "",
@@ -6688,7 +6690,8 @@
                 
                 let posts = [];
                 try {
-                    const raw = localStorage.getItem('dito_profile_posts') || '[]';
+                    const key = this.getUserKey();
+                    const raw = localStorage.getItem(`dito_profile_posts_${key}`) || '[]';
                     posts = JSON.parse(raw);
                     if (!Array.isArray(posts)) posts = [];
                 } catch(e) {
@@ -6724,7 +6727,8 @@
             if (confirm('Deseja excluir este post?')) {
                 let posts = [];
                 try {
-                    const raw = localStorage.getItem('dito_profile_posts') || '[]';
+                    const key = this.getUserKey();
+                    const raw = localStorage.getItem(`dito_profile_posts_${key}`) || '[]';
                     posts = JSON.parse(raw);
                     if (!Array.isArray(posts)) posts = [];
                 } catch(e) { posts = []; }
@@ -6733,7 +6737,8 @@
                     posts.splice(index, 1);
                 
                 // Salva localmente
-                localStorage.setItem('dito_profile_posts', JSON.stringify(posts));
+                const key = this.getUserKey();
+                localStorage.setItem(`dito_profile_posts_${key}`, JSON.stringify(posts));
                 
                 // Sincroniza com o objeto do usuário e nuvem
                 if (this.currentUser) {
@@ -6766,12 +6771,14 @@
                     // Comprime a foto do post para não sobrecarregar a rede
                     const compressedUrl = await this.compressImage(event.target.result, 800, 0.7);
                     
-                    const posts = JSON.parse(localStorage.getItem('dito_profile_posts') || '[]');
+                    const key = this.getUserKey();
+                    const posts = JSON.parse(localStorage.getItem(`dito_profile_posts_${key}`) || '[]');
                     const newPost = { id: Date.now(), url: compressedUrl };
                     posts.unshift(newPost);
                     
                     // Salva localmente
-                    localStorage.setItem('dito_profile_posts', JSON.stringify(posts));
+                    const key = this.getUserKey();
+                    localStorage.setItem(`dito_profile_posts_${key}`, JSON.stringify(posts));
                     
                     // Sincroniza com o objeto do usuário e nuvem
                     if (this.currentUser) {
@@ -8513,6 +8520,10 @@
             setTimeout(() => {
                 localStorage.removeItem('is_logged_in_vanilla');
                 localStorage.removeItem('is_guest_vanilla');
+                localStorage.removeItem('current_user_vanilla');
+                this.currentUser = null;
+                this.purchasedProducts = [];
+                this.cart = [];
                 this.navigate('welcome'); 
                 this.showLoading(false);
             }, 1000);
@@ -10879,7 +10890,7 @@
                             if (this.currentView === 'missoes') this.renderMissions();
                             
                             // Restaura Fotos do Perfil (Eternidade garantida pela nuvem)
-                            if (purchasesRaw.posts) localStorage.setItem('dito_profile_posts', purchasesRaw.posts);
+                            if (purchasesRaw.posts) localStorage.setItem(`dito_profile_posts_${key}`, purchasesRaw.posts);
                             if (purchasesRaw.active_events) {
                                 Object.keys(purchasesRaw.active_events).forEach(k => {
                                     localStorage.setItem(k, purchasesRaw.active_events[k]);
@@ -11116,7 +11127,8 @@
         transientKeys.forEach(k => localStorage.removeItem(k));
         
         // Compacta históricos se estiverem muito grandes (> 50 itens)
-        const historicalKeys = ['dito_checkin_history', 'dito_market_notifications'];
+        const key = this.getUserKey();
+        const historicalKeys = [`dito_checkin_history_${key}`, 'dito_market_notifications'];
         historicalKeys.forEach(k => {
             try {
                 let data = JSON.parse(localStorage.getItem(k) || '[]');

@@ -6197,6 +6197,16 @@
             const list = document.getElementById('admin-users-list');
             if (!list) return;
 
+            // Atualiza Estatísticas no Topo
+            const totalUsersEl = document.getElementById('admin-total-users');
+            const totalBalanceEl = document.getElementById('admin-total-balance');
+            
+            if (totalUsersEl) totalUsersEl.textContent = usuarios.length;
+            if (totalBalanceEl) {
+                const total = usuarios.reduce((sum, u) => sum + parseFloat(u.balance || 0), 0);
+                totalBalanceEl.textContent = `R$ ${total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            }
+
             if (!usuarios || usuarios.length === 0) {
                 list.innerHTML = `<p style="text-align: center; color: #999; font-weight: 800; padding: 40px;">Nenhum usuário encontrado.</p>`;
                 return;
@@ -6204,15 +6214,19 @@
 
             list.innerHTML = usuarios.map(user => {
                 const userId = `admin-user-details-${(user.id || user.username).toString().replace(/[^a-zA-Z0-9]/g, '-')}`;
+                const isBlocked = user.is_blocked === true;
+                
                 return `
-                <div style="background: #fff; border: 1px solid #f2f2f2; border-radius: 16px; margin-bottom: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.01); overflow: hidden;">
+                <div style="background: ${isBlocked ? '#fff5f5' : '#fff'}; border: 1px solid ${isBlocked ? '#feb2b2' : '#f2f2f2'}; border-radius: 16px; margin-bottom: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.01); overflow: hidden; position: relative;">
+                    ${isBlocked ? '<div style="position: absolute; top: 8px; right: 40px; background: #ef4444; color: #fff; font-size: 8px; font-weight: 950; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">BLOQUEADO</div>' : ''}
+                    
                     <!-- Cabecalho Minimalista -->
                     <div onclick="const el = document.getElementById('${userId}'); el.style.display = el.style.display === 'none' ? 'block' : 'none';" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#fcfcfc'" onmouseout="this.style.background='transparent'">
                         <div style="display: flex; gap: 12px; align-items: center;">
-                            <div style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; background: #f5f5f5; border: 1px solid #eee;">
+                            <div style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; background: #f5f5f5; border: 1px solid #eee; ${isBlocked ? 'filter: grayscale(1);' : ''}">
                                 <img src="${this.rGetPImage(user.avatar, user.username)}" style="width: 100%; height: 100%; object-fit: cover;">
                             </div>
-                            <h4 style="font-weight: 950; font-size: 13px; color: #000; margin: 0;">${user.username}</h4>
+                            <h4 style="font-weight: 950; font-size: 13px; color: ${isBlocked ? '#ef4444' : '#000'}; margin: 0;">${user.username}</h4>
                         </div>
                         <div style="display: flex; align-items: center; gap: 12px;">
                             <span style="font-size: 13px; font-weight: 900; color: #10b981;">R$ ${parseFloat(user.balance || 0).toFixed(2)}</span>
@@ -6232,10 +6246,12 @@
                             <div><strong style="color:#aaa; text-transform: uppercase; font-size: 8px; display: block; margin-bottom: 2px;">Criação</strong> ${user.created_at ? new Date(user.created_at).toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}) : 'N/A'}</div>
                         </div>
                         
-                        <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-size: 9px; color: #bbb;">ID: ${user.id}</span>
+                        <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                            <button onclick="app.toggleUserBlock('${user.username}', ${isBlocked})" style="height: 32px; flex: 1; background: ${isBlocked ? '#10b981' : '#000'}; color: #fff; border: none; border-radius: 8px; font-size: 10px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                <i data-lucide="${isBlocked ? 'unlock' : 'lock'}" style="width: 12px;"></i> ${isBlocked ? 'DESBLOQUEAR' : 'BLOQUEAR CONTA'}
+                            </button>
                             <button onclick="app.deleteUser('${user.username}', '${user.id}')" style="height: 32px; padding: 0 12px; background: #fee2e2; color: #ef4444; border: none; border-radius: 8px; font-size: 10px; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                                <i data-lucide="trash-2" style="width: 12px;"></i> EXCLUIR CONTA
+                                <i data-lucide="trash-2" style="width: 12px;"></i> EXCLUIR
                             </button>
                         </div>
                     </div>
@@ -8497,6 +8513,13 @@
                 // 3. Validação Final
                 if (user || (userInp === 'admin' && passInp === 'admin')) {
                     const loggedUser = user || { id: 1, username: 'admin', name: 'Admin', bio: 'Admin', sales: 0 };
+                    
+                    // VERIFICAÇÃO DE BLOQUEIO
+                    if (loggedUser.is_blocked === true) {
+                        this.showNotification('🚫 Sua conta está suspensa. Entre em contato com o suporte.', 'error');
+                        return;
+                    }
+                    
                     localStorage.setItem('is_logged_in_vanilla', 'true');
                     localStorage.setItem('is_guest_vanilla', 'false');
                     this.saveSession(loggedUser);
@@ -10843,6 +10866,14 @@
                 .maybeSingle();
 
             if (data && !error) {
+                // VERIFICAÇÃO DE BLOQUEIO ATIVA
+                if (data.is_blocked === true) {
+                    console.error("🛑 [Segurança] Conta bloqueada detectada.");
+                    alert("Sua conta foi suspensa por um administrador. Entre em contato com o suporte.");
+                    this.logout();
+                    return;
+                }
+
                 // 1. Sincroniza Saldo (Reais)
                 if (data.balance !== undefined && data.balance !== null) {
                     this.currentUser.balance = parseFloat(data.balance);

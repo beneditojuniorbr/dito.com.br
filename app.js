@@ -8307,8 +8307,13 @@
                 }
             }
 
-            this.showNotification('Cadastro realizado com sucesso! Agora você já pode fazer login.');
-            this.navigate('login');
+            // Login Automático Pós-Cadastro
+            this.currentUser = newUser;
+            localStorage.setItem('is_logged_in_vanilla', 'true');
+            localStorage.setItem('current_user_vanilla', JSON.stringify(newUser));
+            
+            this.showNotification('Cadastro realizado com sucesso! Bem-vindo ao Dito 🚀');
+            this.navigate('perfil'); // Redireciona direto para o perfil conforme solicitado
         },
 
         // --- Gerenciamento de Estrutura de Curso ---

@@ -2531,6 +2531,7 @@
                 if (balanceEl) balanceEl.innerText = currentCoins.toLocaleString();
 
                 this.launchVictoryConfetti();
+                this.updateOnboarding('checkin'); // Marco: Checkin Diário
                 this.showNotification(`${REWARD} Cupons coletados! 🎫✨`, 'success');
                 this.showSystemNotification('Check-in Realizado! ✅', `Você ganhou ${REWARD} cupons de bônus diário.`, 'success');
                 
@@ -5172,9 +5173,11 @@
                         this.checkSalesNotification();
                         this.checkAdminNotifications();
                         this.startEventsCarousel();
+                        this.renderOnboarding(); // Renderiza barra de progresso
                         break;
                     case 'mercado': 
                         localStorage.setItem('dito_market_last_seen', Date.now().toString());
+                        this.updateOnboarding('market_visit'); // Marco: Conhecer o Mercado
                         setTimeout(() => {
                             this.renderStore();
                             this.checkNewProducts();
@@ -6134,6 +6137,7 @@
                 this.syncUserToNetwork(this.currentUser); // Sincroniza com a rede ao salvar perfil!
                 
                 this.showNotification('Perfil atualizado com sucesso!');
+                this.updateOnboarding('profile_complete'); // Marco: Perfil Completo
                 this.navigate('perfil');
             }
         },
@@ -8020,6 +8024,7 @@
                 if (notif) notif.remove();
                 app.showNotification(`Produto "${name}" criado com sucesso!`, "success");
                 app.launchVictoryConfetti();
+                this.updateOnboarding('first_product'); // Marco: Primeiro Produto
 
                 // Recarrega rede IMEDIAMENTE para aparecer
                 setTimeout(() => app.fetchNetworkProducts(true), 500);
@@ -8220,7 +8225,8 @@
                 name: username,
                 bio: "Novo Infoprodutor Dito",
                 avatar: "",
-                sales: 0
+                sales: 0,
+                onboarding_completed: ['signup']
             };
 
             users.push(newUser);
@@ -11131,6 +11137,80 @@
         if (this.currentUser && this.currentUser.username === username) {
             this.currentUser.avatar = newSrc;
             this.saveSession(this.currentUser);
+        }
+    };
+
+    // 📈 SISTEMA DE ONBOARDING (SETUP DA CONTA)
+    app.onboardingSteps = [
+        { id: 'signup', label: 'Cadastrar-se', tip: 'Próximo: Fazer checkin diário para ganhar cupons.' },
+        { id: 'checkin', label: 'Fazer checkin diário', tip: 'Próximo: Criar seu primeiro produto para vender.' },
+        { id: 'first_product', label: 'Criar primeiro produto', tip: 'Próximo: Conhecer o Mercado e ver o que está bombando.' },
+        { id: 'market_visit', label: 'Conhecer o Mercado', tip: 'Próximo: Terminar seu perfil para passar confiança.' },
+        { id: 'profile_complete', label: 'Terminar o perfil', tip: 'Parabéns! Você concluiu o setup inicial.' }
+    ];
+
+    app.updateOnboarding = async function(stepId) {
+        if (!this.currentUser) return;
+        
+        if (!this.currentUser.onboarding_completed) {
+            this.currentUser.onboarding_completed = [];
+        }
+
+        if (this.currentUser.onboarding_completed.includes(stepId)) return;
+
+        this.currentUser.onboarding_completed.push(stepId);
+        this.saveSession(this.currentUser);
+        
+        // Efeito Visual de Sucesso
+        this.launchVictoryConfetti();
+        this.showNotification(`Progresso: ${this.onboardingSteps.find(s => s.id === stepId).label} concluído!`, 'success');
+        
+        await this.syncUserToNetwork(this.currentUser);
+        
+        if (this.currentView === 'dashboard') {
+            this.renderOnboarding();
+        }
+    };
+
+    app.renderOnboarding = function() {
+        const card = document.getElementById('onboarding-card');
+        if (!card || !this.currentUser) return;
+
+        // Inicializa para usuários que já existem ou recém-criados
+        if (!this.currentUser.onboarding_completed) {
+            this.currentUser.onboarding_completed = ['signup'];
+        }
+
+        const completed = this.currentUser.onboarding_completed || [];
+        
+        if (completed.length === this.onboardingSteps.length) {
+            card.style.display = 'none';
+            return;
+        }
+
+        card.style.display = 'block';
+        
+        const total = this.onboardingSteps.length;
+        const current = completed.length;
+        const percent = Math.round((current / total) * 100);
+
+        const percentEl = document.getElementById('onboarding-percent');
+        const barEl = document.getElementById('onboarding-bar');
+        const tipEl = document.getElementById('onboarding-tip');
+
+        if (percentEl) percentEl.innerText = `${percent}%`;
+        if (barEl) barEl.style.width = `${percent}%`;
+        
+        const nextStep = this.onboardingSteps.find(s => !completed.includes(s.id));
+        if (tipEl && nextStep) {
+            tipEl.innerText = `Próximo passo: ${nextStep.label}`;
+            // Dica mais amigável
+            if (nextStep.id === 'checkin') tipEl.innerText = 'Próximo passo: Fazer checkin diário para ganhar cupons.';
+            if (nextStep.id === 'first_product') tipEl.innerText = 'Próximo passo: Criar seu primeiro produto para começar a vender.';
+            if (nextStep.id === 'market_visit') tipEl.innerText = 'Próximo passo: Conhecer o Mercado e ver o que está bombando.';
+            if (nextStep.id === 'profile_complete') tipEl.innerText = 'Próximo passo: Terminar seu perfil (Foto e Bio) para passar confiança.';
+        } else if (tipEl) {
+            tipEl.innerText = 'Tudo pronto! Sua conta está 100% configurada.';
         }
     };
 

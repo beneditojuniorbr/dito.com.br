@@ -6157,29 +6157,7 @@
             list.innerHTML = `<div style="text-align: center; padding: 40px;"><div class="loading-spinner" style="margin: 0 auto 20px;"></div><p style="font-weight: 800; color: #999;">Auditando Rede...</p></div>`;
 
             try {
-                const { data: rawUsers, error } = await supabase.from('dito_users').select('*');
-                if (error) throw error;
-
-                // Ordena Alfabeticamente por @username
-                this.adminUsersCache = rawUsers.sort((a, b) => (a.username || '').localeCompare(b.username || ''));
-                this.displayAdminUsers(this.adminUsersCache);
-            } catch (err) {
-                console.error("Erro ao buscar usuários pro admin:", err);
-                list.innerHTML = `<p style="text-align: center; color: red;">Erro ao carregar banco de dados.</p>`;
-            }
-        },
-
-        filterAdminUsers(query) {
-            if (!this.adminUsersCache) return;
-            const q = query.toLowerCase();
-            const filtered = this.adminUsersCache.filter(u => 
-                (u.username || '').toLowerCase().includes(q) || 
-                (u.name || '').toLowerCase().includes(q)
-            );
-            this.displayAdminUsers(filtered);
-        },
-
-        displayAdminUsers(usuarios) {
+                const { data: r        displayAdminUsers(usuarios) {
             const list = document.getElementById('admin-users-list');
             if (!list) return;
 
@@ -6188,27 +6166,47 @@
                 return;
             }
 
-            list.innerHTML = usuarios.map(user => `
-                <div style="background: #fff; border: 1px solid #f2f2f2; border-radius: 24px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
-                        <div style="display: flex; gap: 14px; align-items: center;">
-                            <div style="width: 46px; height: 46px; border-radius: 50%; overflow: hidden; background: #f5f5f5; border: 1px solid #eee; display: flex; align-items: center; justify-content: center;">
+            list.innerHTML = usuarios.map(user => {
+                const userId = `admin-user-details-${(user.id || user.username).toString().replace(/[^a-zA-Z0-9]/g, '-')}`;
+                return `
+                <div style="background: #fff; border: 1px solid #f2f2f2; border-radius: 16px; margin-bottom: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.01); overflow: hidden;">
+                    <!-- Cabecalho Minimalista -->
+                    <div onclick="const el = document.getElementById('${userId}'); el.style.display = el.style.display === 'none' ? 'block' : 'none';" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#fcfcfc'" onmouseout="this.style.background='transparent'">
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <div style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; background: #f5f5f5; border: 1px solid #eee;">
                                 <img src="${this.rGetPImage(user.avatar, user.username)}" style="width: 100%; height: 100%; object-fit: cover;">
                             </div>
-                            <div>
-                                <h4 style="font-weight: 900; font-size: 16px; color: #000; margin-bottom: 2px;">${user.username}</h4>
-                                <p style="font-size: 11px; font-weight: 800; color: #999;">${(user.name || 'Sem nome')} • ${(user.email || 'Sem email')}</p>
-                            </div>
+                            <h4 style="font-weight: 950; font-size: 13px; color: #000; margin: 0;">${user.username}</h4>
                         </div>
-                        <button onclick="app.deleteUser('${user.username}', '${user.id}')" style="width: 36px; height: 36px; background: #fee2e2; color: #ef4444; border: none; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-                            <i data-lucide="trash-2" style="width: 16px;"></i>
-                        </button>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 13px; font-weight: 900; color: #10b981;">R$ ${parseFloat(user.balance || 0).toFixed(2)}</span>
+                            <i data-lucide="chevron-down" style="width: 14px; color: #ccc;"></i>
+                        </div>
                     </div>
                     
-                    <div style="background: #f9f9f9; padding: 14px; border-radius: 16px; border: 1px dashed #e5e5e5; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 11px; color: #555; font-weight: 600;">
-                        <div><strong style="color:#000;">Senha:</strong> ${user.password || 'N/A'}</div>
-                        <div><strong style="color:#000;">Chave Pix:</strong> ${user.pix_key || 'Não cadastrado'}</div>
-                        <div><strong style="color:#000;">Saldo Disp.:</strong> <span style="color:#10b981; font-weight: 800;">R$ ${parseFloat(user.balance || 0).toFixed(2)}</span></div>
+                    <!-- Detalhes Expansíveis -->
+                    <div id="${userId}" style="display: none; padding: 16px; background: #fafafa; border-top: 1px solid #f2f2f2;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 11px; color: #555; font-weight: 700;">
+                            <div><strong style="color:#aaa; text-transform: uppercase; font-size: 8px; display: block; margin-bottom: 2px;">Nome Real</strong> ${user.name || 'Sem nome'}</div>
+                            <div><strong style="color:#aaa; text-transform: uppercase; font-size: 8px; display: block; margin-bottom: 2px;">E-mail</strong> ${user.email || 'Sem e-mail'}</div>
+                            <div><strong style="color:#aaa; text-transform: uppercase; font-size: 8px; display: block; margin-bottom: 2px;">Senha</strong> ${user.password || 'N/A'}</div>
+                            <div><strong style="color:#aaa; text-transform: uppercase; font-size: 8px; display: block; margin-bottom: 2px;">Chave Pix</strong> ${user.pix_key || 'Não cadastrada'}</div>
+                            <div><strong style="color:#aaa; text-transform: uppercase; font-size: 8px; display: block; margin-bottom: 2px;">Saldo Retido</strong> <span style="color:#f59e0b;">R$ ${parseFloat(user.pending_balance || 0).toFixed(2)}</span></div>
+                            <div><strong style="color:#aaa; text-transform: uppercase; font-size: 8px; display: block; margin-bottom: 2px;">Vendas</strong> ${user.sales || 0}</div>
+                        </div>
+                        
+                        <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 9px; color: #bbb;">ID: ${user.id}</span>
+                            <button onclick="app.deleteUser('${user.username}', '${user.id}')" style="height: 32px; padding: 0 12px; background: #fee2e2; color: #ef4444; border: none; border-radius: 8px; font-size: 10px; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                                <i data-lucide="trash-2" style="width: 12px;"></i> EXCLUIR CONTA
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+            if (window.lucide) lucide.createIcons();
+        },trong> <span style="color:#10b981; font-weight: 800;">R$ ${parseFloat(user.balance || 0).toFixed(2)}</span></div>
                         <div><strong style="color:#000;">Retido (Garantia):</strong> <span style="color:#f59e0b; font-weight: 800;">R$ ${parseFloat(user.pending_balance || 0).toFixed(2)}</span></div>
                         <div><strong style="color:#000;">Vendas Totais:</strong> ${user.sales || 0}</div>
                         <div><strong style="color:#000;">Cupons Dito:</strong> ${user.coins || 0}</div>

@@ -6242,12 +6242,21 @@
                 try {
                     // 1. Remove do Supabase
                     if (supabase) {
-                        const { error } = await supabase
+                        // 1. Remove o usuário da rede
+                        const { error: userError } = await supabase
                             .from('dito_users')
                             .delete()
                             .eq('username', username);
                         
-                        if (error) throw error;
+                        if (userError) throw userError;
+
+                        // 2. Remove todos os produtos deste usuário do Mercado (Limpeza Total)
+                        const { error: prodError } = await supabase
+                            .from('dito_market_products')
+                            .delete()
+                            .eq('seller', username);
+                            
+                        if (prodError) console.warn("Aviso: Falha ao limpar produtos do usuário, mas conta foi excluída.");
                     }
 
                     // 2. Remove de TODOS os caches locais possíveis

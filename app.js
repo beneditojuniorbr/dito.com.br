@@ -3275,8 +3275,13 @@
                         
                         return processed;
                     });
+                    
+                    // Mescla com produtos locais (preserva produtos que ainda não subiram para a nuvem)
+                    const localOnly = (JSON.parse(localStorage.getItem('dito_products_vanilla') || '[]')).filter(lp => 
+                        !synchronized.some(sp => String(sp.id) === String(lp.id))
+                    );
 
-                    this.products = synchronized;
+                    this.products = [...synchronized, ...localOnly];
                     this.checkNewProducts();
                     
                     if (this.currentView === 'mercado' && this.marketView === 'home') {

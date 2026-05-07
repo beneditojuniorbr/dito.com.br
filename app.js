@@ -6228,17 +6228,6 @@
                 `;
             }).join('');
             if (window.lucide) lucide.createIcons();
-        },trong> <span style="color:#10b981; font-weight: 800;">R$ ${parseFloat(user.balance || 0).toFixed(2)}</span></div>
-                        <div><strong style="color:#000;">Retido (Garantia):</strong> <span style="color:#f59e0b; font-weight: 800;">R$ ${parseFloat(user.pending_balance || 0).toFixed(2)}</span></div>
-                        <div><strong style="color:#000;">Vendas Totais:</strong> ${user.sales || 0}</div>
-                        <div><strong style="color:#000;">Cupons Dito:</strong> ${user.coins || 0}</div>
-                        <div style="grid-column: 1 / -1; font-size: 10px; color: #aaa; margin-top: 4px; padding-top: 8px; border-top: 1px solid #eee;">
-                            <strong>ID:</strong> ${user.id} • <strong>Data:</strong> ${new Date(user.created_at).toLocaleString('pt-BR')}
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-            if (window.lucide) lucide.createIcons();
         },
 
         async deleteUser(username, id) {

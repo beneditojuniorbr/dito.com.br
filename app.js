@@ -6157,7 +6157,29 @@
             list.innerHTML = `<div style="text-align: center; padding: 40px;"><div class="loading-spinner" style="margin: 0 auto 20px;"></div><p style="font-weight: 800; color: #999;">Auditando Rede...</p></div>`;
 
             try {
-                const { data: r        displayAdminUsers(usuarios) {
+                const { data: rawUsers, error } = await supabase.from('dito_users').select('*');
+                if (error) throw error;
+
+                // Ordena Alfabeticamente por @username
+                this.adminUsersCache = rawUsers.sort((a, b) => (a.username || '').localeCompare(b.username || ''));
+                this.displayAdminUsers(this.adminUsersCache);
+            } catch (err) {
+                console.error("Erro ao buscar usuários pro admin:", err);
+                list.innerHTML = `<p style="text-align: center; color: red;">Erro ao carregar banco de dados.</p>`;
+            }
+        },
+
+        filterAdminUsers(query) {
+            if (!this.adminUsersCache) return;
+            const q = query.toLowerCase();
+            const filtered = this.adminUsersCache.filter(u => 
+                (u.username || '').toLowerCase().includes(q) || 
+                (u.name || '').toLowerCase().includes(q)
+            );
+            this.displayAdminUsers(filtered);
+        },
+
+        displayAdminUsers(usuarios) {
             const list = document.getElementById('admin-users-list');
             if (!list) return;
 

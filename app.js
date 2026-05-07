@@ -3084,18 +3084,16 @@
                     const netUser = meRes.data;
                     this.currentUser.sales = parseFloat(netUser.sales || 0);
                     
-                    // Sincronia de Avatar com Auto-Compressão para o Cache Local
+                    const lastLocalChange = parseInt(localStorage.getItem('dito_last_avatar_change') || '0');
+                    const isNewLocal = (Date.now() - lastLocalChange < 60000);
+
                     if (netUser.avatar && netUser.avatar.startsWith('data:')) {
-                        if (netUser.avatar.length > 300000) {
-                            this.compressImage(netUser.avatar, 400, 0.6).then(compressed => {
-                                this.currentUser.avatar = compressed;
-                                this.saveSession(this.currentUser);
-                            });
-                        } else {
+                        if (!isNewLocal) {
                             this.currentUser.avatar = netUser.avatar;
+                            this.saveSession(this.currentUser);
                         }
-                    } else {
-                        this.currentUser.avatar = netUser.avatar || this.currentUser.avatar;
+                    } else if (this.currentUser.avatar && !isNewLocal && !netUser.avatar) {
+                        this.syncUserToNetwork(this.currentUser);
                     }
                     
                     localStorage.setItem('dito_balance', netUser.balance || '0');
@@ -6833,7 +6831,7 @@
                     
                     if (this.currentUser) {
                         this.currentUser.avatar = avatarData;
-                        this.lastAvatarChange = Date.now(); // Marca o momento da alteração para evitar sobrescrita
+                        localStorage.setItem('dito_last_avatar_change', Date.now().toString()); 
                         this.saveSession(this.currentUser); 
                         
                         // Sincronização imediata (Aguardamos para garantir que a nuvem receba antes de qualquer fetch)
@@ -10824,11 +10822,17 @@
                 }
 
                 // 2. Sincroniza Perfil para não desatualizar entre dispositivos
-                // Proteção: Não sobrescreve o avatar se ele foi alterado localmente nos últimos 30 segundos
-                const canOverwriteAvatar = !this.lastAvatarChange || (Date.now() - this.lastAvatarChange > 30000);
+                // Proteção: Não sobrescreve o avatar se ele foi alterado localmente nos últimos 60 segundos
+                const lastLocalChange = parseInt(localStorage.getItem('dito_last_avatar_change') || '0');
+                const canOverwriteAvatar = (Date.now() - lastLocalChange > 60000);
                 
-                if (!canOverwriteAvatar && data.avatar) {
-                    delete data.avatar; // Remove o avatar antigo vindo da nuvem para manter o novo local
+                if (!canOverwriteAvatar) {
+                    // Mantém o avatar local se for muito recente
+                    if (data.avatar) delete data.avatar;
+                } else if (!data.avatar && this.currentUser.avatar) {
+                    // Se a nuvem está vazia mas o local tem, não deixa apagar o local
+                    delete data.avatar;
+                    this.syncUserToNetwork(this.currentUser);
                 }
 
                 this.currentUser = { ...this.currentUser, ...data };

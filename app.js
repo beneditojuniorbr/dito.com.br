@@ -2032,7 +2032,6 @@
 
                 if (resetHappened) {
                     localStorage.setItem(storageKey, JSON.stringify(checklist));
-                    this.showNotification("Streak quebrada! Seu progresso reiniciou, mas você pode recomeçar de hoje.", "error");
                 }
             } else if (changed) {
                 localStorage.setItem(storageKey, JSON.stringify(checklist));

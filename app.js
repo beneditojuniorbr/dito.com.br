@@ -7914,6 +7914,15 @@
                 return;
             }
 
+            // Validação de Termos para Produto Físico
+            if (this.selectedProductType === 'Fisico') {
+                const termsChecked = document.getElementById('prod-fisico-terms')?.checked;
+                if (!termsChecked) {
+                    this.showNotification("Você precisa aceitar os termos de responsabilidade de entrega.", "error");
+                    return;
+                }
+            }
+
             // Notificação Central de 3 segundos
             const notif = { remove: () => {} }; // Mock para não quebrar o código posterior
 

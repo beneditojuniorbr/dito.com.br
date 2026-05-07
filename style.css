@@ -325,9 +325,9 @@ input::placeholder, textarea::placeholder {
         width: 24px !important;
     }
 
-    /* Imagem D6 proporcional no Desktop */
+    /* Imagem D6 proporcional no Desktop - Aumentada em 30% */
     .login-header img[src*="D6.png"] {
-        max-width: 450px !important;
+        max-width: 585px !important;
         margin-left: auto !important;
         margin-right: auto !important;
     }

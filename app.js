@@ -145,6 +145,12 @@
                 } else if (type === 'Vantagem') {
                     // Ícone de Ticket/Cupom (Igual tela de cupons)
                     iconPath = `<path d="M2 9V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 0 0 4v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-4a2 2 0 0 0 0-4Z"/><path d="M15 3v18"/><path d="M15 8h.01"/><path d="M15 12h.01"/><path d="M15 16h.01"/>`;
+                } else if (type === 'App') {
+                    // Ícone de Smartphone
+                    iconPath = `<rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line>`;
+                } else if (type === 'Fisico') {
+                    // Ícone de Pacote
+                    iconPath = `<line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line>`;
                 } else { // Curso
                     // Ícone de Play Circle
                     iconPath = `<circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon>`;
@@ -9280,7 +9286,7 @@
 
             // --- FILTRO POR NICHO (NOVO) ---
             if (currentCat !== 'Todas') {
-                all = all.filter(p => p.category === currentCat);
+                all = all.filter(p => p.category === currentCat || (currentCat === 'App' && p.type === 'App'));
             }
 
             if (all.length === 0 && currentCat === 'Todas') {
@@ -9303,6 +9309,34 @@
                             </div>
                         </div>
                         <span style="font-size: 9px; font-weight: 800; color: #000; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; line-height: 1.2;">${p.name}</span>
+                    </div>
+                `).join('');
+            }
+
+            // --- NOVO: SEÇÃO DE APPS ---
+            const appsContainer = document.getElementById('apps-horizontal-list');
+            const appsWrapper = document.getElementById('apps-carousel-container');
+            const appProducts = all.filter(p => p.type === 'App');
+            
+            if (appsContainer && appsWrapper) {
+                appsWrapper.style.display = appProducts.length > 0 ? 'block' : 'none';
+                appsContainer.innerHTML = appProducts.map(p => `
+                    <div onclick="app.viewProduct('${p.id}')" class="mercado-card-premium" style="width: 165px; min-width: 165px; scroll-snap-align: start;">
+                        <div style="width: 100%; aspect-ratio: 1; background: #f9f9f9; overflow: hidden; position: relative; border-bottom: 2px solid #f2f2f2;">
+                             <img src="${this.rGetPImage(p.image, p.name, p.type)}" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <div style="padding: 10px; display: flex; flex-direction: column; gap: 4px; flex-grow: 1;">
+                            <h4 style="font-weight: 900; font-size: 11px; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0;">${p.name}</h4>
+                            <div style="display: flex; align-items: center; gap: 4px;">
+                                <div style="display: flex; gap: 2px;">
+                                    ${this.renderStars(this.getProductRating(p.id).avg)}
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
+                                <span style="font-weight: 900; font-size: 14px; color: #006eff;">R$ ${parseFloat(p.price || 0).toFixed(2)}</span>
+                                <span style="font-size: 8px; font-weight: 800; color: #ccc;">${p.sales || 0} v.</span>
+                            </div>
+                        </div>
                     </div>
                 `).join('');
             }

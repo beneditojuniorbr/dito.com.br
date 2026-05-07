@@ -11200,11 +11200,14 @@
         
         const total = this.onboardingSteps.length;
         const current = completed.length;
+        const percent = Math.round((current / total) * 100);
 
         const percentEl = document.getElementById('onboarding-percent');
+        const barEl = document.getElementById('onboarding-bar');
         const tipEl = document.getElementById('onboarding-tip');
 
         if (percentEl) percentEl.innerText = `${current} de ${total}`;
+        if (barEl) barEl.style.width = `${percent}%`;
         
         const nextStep = this.onboardingSteps.find(s => !completed.includes(s.id));
         if (tipEl && nextStep) {

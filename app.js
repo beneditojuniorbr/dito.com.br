@@ -8330,7 +8330,8 @@
             localStorage.setItem('current_user_vanilla', JSON.stringify(newUser));
             
             this.showNotification('Cadastro realizado com sucesso! Bem-vindo ao Dito 🚀');
-            this.navigate('perfil'); // Redireciona direto para o perfil conforme solicitado
+            this.launchVictoryConfetti();
+            this.navigate('dashboard'); 
         },
 
         // --- Gerenciamento de Estrutura de Curso ---

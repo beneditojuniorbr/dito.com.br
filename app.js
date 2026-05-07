@@ -6215,6 +6215,7 @@
                             <div><strong style="color:#aaa; text-transform: uppercase; font-size: 8px; display: block; margin-bottom: 2px;">Chave Pix</strong> ${user.pix_key || 'Não cadastrada'}</div>
                             <div><strong style="color:#aaa; text-transform: uppercase; font-size: 8px; display: block; margin-bottom: 2px;">Saldo Retido</strong> <span style="color:#f59e0b;">R$ ${parseFloat(user.pending_balance || 0).toFixed(2)}</span></div>
                             <div><strong style="color:#aaa; text-transform: uppercase; font-size: 8px; display: block; margin-bottom: 2px;">Vendas</strong> ${user.sales || 0}</div>
+                            <div><strong style="color:#aaa; text-transform: uppercase; font-size: 8px; display: block; margin-bottom: 2px;">Criação</strong> ${user.created_at ? new Date(user.created_at).toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}) : 'N/A'}</div>
                         </div>
                         
                         <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">

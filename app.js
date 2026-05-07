@@ -8090,6 +8090,8 @@
             this.saveSession(this.currentUser);
             await this.syncUserToNetwork(this.currentUser);
             
+            this.updateOnboarding('pix_config'); // Marco: Configuração de Recebimento
+            
             if (btn) {
                 btn.innerText = 'DADOS SALVOS';
                 btn.style.background = '#22c55e';
@@ -11151,7 +11153,8 @@
         { id: 'checkin', label: 'Fazer checkin diário', tip: 'Próximo: Criar seu primeiro produto para vender.' },
         { id: 'first_product', label: 'Criar primeiro produto', tip: 'Próximo: Conhecer o Mercado e ver o que está bombando.' },
         { id: 'market_visit', label: 'Conhecer o Mercado', tip: 'Próximo: Terminar seu perfil para passar confiança.' },
-        { id: 'profile_complete', label: 'Terminar o perfil', tip: 'Parabéns! Você concluiu o setup inicial.' }
+        { id: 'profile_complete', label: 'Terminar o perfil', tip: 'Próximo: Configurar como você quer receber suas vendas.' },
+        { id: 'pix_config', label: 'Configurar Recebimento', tip: 'Parabéns! Você concluiu o setup inicial.' }
     ];
 
     app.updateOnboarding = async function(stepId) {
@@ -11197,23 +11200,20 @@
         
         const total = this.onboardingSteps.length;
         const current = completed.length;
-        const percent = Math.round((current / total) * 100);
 
         const percentEl = document.getElementById('onboarding-percent');
-        const barEl = document.getElementById('onboarding-bar');
         const tipEl = document.getElementById('onboarding-tip');
 
-        if (percentEl) percentEl.innerText = `${percent}%`;
-        if (barEl) barEl.style.width = `${percent}%`;
+        if (percentEl) percentEl.innerText = `${current} de ${total}`;
         
         const nextStep = this.onboardingSteps.find(s => !completed.includes(s.id));
         if (tipEl && nextStep) {
             tipEl.innerText = `Próximo passo: ${nextStep.label}`;
-            // Dica mais amigável
             if (nextStep.id === 'checkin') tipEl.innerText = 'Próximo passo: Fazer checkin diário para ganhar cupons.';
             if (nextStep.id === 'first_product') tipEl.innerText = 'Próximo passo: Criar seu primeiro produto para começar a vender.';
             if (nextStep.id === 'market_visit') tipEl.innerText = 'Próximo passo: Conhecer o Mercado e ver o que está bombando.';
-            if (nextStep.id === 'profile_complete') tipEl.innerText = 'Próximo passo: Terminar seu perfil (Foto e Bio) para passar confiança.';
+            if (nextStep.id === 'profile_complete') tipEl.innerText = 'Próximo passo: Terminar seu perfil (Foto e Bio).';
+            if (nextStep.id === 'pix_config') tipEl.innerText = 'Próximo passo: Configurar sua chave Pix para receber suas vendas.';
         } else if (tipEl) {
             tipEl.innerText = 'Tudo pronto! Sua conta está 100% configurada.';
         }

@@ -3577,15 +3577,28 @@
                         actionsContainer.style.flexDirection = 'column';
                         actionsContainer.style.gap = '10px';
                         
-                        actionsContainer.innerHTML = `
-                            <button onclick="app.addToCartFromDetail()" style="width: 100%; height: 60px; background: #fff; color: #000; border: 1.5px solid #eee; border-radius: 100px; font-size: 13px; font-weight: 900; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
-                                <i data-lucide="shopping-bag" style="width: 20px;"></i> ADICIONAR À SACOLA
-                            </button>
-                            <button onclick="app.buyNowFromDetail()" style="width: 100%; height: 60px; background: #000; color: #fff; border: none; border-radius: 100px; font-size: 13px; font-weight: 900; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
-                                <i data-lucide="${p.price <= 0 ? 'check-circle' : 'shopping-cart'}" style="width: 20px;"></i>
-                                ${p.price <= 0 ? 'ENTRAR GRATUITAMENTE' : 'COMPRAR AGORA'}
-                            </button>
-                        `;
+                        const isApp = p.type === 'App';
+                        const btnText = isApp ? (p.price <= 0 ? 'INSTALAR GRATUITAMENTE' : 'COMPRAR ACESSO AO APP') : (p.price <= 0 ? 'ENTRAR GRATUITAMENTE' : 'COMPRAR AGORA');
+                        const btnIcon = isApp ? 'smartphone' : (p.price <= 0 ? 'check-circle' : 'shopping-cart');
+
+                        if (hasAccess && isApp) {
+                            actionsContainer.innerHTML = `
+                                <a href="${p.app_link || '#'}" target="_blank" style="width: 100%; height: 60px; background: #000; color: #fff; border: none; border-radius: 100px; font-size: 13px; font-weight: 900; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-decoration: none;">
+                                    <i data-lucide="external-link" style="width: 20px;"></i>
+                                    ABRIR APP
+                                </a>
+                            `;
+                        } else {
+                            actionsContainer.innerHTML = `
+                                <button onclick="app.addToCartFromDetail()" style="width: 100%; height: 60px; background: #fff; color: #000; border: 1.5px solid #eee; border-radius: 100px; font-size: 13px; font-weight: 900; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                                    <i data-lucide="shopping-bag" style="width: 20px;"></i> ADICIONAR À SACOLA
+                                </button>
+                                <button onclick="app.buyNowFromDetail()" style="width: 100%; height: 60px; background: #000; color: #fff; border: none; border-radius: 100px; font-size: 13px; font-weight: 900; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
+                                    <i data-lucide="${btnIcon}" style="width: 20px;"></i>
+                                    ${btnText}
+                                </button>
+                            `;
+                        }
                     }
                 }
             }
@@ -9279,8 +9292,8 @@
             // Marca que o usuário viu o mercado agora
             localStorage.setItem('dito_market_last_seen', Date.now().toString());
 
-            let all = (this.products || [])
-                .filter(p => p.visible !== false && p.visible !== 'false'); // Exibe se for true ou se o campo não existir
+            let all = (this.products && this.products.length > 0) ? this.products : JSON.parse(localStorage.getItem('dito_products_vanilla') || '[]');
+            all = all.filter(p => p.visible !== false && p.visible !== 'false'); // Exibe se for true ou se o campo não existir
             
             // --- ORDENAR POR NOVOS PRIMEIRO (DESC) ---
             all = all.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
@@ -9317,7 +9330,9 @@
             // --- NOVO: SEÇÃO DE APPS ---
             const appsContainer = document.getElementById('apps-horizontal-list');
             const appsWrapper = document.getElementById('apps-carousel-container');
-            const appProducts = all.filter(p => p.type === 'App');
+            // Busca Apps da lista completa (ignorando filtro de nicho) para garantir destaque
+            const fullList = (this.products && this.products.length > 0) ? this.products : JSON.parse(localStorage.getItem('dito_products_vanilla') || '[]');
+            const appProducts = fullList.filter(p => p.type === 'App' && (p.visible !== false && p.visible !== 'false'));
             
             if (appsContainer && appsWrapper) {
                 appsWrapper.style.display = appProducts.length > 0 ? 'block' : 'none';

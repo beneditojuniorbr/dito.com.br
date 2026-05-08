@@ -550,12 +550,8 @@
                 this.checkMissionsNotification();
                 this.updateLastSeen(); // Atualiza imediatamente ao carregar
 
-                if (typeof this.checkSalesPageRoute === 'function' && this.checkSalesPageRoute()) {
-                    return; // Routing Handled
-                }
-
                 // RESTAURAÇÃO DE ESTADO (F5 Seguro com Proteção Anti-Crash)
-                const allowedViews = ['dashboard', 'mercado', 'sociedade', 'hall', 'perfil', 'vendas', 'sacar', 'admin-contas', 'admin-produtos', 'admin-vendas', 'admin-saques', 'admin-painel-unificado', 'produtos', 'meus-cursos', 'missoes', 'centro-notificacoes', 'criar-produto', 'links', 'page-builder', 'sales-page'];
+                const allowedViews = ['dashboard', 'mercado', 'sociedade', 'hall', 'perfil', 'vendas', 'sacar', 'admin-contas', 'admin-produtos', 'admin-vendas', 'admin-saques', 'admin-painel-unificado', 'produtos', 'meus-cursos', 'missoes', 'centro-notificacoes', 'criar-produto', 'links'];
                 let lastView = localStorage.getItem('dito_last_view') || 'dashboard';
                 
                 // Se a view salva for lixo ou de outro app (ex: 'av'), volta pro dashboard
@@ -5234,8 +5230,6 @@
                     case 'admin-vendas': this.renderAdminSales(); break;
                     case 'admin-produtos': this.renderAdminProducts(); break;
                     case 'produtos': this.renderMyProducts(); break;
-                    case 'page-builder': this.renderPageBuilder(); break;
-                    case 'sales-page': this.renderSalesPage(); break;
                     case 'meus-cursos': this.renderPurchasedProducts(); break;
                     case 'curso-player': this.renderCoursePlayer(); break;
                     case 'missoes': this.renderMissions(); break;
@@ -10301,9 +10295,8 @@
                     <p style="font-size:10px; color:#999; font-weight: 700;">${p.type || 'Infoproduto'} • R$ ${parseFloat(p.price || 0).toFixed(2)}</p>
                 </div>
                 <div style="display:flex; gap:8px;">
-                    <button onclick="app.openPageBuilder('${String(p.id)}')" title="Editar Página de Vendas" style="width:40px; height:40px; background:#10b981; color:#fff; border:none; border-radius:50%; cursor:pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; box-shadow: 0 4px 10px rgba(16,185,129,0.2);" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"><i data-lucide="layout-template" style="width:18px;"></i></button>
                     <button onclick="app.copyToClipboard('https://www.ditoapp.com.br/checkout/${p.id}', 'Link de Checkout copiado!', this)" title="Copiar Checkout" style="width:40px; height:40px; background:#f5f5f5; color:#000; border:none; border-radius:50%; cursor:pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;" onmouseover="this.style.background='#eee'" onmouseout="this.style.background='#f5f5f5'"><i data-lucide="link" style="width:18px;"></i></button>
-                    <button onclick="app.editProduct('${String(p.id)}')" title="Editar Produto" style="width:40px; height:40px; background:#f5f5f5; color:#000; border:none; border-radius:50%; cursor:pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;" onmouseover="this.style.background='#eee'" onmouseout="this.style.background='#f5f5f5'"><i data-lucide="edit-3" style="width:18px;"></i></button>
+                    <button onclick="app.editProduct('${String(p.id)}')" title="Editar" style="width:40px; height:40px; background:#f5f5f5; color:#000; border:none; border-radius:50%; cursor:pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;" onmouseover="this.style.background='#eee'" onmouseout="this.style.background='#f5f5f5'"><i data-lucide="edit-3" style="width:18px;"></i></button>
                     <button onclick="app.deleteProduct('${String(p.id)}', '${(p.name || '').replace(/'/g, "\\'")}')" title="Excluir" style="width:40px; height:40px; background:#f5f5f5; color:#000; border:none; border-radius:50%; cursor:pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;" onmouseover="this.style.background='#eee'" onmouseout="this.style.background='#f5f5f5'"><i data-lucide="trash-2" style="width:18px;"></i></button>
                 </div>
             </div>`).join('');

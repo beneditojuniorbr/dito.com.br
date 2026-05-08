@@ -5200,7 +5200,8 @@
                     case 'hall': this.renderHallOfFame(); break;
                     case 'perfil': 
                         this.renderProfile(); 
-                        if (this.currentUser && this.currentUser.username === 'Ditão') {
+                        this.updateOnboarding('profile_complete'); // Marco: Terminar o perfil
+                        if (this.currentUser && (this.currentUser.username === 'Ditão' || this.currentUser.username === 'benedito_pro')) {
                             const dotMobile = document.getElementById('dot-perfil');
                             const dotDesktop = document.getElementById('dot-perfil-desktop');
                             if (dotMobile) dotMobile.style.display = 'none';

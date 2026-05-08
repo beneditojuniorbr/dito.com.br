@@ -551,7 +551,7 @@
                 this.updateLastSeen(); // Atualiza imediatamente ao carregar
 
                 // RESTAURAÇÃO DE ESTADO (F5 Seguro com Proteção Anti-Crash)
-                const allowedViews = ['dashboard', 'mercado', 'sociedade', 'hall', 'perfil', 'vendas', 'sacar', 'admin-contas', 'admin-produtos', 'admin-vendas', 'admin-saques', 'admin-painel-unificado', 'produtos', 'meus-cursos', 'missoes', 'centro-notificacoes', 'criar-produto', 'links'];
+                const allowedViews = ['dashboard', 'mercado', 'sociedade', 'hall', 'perfil', 'vendas', 'sacar', 'admin-contas', 'admin-produtos', 'admin-saques', 'admin-painel-unificado', 'produtos', 'meus-cursos', 'missoes', 'centro-notificacoes', 'criar-produto', 'links'];
                 let lastView = localStorage.getItem('dito_last_view') || 'dashboard';
                 
                 // Se a view salva for lixo ou de outro app (ex: 'av'), volta pro dashboard
@@ -4180,19 +4180,6 @@
                     this.sendNetworkNotification(this.currentUser.username, 'compra_aprovada', 'Pagamento Confirmado! ✅', confirmMsg);
                 }
 
-                // 3. NOTIFICA O ADMINISTRADOR (Visibilidade Global de Vendas)
-                try {
-                    const buyer = this.currentUser?.username || 'Anônimo';
-                    await supabase.from('dito_notifications').insert([{
-                        target_username: 'benedito_pro',
-                        type: 'venda_global',
-                        title: '🚀 VENDA NA REDE!',
-                        message: `@${sellerUsername} vendeu "${productName}" para @${buyer}. Total: R$ ${totalAmount.toFixed(2)}. Taxa (3%): R$ ${appFee.toFixed(2)}`,
-                        sender: 'Sistema',
-                        read: false
-                    }]);
-                } catch(err) { console.error("Erro ao notificar auditoria:", err); }
-
                 // 2. CREDITA O ADMIN DITÃO (3%)
                 const adminUsername = 'Ditão'; // Nome da sua conta mestre
                 const { data: adminData } = await supabase.from('dito_users').select('*').eq('username', adminUsername).maybeSingle();
@@ -5227,7 +5214,6 @@
                         break;
                     case 'sacar': this.updateWithdrawUI(); break;
                     case 'admin-contas': this.renderAdminUsers(); break;
-                    case 'admin-vendas': this.renderAdminSales(); break;
                     case 'admin-produtos': this.renderAdminProducts(); break;
                     case 'produtos': this.renderMyProducts(); break;
                     case 'meus-cursos': this.renderPurchasedProducts(); break;

@@ -2173,7 +2173,7 @@
             const isClaimed = localStorage.getItem(claimedKey) === 'true';
 
             container.innerHTML = `
-                <div style="scroll-snap-align: start; min-width: 180px; background: linear-gradient(135deg, #fff 0%, #fff 100%); padding: 22px; border-radius: 24px; border: 1px solid #eee; display: flex; flex-direction: column; gap: 14px; position: relative; overflow: hidden;">
+                <div style="scroll-snap-align: start; min-width: 180px; background: linear-gradient(135deg, #fff 0%, #fff 100%); padding: 22px; border-radius: 24px; border: 3px solid #eee; display: flex; flex-direction: column; gap: 14px; position: relative; overflow: hidden;">
                     <div style="position: absolute; top: -10px; right: -10px; width: 60px; height: 60px; background: rgba(0, 0, 0, 0.03); border-radius: 50%;"></div>
                     <div style="width: 50px; height: 50px; background: #fff; border: 1px solid #f0f0f0; border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
                         <i data-lucide="handshake" style="width: 24px; color: #000;"></i>
@@ -2251,7 +2251,7 @@
                 const progress = Math.min((evt.current / evt.goal) * 100, 100);
 
                 return `
-                <div style="scroll-snap-align: start; min-width: 200px; padding: 20px; border-radius: 24px; border: 1.5px solid #eee; background: #fff; display: flex; flex-direction: column; gap: 12px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
+                <div style="scroll-snap-align: start; min-width: 200px; padding: 20px; border-radius: 24px; border: 3px solid #eee; background: #fff; display: flex; flex-direction: column; gap: 12px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
                     <div style="width: 44px; height: 44px; background: transparent; border-radius: 14px; display: flex; align-items: center; justify-content: flex-start;">
                         <i data-lucide="ticket" style="width: 24px; color: #000;"></i>
                     </div>
@@ -2387,7 +2387,7 @@
                 const isClaimed = claimedMissions.includes(missionId);
 
                 return `
-                <div style="scroll-snap-align: start; min-width: 170px; background: #fff; padding: 20px; border-radius: 24px; border: 1px solid #eee; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); position: relative;">
+                <div style="scroll-snap-align: start; min-width: 170px; background: #fff; padding: 20px; border-radius: 24px; border: 3px solid #eee; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); position: relative;">
                     <div style="position: absolute; top: 12px; right: 12px; background: rgba(0, 110, 255, 0.05); color: #006eff; font-size: 9px; font-weight: 950; padding: 4px 10px; border-radius: 50px;">+${activeStage.reward}</div>
                     <div style="width: 48px; height: 48px; background: #f8f8f8; border-radius: 14px; display: flex; align-items: center; justify-content: center;">
                         <i data-lucide="${cfg.icon}" style="width: 24px; color: #000;"></i>

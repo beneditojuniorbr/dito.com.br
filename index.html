@@ -1168,28 +1168,31 @@
                 <p style="font-size: 10px; font-weight: 950; color: #fff; text-transform: uppercase; letter-spacing: 1px; margin: 0;">ganhe cupons de desconto, compre online no aplicativo.</p>
             </div>
 
-            <!-- NOVA ÁREA: BUSCA + SACOLA (ACIMA DO TÍTULO) -->
-            <div style="padding: 20px 24px 10px; display: flex; align-items: center; gap: 12px;">
+            <!-- NOVA ÁREA: VOLTAR + BUSCA + SACOLA -->
+            <div style="padding: 20px 16px 10px; display: flex; align-items: center; gap: 10px;">
+                <!-- Voltar -->
+                <div onclick="app.navigate('dashboard', 'left')"
+                    style="width: 50px; height: 50px; background: #fff; border: 3px solid #f0f0f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #000; cursor: pointer; flex-shrink: 0; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
+                    <i data-lucide="arrow-left" style="width: 20px;"></i>
+                </div>
+
+                <!-- Busca -->
                 <div style="flex: 1; position: relative; height: 50px;">
                     <i data-lucide="search" style="position: absolute; left: 18px; top: 50%; transform: translateY(-50%); width: 18px; color: #999; pointer-events: none;"></i>
                     <input type="text" id="market-search" placeholder="Buscar no Dito" 
                         oninput="app.filterMarket(this.value)"
-                        style="width: 100%; height: 100%; background: #fff; border: 1px solid #eee; border-radius: 25px; padding: 0 20px 0 48px; color: #000; font-weight: 700; font-size: 14px; outline: none; box-shadow: 0 4px 15px rgba(0,0,0,0.03); box-sizing: border-box;">
+                        style="width: 100%; height: 100%; background: #fff; border: 3px solid #f0f0f0; border-radius: 25px; padding: 0 20px 0 48px; color: #000; font-weight: 700; font-size: 14px; outline: none; box-shadow: 0 4px 15px rgba(0,0,0,0.02); box-sizing: border-box;">
                 </div>
+
+                <!-- Sacola -->
                 <div onclick="app.setMarketView('cart')" 
-                    style="width: 50px; height: 50px; background: #fff; border: 1px solid #eee; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+                    style="width: 50px; height: 50px; background: #fff; border: 3px solid #f0f0f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
                     <i data-lucide="shopping-bag" style="width: 20px; color: #000;"></i>
                 </div>
             </div>
 
             <header
-                style="margin-bottom: 24px; padding: 0 16px; display: flex; align-items: center; justify-content: center; height: 50px; position: relative;">
-                <!-- Voltar -->
-                <div id="market-back-btn" onclick="app.navigate('dashboard', 'left')"
-                    style="position: absolute; left: 16px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: #fff; border-radius: 50%; color: #000; cursor: pointer; z-index: 10; border: 1px solid #f5f5f5;">
-                    <i data-lucide="arrow-left" style="width: 20px;"></i>
-                </div>
-
+                style="margin-bottom: 24px; padding: 0 16px; display: flex; align-items: center; justify-content: center; height: 40px; position: relative;">
                 <!-- Título -->
                 <h2 style="font-size: 28px; font-weight: 900; letter-spacing: -1.5px; color: #000; margin: 0;">Mercado</h2>
 

@@ -4306,8 +4306,9 @@
 
             const key = this.getUserKey();
             const trash = JSON.parse(localStorage.getItem(`dito_purchased_trash_${key}`) || '[]');
-            // Força comparação por String para evitar erro de tipo (número vs string)
-            const visibleProducts = (this.purchasedProducts || []).filter(p => !trash.some(tid => String(tid) === String(p.id)));
+            // Força que purchasedProducts seja sempre um Array antes de filtrar
+            const productsArray = Array.isArray(this.purchasedProducts) ? this.purchasedProducts : [];
+            const visibleProducts = productsArray.filter(p => !trash.some(tid => String(tid) === String(p.id)));
 
             if (visibleProducts.length === 0) {
                 list.innerHTML = `
@@ -11000,6 +11001,7 @@
                             }
 
                             if (this.currentView === 'missoes') this.renderMissions();
+                        } else if (Array.isArray(purchasesRaw)) {
                             // Formato antigo (apenas array de produtos)
                             this.purchasedProducts = purchasesRaw;
                             this.safeLocalStorageSet(`dito_purchased_products_${key}`, JSON.stringify(this.purchasedProducts));

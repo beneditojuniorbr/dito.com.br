@@ -467,7 +467,7 @@
                     } catch (e) {
                         console.warn("⚠️ [Sync] Falha no ciclo de polling:", e.message);
                     }
-                }, 30000);
+                }, 60000); // Aumentado para 60s para economizar Egress do Supabase
 
                 // Inicia Canais Realtime (Supabase)
                 if (supabase) {
@@ -2536,6 +2536,9 @@
                 });
                 localStorage.setItem(historyKey, JSON.stringify(history));
                 
+                // MARCO DE ONBOARDING: Fazer checkin
+                this.updateOnboarding('checkin');
+                
                 // Atualiza saldo na tela IMEDIATAMENTE
                 const balanceEl = document.getElementById('missions-coin-balance');
                 if (balanceEl) balanceEl.innerText = currentCoins.toLocaleString();
@@ -3073,7 +3076,8 @@
                 }
 
                 const [hallRes, meRes] = await Promise.all([
-                    supabase.from('dito_users').select('username, name, bio, fans, sales, avatar, last_seen, gender, purchases').order('sales', { ascending: false }).limit(80), 
+                    // OTIMIZAÇÃO: Removemos 'purchases' e 'bio' da listagem global para economizar Egress
+                    supabase.from('dito_users').select('username, name, sales, fans, avatar, last_seen').order('sales', { ascending: false }).limit(60), 
                     this.currentUser ? supabase.from('dito_users').select('*').eq('username', this.currentUser.username).maybeSingle() : Promise.resolve({ data: null })
                 ]);
 
@@ -3198,7 +3202,8 @@
                         claimed: localStorage.getItem(`dito_claimed_events_${key}`),
                         daily_claims: Object.keys(localStorage).filter(k => k.startsWith(`dito_claimed_daily_${key}_`)).reduce((obj, k) => ({...obj, [k]: localStorage.getItem(k)}), {}),
                         posts: localStorage.getItem(`dito_profile_posts_${key}`),
-                        active_events: Object.keys(localStorage).filter(k => k.startsWith('dito_event_')).reduce((obj, k) => ({...obj, [k]: localStorage.getItem(k)}), {})
+                        active_events: Object.keys(localStorage).filter(k => k.startsWith('dito_event_')).reduce((obj, k) => ({...obj, [k]: localStorage.getItem(k)}), {}),
+                        onboarding: user.onboarding_completed || ['signup']
                     }),
                     avatar: user.avatar || "",
                     last_seen: new Date().toISOString()
@@ -3256,8 +3261,13 @@
             try {
                 // 2. BUSCA NO SUPABASE (Produtos + Avaliações)
                 const [pRes, rRes] = await Promise.all([
-                    supabase.from('dito_market_products').select('*').order('created_at', { ascending: false }).limit(50),
-                    supabase.from('dito_product_ratings').select('product_id, score, username')
+                    // OTIMIZAÇÃO: Não baixamos 'content' nem 'description' na listagem para poupar dados
+                    supabase.from('dito_market_products')
+                        .select('id, name, price, oldPrice, image, image_url, author, seller, type, category, sales, rating, createdAt')
+                        .order('created_at', { ascending: false })
+                        .limit(40),
+                    // OTIMIZAÇÃO: Limitamos a busca de avaliações recentes
+                    supabase.from('dito_product_ratings').select('product_id, score').limit(200)
                 ]);
 
                 const data = pRes.data;
@@ -10937,7 +10947,13 @@
                                     localStorage.setItem(k, purchasesRaw.active_events[k]);
                                 });
                             }
-                        } else if (Array.isArray(purchasesRaw)) {
+
+                            // Restaura Progresso de Onboarding (Evita repetir etapas ao logar)
+                            if (purchasesRaw.onboarding) {
+                                this.currentUser.onboarding_completed = Array.isArray(purchasesRaw.onboarding) ? purchasesRaw.onboarding : ['signup'];
+                            }
+
+                            if (this.currentView === 'missoes') this.renderMissions();
                             // Formato antigo (apenas array de produtos)
                             this.purchasedProducts = purchasesRaw;
                             this.safeLocalStorageSet(`dito_purchased_products_${key}`, JSON.stringify(this.purchasedProducts));

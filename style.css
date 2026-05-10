@@ -663,7 +663,7 @@ input::placeholder, textarea::placeholder {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    border: 1px solid #f0f0f0; /* Borda cinza claro solicitada pelo usuário */
+    border: 3px solid #f0f0f0; /* Borda cinza claro de 3px solicitada pelo usuário */
     transition: var(--transition);
 }
 

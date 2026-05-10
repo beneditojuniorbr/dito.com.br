@@ -9420,29 +9420,31 @@
             if (!container) container = document.getElementById('market-actual-content');
             if (!container) return; 
 
-            const temp = document.getElementById('template-mercado-home');
-            if (!temp) return;
-            container.innerHTML = temp.innerHTML;
+            // EVITA O PISCA-PISCA: Só injeta o template se ele ainda não estiver lá
+            const isAlreadyOnMarket = container.querySelector('#main-market-feed');
+            if (!isAlreadyOnMarket) {
+                const temp = document.getElementById('template-mercado-home');
+                if (!temp) return;
+                container.innerHTML = temp.innerHTML;
+            }
             
-            // APLICA O DESTAQUE VISUAL NO CHIP ATIVO
+            // APLICA O DESTAQUE VISUAL NO CHIP ATIVO (Sem piscar)
             const currentCat = this.marketCategory || 'Livros';
-            setTimeout(() => {
-                document.querySelectorAll('.category-chip').forEach(btn => {
-                    const isMatch = btn.innerText.trim().toLowerCase().includes(currentCat.toLowerCase()) || 
-                                    (currentCat === 'Livros' && btn.innerText.includes('Livros'));
-                    
-                    if (isMatch) {
-                        btn.style.color = '#000';
-                        btn.style.fontWeight = '950';
-                        btn.style.borderBottom = '3px solid #000';
-                        btn.classList.add('active');
-                    } else {
-                        btn.style.color = '#999';
-                        btn.style.fontWeight = '800';
-                        btn.style.borderBottom = '3px solid transparent';
-                    }
-                });
-            }, 10);
+            document.querySelectorAll('.category-chip').forEach(btn => {
+                const isMatch = btn.innerText.trim().toLowerCase().includes(currentCat.toLowerCase()) || 
+                                (currentCat === 'Livros' && btn.innerText.includes('Livros'));
+                
+                if (isMatch) {
+                    btn.style.color = '#000';
+                    btn.style.fontWeight = '950';
+                    btn.style.borderBottom = '3px solid #000';
+                    btn.classList.add('active');
+                } else {
+                    btn.style.color = '#999';
+                    btn.style.fontWeight = '800';
+                    btn.style.borderBottom = '3px solid transparent';
+                }
+            });
 
             const feed = document.getElementById('main-market-feed');
             const hContainer = document.getElementById('ebooks-horizontal-list');

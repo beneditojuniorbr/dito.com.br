@@ -1168,44 +1168,35 @@
                 <p style="font-size: 10px; font-weight: 950; color: #fff; text-transform: uppercase; letter-spacing: 1px; margin: 0;">ganhe cupons de desconto, compre online no aplicativo.</p>
             </div>
 
+            <!-- NOVA ÁREA: BUSCA + SACOLA (ACIMA DO TÍTULO) -->
+            <div style="padding: 20px 24px 10px; display: flex; align-items: center; gap: 12px;">
+                <div style="flex: 1; position: relative; height: 50px;">
+                    <i data-lucide="search" style="position: absolute; left: 18px; top: 50%; transform: translateY(-50%); width: 18px; color: #999; pointer-events: none;"></i>
+                    <input type="text" id="market-search" placeholder="O que você procura hoje?" 
+                        oninput="app.filterMarket(this.value)"
+                        style="width: 100%; height: 100%; background: #fff; border: 1px solid #eee; border-radius: 25px; padding: 0 20px 0 48px; color: #000; font-weight: 700; font-size: 14px; outline: none; box-shadow: 0 4px 15px rgba(0,0,0,0.03); box-sizing: border-box;">
+                </div>
+                <div onclick="app.setMarketView('cart')" 
+                    style="width: 50px; height: 50px; background: #fff; border: 1px solid #eee; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+                    <i data-lucide="shopping-bag" style="width: 20px; color: #000;"></i>
+                </div>
+            </div>
+
             <header
-                style="margin-top: 10px; margin-bottom: 32px; padding: 0 9px; display: flex; align-items: center; justify-content: space-between; height: 44px; position: relative;">
+                style="margin-bottom: 24px; padding: 0 16px; display: flex; align-items: center; justify-content: center; height: 50px; position: relative;">
                 <!-- Voltar -->
                 <div id="market-back-btn" onclick="app.navigate('dashboard', 'left')"
-                    style="width: 44px; height: 44px; display: flex; align-items: center; color: #000; cursor: pointer; z-index: 10;">
+                    style="position: absolute; left: 16px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: #fff; border-radius: 50%; color: #000; cursor: pointer; z-index: 10; border: 1px solid #f5f5f5;">
                     <i data-lucide="arrow-left" style="width: 20px;"></i>
                 </div>
 
                 <!-- Título -->
-                <div id="market-title-container"
-                    style="position: absolute; left: 50%; transform: translateX(-50%); text-align: center; transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);">
-                    <h2
-                        style="font-size: 28px; font-weight: 900; letter-spacing: -1.5px; color: #000; italic; margin: 0;">
-                        Mercado</h2>
-                </div>
+                <h2 style="font-size: 28px; font-weight: 900; letter-spacing: -1.5px; color: #000; margin: 0;">Mercado</h2>
 
-                <!-- Input de Busca (Invisível por padrão, desliza para a esquerda) -->
-                <div id="market-search-container"
-                    style="position: absolute; right: 88px; left: 60px; height: 44px; opacity: 0; transform: translateX(100%); transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1); pointer-events: none; z-index: 5;">
-                    <input type="text" id="market-search" placeholder="Qual o seu desejo?" onfocus="this.placeholder=''"
-                        onblur="this.placeholder='Qual o seu desejo?'" oninput="app.filterMarket(this.value)"
-                        style="width: 100%; height: 44px; background: #fff; border: none; border-radius: 50px; padding: 0 20px; color: #000; font-weight: 800; font-size: 14px; outline: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                </div>
-
-                <!-- Ações: Lupa e Refresh -->
-                <div style="display: flex; align-items: center; gap: 4px; z-index: 10;">
-                    <button id="btn-market-search" onclick="app.toggleMarketSearch(true)"
-                        style="background: transparent; border: none; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s;">
-                        <i data-lucide="search" style="width: 20px; color: #000;"></i>
-                    </button>
-                    <button id="btn-market-close-search" onclick="app.toggleMarketSearch(false)"
-                        style="display:none; background: transparent; border: none; width: 44px; height: 44px; align-items: center; justify-content: center; cursor: pointer;">
-                        <i data-lucide="x" style="width: 20px; color: #000;"></i>
-                    </button>
-                    <button id="btn-market-refresh" onclick="app.fetchNetworkProducts(true)"
-                        style="background: transparent; border: none; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                        <i id="market-refresh-icon" data-lucide="refresh-cw" style="width: 18px; color: #000;"></i>
-                    </button>
+                <!-- Botão Refresh (Canto Direito do Título) -->
+                <div onclick="app.fetchNetworkProducts(true)" 
+                    style="position: absolute; right: 16px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                    <i id="market-refresh-icon" data-lucide="refresh-cw" style="width: 18px; color: #000;"></i>
                 </div>
             </header>
 

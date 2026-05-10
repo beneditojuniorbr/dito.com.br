@@ -7762,11 +7762,11 @@
             const gallery = document.getElementById('product-images-gallery-preview');
             
             const files = Array.from(input.files);
-            const maxSize = 200 * 1024; // 200kb
+            const maxSize = 500 * 1024; // 500kb
 
             files.forEach((file, index) => {
                 if (file.size > maxSize) {
-                    this.showNotification(`A foto é muito pesada (${(file.size/1024).toFixed(0)}kb). Limite Pro: Máximo 200kb.`, "error");
+                    this.showNotification(`A foto é muito pesada (${(file.size/1024).toFixed(0)}kb). Limite: 500kb.`, "error");
                     return;
                 }
 
@@ -7795,11 +7795,11 @@
             const file = input.files[0];
             if (!file) return;
 
-            const maxSize = 200 * 1024; // 200kb
-            if (file.size > maxSize) {
-                this.showNotification("Imagem muito pesada. Limite: 200kb.", "error");
-                return;
-            }
+            const maxSize = 500 * 1024; // 500kb
+                if (file.size > maxSize) {
+                    this.showNotification("Imagem muito pesada. Limite: 500kb.", "error");
+                    return;
+                }
 
             const reader = new FileReader();
             reader.onload = (e) => {

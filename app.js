@@ -9445,6 +9445,8 @@
             }, 10);
 
             const feed = document.getElementById('main-market-feed');
+            const hContainer = document.getElementById('ebooks-horizontal-list');
+            const hWrapper = document.getElementById('ebooks-carousel-container');
             if (!feed) return;
 
             // Marca que o usuário viu o mercado agora

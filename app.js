@@ -9384,8 +9384,20 @@
         setMarketCategory(category, el) {
             this.marketCategory = category;
             
-            // Fecha o menu após selecionar
-            this.toggleMarketFilter();
+            // Atualiza visual dos chips
+            document.querySelectorAll('.category-chip').forEach(btn => {
+                btn.style.background = '#fff';
+                btn.style.color = '#000';
+                btn.style.border = '1px solid #eee';
+                btn.classList.remove('active');
+            });
+
+            if (el) {
+                el.style.background = '#000';
+                el.style.color = '#fff';
+                el.style.border = 'none';
+                el.classList.add('active');
+            }
             
             // Renderiza novamente a Home do Mercado com o filtro
             const container = document.getElementById('market-actual-content');
@@ -9426,7 +9438,7 @@
 
             // --- FILTRO POR NICHO (NOVO) ---
             if (currentCat !== 'Todas') {
-                all = all.filter(p => p.category === currentCat || (currentCat === 'App' && p.type === 'App'));
+                all = all.filter(p => p.category === currentCat || (currentCat === 'App' && p.type === 'App') || (currentCat === 'Livros' && p.type === 'Ebook'));
             }
 
             if (all.length === 0 && currentCat === 'Todas') {

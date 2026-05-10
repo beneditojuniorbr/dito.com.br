@@ -9382,6 +9382,7 @@
         },
 
         setMarketCategory(category, el) {
+            console.log("🎯 Filtrando por:", category);
             this.marketCategory = category;
             
             // Atualiza visual dos chips (Apenas texto minimalista com sublinha)
@@ -9393,11 +9394,18 @@
                 btn.classList.remove('active');
             });
 
-            if (el) {
-                el.style.color = '#000';
-                el.style.fontWeight = '950';
-                el.style.borderBottom = '3px solid #000';
-                el.classList.add('active');
+            // Se clicou em um elemento, destaca ele. Se não (ex: carregamento inicial), procura pelo texto
+            let target = el;
+            if (!target) {
+                const chips = document.querySelectorAll('.category-chip');
+                target = Array.from(chips).find(c => c.innerText.trim().includes(category)) || chips[0];
+            }
+
+            if (target) {
+                target.style.color = '#000';
+                target.style.fontWeight = '950';
+                target.style.borderBottom = '3px solid #000';
+                target.classList.add('active');
             }
             
             // Renderiza novamente a Home do Mercado com o filtro
@@ -9410,44 +9418,55 @@
     // ==========================================
     renderMarketHome(container) {
             if (!container) container = document.getElementById('market-actual-content');
-            if (!container) return; // Aborta se não houver onde renderizar
+            if (!container) return; 
 
             const temp = document.getElementById('template-mercado-home');
             if (!temp) return;
             container.innerHTML = temp.innerHTML;
             
-            // Atualiza o texto do filtro no UI recém-renderizado
-            const currentCat = this.marketCategory || 'Todas';
-            const triggerText = document.querySelector('#market-filter-trigger span');
-            if (triggerText) {
-                triggerText.innerText = currentCat === 'Todas' ? 'Filtro' : currentCat;
-            }
+            // APLICA O DESTAQUE VISUAL NO CHIP ATIVO
+            const currentCat = this.marketCategory || 'Livros';
+            setTimeout(() => {
+                document.querySelectorAll('.category-chip').forEach(btn => {
+                    const isMatch = btn.innerText.trim().toLowerCase().includes(currentCat.toLowerCase()) || 
+                                    (currentCat === 'Livros' && btn.innerText.includes('Livros'));
+                    
+                    if (isMatch) {
+                        btn.style.color = '#000';
+                        btn.style.fontWeight = '950';
+                        btn.style.borderBottom = '3px solid #000';
+                        btn.classList.add('active');
+                    } else {
+                        btn.style.color = '#999';
+                        btn.style.fontWeight = '800';
+                        btn.style.borderBottom = '3px solid transparent';
+                    }
+                });
+            }, 10);
 
             const feed = document.getElementById('main-market-feed');
-            const hContainer = document.getElementById('ebooks-horizontal-list');
-            const hWrapper = document.getElementById('ebooks-carousel-container');
             if (!feed) return;
 
             // Marca que o usuário viu o mercado agora
             localStorage.setItem('dito_market_last_seen', Date.now().toString());
 
             let all = (this.products && this.products.length > 0) ? this.products : JSON.parse(localStorage.getItem('dito_products_vanilla') || '[]');
-            all = all.filter(p => p.visible !== false && p.visible !== 'false'); // Exibe se for true ou se o campo não existir
+            all = all.filter(p => p.visible !== false && p.visible !== 'false'); 
             
-            // --- ORDENAR POR NOVOS PRIMEIRO (DESC) ---
+            // --- ORDENAR POR NOVOS PRIMEIRO ---
             all = all.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
 
-            // --- FILTRO POR NICHO (MELHORADO) ---
+            // --- FILTRO POR NICHO (ROBUSTO) ---
             if (currentCat && currentCat !== 'Todas') {
                 all = all.filter(p => {
                     const cat = (p.category || '').toLowerCase();
                     const type = (p.type || '').toLowerCase();
                     const filter = currentCat.toLowerCase();
                     
-                    if (filter === 'livros') return type === 'ebook' || cat === 'livros' || cat === 'ebook';
-                    if (filter === 'curso') return type === 'curso' || cat === 'curso';
-                    if (filter === 'mentoria') return type === 'mentoria' || cat === 'mentoria';
-                    if (filter === 'app') return type === 'app' || cat === 'app';
+                    if (filter === 'livros') return type.includes('ebook') || cat.includes('livro') || cat.includes('ebook');
+                    if (filter.includes('curso')) return type.includes('curso') || cat.includes('curso');
+                    if (filter.includes('mentoria')) return type.includes('mentoria') || cat.includes('mentoria');
+                    if (filter.includes('app')) return type.includes('app') || cat.includes('app');
                     return false;
                 });
             }

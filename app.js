@@ -3077,7 +3077,7 @@
 
                 const [hallRes, meRes] = await Promise.all([
                     // OTIMIZAÇÃO: Removemos 'purchases' e 'bio' da listagem global para economizar Egress
-                    supabase.from('dito_users').select('username, name, sales, fans, avatar, last_seen').order('sales', { ascending: false }).limit(60), 
+                    supabase.from('dito_users').select('username, name, sales, fans, avatar, last_seen, created_at').order('sales', { ascending: false }).limit(60), 
                     this.currentUser ? supabase.from('dito_users').select('*').eq('username', this.currentUser.username).maybeSingle() : Promise.resolve({ data: null })
                 ]);
 
@@ -3263,7 +3263,7 @@
                 const [pRes, rRes] = await Promise.all([
                     // OTIMIZAÇÃO: Não baixamos 'content' nem 'description' na listagem para poupar dados
                     supabase.from('dito_market_products')
-                        .select('id, name, price, oldPrice, image, image_url, author, seller, type, category, sales, rating, createdAt')
+                        .select('id, name, price, image, author, seller, category, sales, created_at')
                         .order('created_at', { ascending: false })
                         .limit(40),
                     // OTIMIZAÇÃO: Limitamos a busca de avaliações recentes

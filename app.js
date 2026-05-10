@@ -9384,18 +9384,16 @@
         setMarketCategory(category, el) {
             this.marketCategory = category;
             
-            // Atualiza visual dos chips
+            // Atualiza visual dos chips (Apenas texto minimalista)
             document.querySelectorAll('.category-chip').forEach(btn => {
-                btn.style.background = '#fff';
-                btn.style.color = '#000';
-                btn.style.border = '1px solid #eee';
+                btn.style.color = '#999';
+                btn.style.fontWeight = '800';
                 btn.classList.remove('active');
             });
 
             if (el) {
-                el.style.background = '#000';
-                el.style.color = '#fff';
-                el.style.border = 'none';
+                el.style.color = '#000';
+                el.style.fontWeight = '950';
                 el.classList.add('active');
             }
             

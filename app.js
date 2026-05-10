@@ -9384,16 +9384,19 @@
         setMarketCategory(category, el) {
             this.marketCategory = category;
             
-            // Atualiza visual dos chips (Apenas texto minimalista)
+            // Atualiza visual dos chips (Apenas texto minimalista com sublinha)
             document.querySelectorAll('.category-chip').forEach(btn => {
                 btn.style.color = '#999';
                 btn.style.fontWeight = '800';
+                btn.style.borderBottom = '3px solid transparent';
+                btn.style.paddingBottom = '8px';
                 btn.classList.remove('active');
             });
 
             if (el) {
                 el.style.color = '#000';
                 el.style.fontWeight = '950';
+                el.style.borderBottom = '3px solid #000';
                 el.classList.add('active');
             }
             
@@ -9434,9 +9437,19 @@
             // --- ORDENAR POR NOVOS PRIMEIRO (DESC) ---
             all = all.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
 
-            // --- FILTRO POR NICHO (NOVO) ---
-            if (currentCat !== 'Todas') {
-                all = all.filter(p => p.category === currentCat || (currentCat === 'App' && p.type === 'App') || (currentCat === 'Livros' && p.type === 'Ebook'));
+            // --- FILTRO POR NICHO (MELHORADO) ---
+            if (currentCat && currentCat !== 'Todas') {
+                all = all.filter(p => {
+                    const cat = (p.category || '').toLowerCase();
+                    const type = (p.type || '').toLowerCase();
+                    const filter = currentCat.toLowerCase();
+                    
+                    if (filter === 'livros') return type === 'ebook' || cat === 'livros' || cat === 'ebook';
+                    if (filter === 'curso') return type === 'curso' || cat === 'curso';
+                    if (filter === 'mentoria') return type === 'mentoria' || cat === 'mentoria';
+                    if (filter === 'app') return type === 'app' || cat === 'app';
+                    return false;
+                });
             }
 
             if (all.length === 0 && currentCat === 'Todas') {

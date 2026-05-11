@@ -7673,7 +7673,7 @@
                 if (step === 3 && step3) step3.style.display = 'flex';
                 if (step === 4 && step4) {
                     step4.style.display = 'flex';
-                    if (document.getElementById('ebook-upload')) document.getElementById('ebook-upload').style.display = (this.selectedProductType === 'Ebook') ? 'block' : 'none';
+                    if (document.getElementById('ebook-upload')) document.getElementById('ebook-upload').style.display = (this.selectedProductType === 'Livros' || this.selectedProductType === 'Ebook') ? 'block' : 'none';
                     if (document.getElementById('curso-upload')) document.getElementById('curso-upload').style.display = (this.selectedProductType === 'Curso') ? 'flex' : 'none';
                     if (document.getElementById('mentoria-fields')) document.getElementById('mentoria-fields').style.display = (this.selectedProductType === 'Mentoria') ? 'flex' : 'none';
                     if (document.getElementById('fisico-fields')) document.getElementById('fisico-fields').style.display = (this.selectedProductType === 'Fisico') ? 'flex' : 'none';

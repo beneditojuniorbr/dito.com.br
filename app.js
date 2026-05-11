@@ -7673,7 +7673,7 @@
                 if (step === 3 && step3) step3.style.display = 'flex';
                 if (step === 4 && step4) {
                     step4.style.display = 'flex';
-                    if (document.getElementById('ebook-upload')) document.getElementById('ebook-upload').style.display = (this.selectedProductType === 'Livros' || this.selectedProductType === 'Ebook') ? 'block' : 'none';
+                    if (document.getElementById('ebook-upload')) document.getElementById('ebook-upload').style.display = (['Livros', 'Livro', 'Ebook'].includes(this.selectedProductType)) ? 'block' : 'none';
                     if (document.getElementById('curso-upload')) document.getElementById('curso-upload').style.display = (this.selectedProductType === 'Curso') ? 'flex' : 'none';
                     if (document.getElementById('mentoria-fields')) document.getElementById('mentoria-fields').style.display = (this.selectedProductType === 'Mentoria') ? 'flex' : 'none';
                     if (document.getElementById('fisico-fields')) document.getElementById('fisico-fields').style.display = (this.selectedProductType === 'Fisico') ? 'flex' : 'none';
@@ -8587,6 +8587,14 @@
                                 </div>
                             </div>
                         `).join('')}
+
+                        <!-- BOTÃO + AULA NO ESTILO DE CAMPO DE LINK -->
+                        <div onclick="app.addCourseLesson('${m.id}')" 
+                            style="width: 100%; height: 48px; background: transparent; border: 2px dashed #eee; border-radius: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; gap: 8px; transition: 0.3s; margin-top: 10px;"
+                            onmouseover="this.style.borderColor='#000'; this.style.background='#fafafa'" onmouseout="this.style.borderColor='#eee'; this.style.background='transparent'">
+                            <i data-lucide="plus-circle" style="width: 16px; color: #000;"></i>
+                            <span style="font-size: 11px; font-weight: 950; color: #000; text-transform: uppercase; letter-spacing: 1px;">Adicionar Nova Aula</span>
+                        </div>
                     </div>
                 </div>
             `).join('');

@@ -8473,15 +8473,32 @@
         handleLessonUpload(input, moduleId, lessonId) {
             const file = input.files[0];
             if (file) {
-                const module = this.courseStructure.find(m => m.id === moduleId);
-                if (module) {
-                    const lesson = module.lessons.find(l => l.id === lessonId);
-                    if (lesson) {
-                        lesson.fileName = file.name;
-                        this.renderCourseStructure();
-                        this.updateProductProgress();
+                // Criar um elemento de vídeo temporário para checar a duração
+                const video = document.createElement('video');
+                video.preload = 'metadata';
+
+                video.onloadedmetadata = () => {
+                    window.URL.revokeObjectURL(video.src);
+                    const duration = video.duration;
+
+                    if (duration > 60.5) { // Tolerância de meio segundo
+                        this.showNotification('🚫 Vídeo muito longo! O limite máximo é de 60 segundos por aula.', 'error');
+                        input.value = ''; // Limpa o input
+                        return;
                     }
-                }
+
+                    const module = this.courseStructure.find(m => m.id === moduleId);
+                    if (module) {
+                        const lesson = module.lessons.find(l => l.id === lessonId);
+                        if (lesson) {
+                            lesson.fileName = file.name;
+                            this.renderCourseStructure();
+                            this.updateProductProgress();
+                        }
+                    }
+                };
+
+                video.src = URL.createObjectURL(file);
             }
         },
 
@@ -8537,7 +8554,7 @@
                                             <!-- Botão Vídeo -->
                                             <div onclick="this.nextElementSibling.click()" style="flex: 1; height: 36px; background: #fff; border: 1px solid #eee; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; gap: 6px;">
                                                 <i data-lucide="upload-cloud" style="width: 12px; color: ${l.fileName ? '#22c55e' : '#999'};"></i>
-                                                <span style="font-size: 8px; font-weight: 900; color: ${l.fileName ? '#22c55e' : '#666'}; text-transform: uppercase;">${l.fileName ? 'Mudar Vídeo' : 'Subir Vídeo'}</span>
+                                                <span style="font-size: 8px; font-weight: 900; color: ${l.fileName ? '#22c55e' : '#666'}; text-transform: uppercase;">${l.fileName ? 'Mudar Vídeo' : 'Subir Vídeo (Máx 60s)'}</span>
                                             </div>
                                             <input type="file" accept="video/*" onchange="app.handleLessonUpload(this, '${m.id}', '${l.id}')" style="display: none;">
 
@@ -8575,9 +8592,6 @@
                     </div>
                 </div>
             `).join('');
-
-            if (window.lucide) lucide.createIcons();
-        },
 
             if (window.lucide) lucide.createIcons();
         },

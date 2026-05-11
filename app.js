@@ -8516,19 +8516,17 @@
             if (noMsg) noMsg.style.display = 'none';
 
             list.innerHTML = this.courseStructure.map(m => `
-                <div style="background: transparent; border: none; padding: 0; margin-bottom: 48px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; padding: 0 10px;">
+                <div style="background: transparent; border: none; padding: 0; margin-bottom: 64px;">
+                    <!-- CABEÇALHO DO MÓDULO -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding: 0 10px;">
                         <input type="text" value="${m.title}" oninput="app.updateModuleTitle('${m.id}', this.value)" 
-                            style="border: none; border-bottom: 3px solid #000; background: transparent; font-weight: 950; font-size: 20px; color: #000; outline: none; width: 65%; padding: 8px 0; letter-spacing: -0.8px;">
-                        <div style="display: flex; gap: 8px;">
-                            <button onclick="app.addCourseLesson('${m.id}')" 
-                                style="background: #000; color: #fff; border: none; padding: 10px 24px; border-radius: 50px; font-size: 11px; font-weight: 950; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 0.5px;">+ Aula</button>
-                            <button onclick="app.removeCourseModule('${m.id}')" 
-                                style="background: transparent; color: #ccc; border: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;" onmouseover="this.style.color='#ff4444'" onmouseout="this.style.color='#ccc'"><i data-lucide="trash-2" style="width: 18px;"></i></button>
-                        </div>
+                            style="border: none; background: transparent; font-weight: 950; font-size: 22px; color: #000; outline: none; width: 80%; padding: 0; letter-spacing: -1px;">
+                        <button onclick="app.removeCourseModule('${m.id}')" 
+                            style="background: transparent; color: #eee; border: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;" onmouseover="this.style.color='#ff4444'" onmouseout="this.style.color='#eee'"><i data-lucide="trash-2" style="width: 18px;"></i></button>
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 40px; padding-left: 10px;">
+                    <!-- LISTA DE AULAS -->
+                    <div style="display: flex; flex-direction: column; gap: 48px; padding-left: 10px;">
                         ${m.lessons.map(l => `
                             <div style="background: transparent; border: none; padding: 0;">
                                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">

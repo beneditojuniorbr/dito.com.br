@@ -8632,20 +8632,29 @@
                 // 2. Se não achou local, TENTA LOGIN GLOBAL (Supabase)
                 if (!user && supabase) {
                     try {
+                        console.log("🔍 [Auth] Tentando login global para:", userInp);
                         const { data, error } = await supabase
                             .from('dito_users')
                             .select('*')
-                            .eq('username', userInp)
+                            .ilike('username', userInp) // Fallback insensível a maiúsculas
                             .eq('password', passInp)
                             .maybeSingle();
                         
-                        if (data && !error) {
+                        if (error) {
+                            console.error("❌ [Auth] Erro Supabase:", error);
+                            this.showNotification('Erro na conexão com o servidor.', 'error');
+                            return;
+                        }
+
+                        if (data) {
                             user = data;
                             users.push(data);
                             localStorage.setItem('dito_users_db', JSON.stringify(users));
+                        } else {
+                            console.warn("⚠️ [Auth] Usuário ou senha incorretos.");
                         }
                     } catch (e) { 
-                        console.warn("⚠️ [Auth] Falha na rede:", e); 
+                        console.error("⚠️ [Auth] Falha crítica na rede:", e); 
                     }
                 }
 

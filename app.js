@@ -8386,7 +8386,11 @@
                 module.lessons.push({
                     id: 'l-' + Date.now(),
                     title: 'Nova Aula',
-                    fileName: ''
+                    fileName: '',
+                    description: '',
+                    thumbnail: '',
+                    attachment: '',
+                    attachmentName: ''
                 });
                 this.renderCourseStructure();
             }
@@ -8410,6 +8414,59 @@
             if (module) {
                 const lesson = module.lessons.find(l => l.id === lessonId);
                 if (lesson) lesson.title = title;
+            }
+        },
+
+        updateLessonDescription(moduleId, lessonId, desc) {
+            const module = this.courseStructure.find(m => m.id === moduleId);
+            if (module) {
+                const lesson = module.lessons.find(l => l.id === lessonId);
+                if (lesson) lesson.description = desc;
+            }
+        },
+
+        updateLessonAttachment(moduleId, lessonId, val) {
+            const module = this.courseStructure.find(m => m.id === moduleId);
+            if (module) {
+                const lesson = module.lessons.find(l => l.id === lessonId);
+                if (lesson) {
+                    lesson.attachment = val;
+                    lesson.attachmentName = val; // Se for link, o nome é o próprio link
+                }
+            }
+        },
+
+        handleLessonThumbnailUpload(input, moduleId, lessonId) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const module = this.courseStructure.find(m => m.id === moduleId);
+                    if (module) {
+                        const lesson = module.lessons.find(l => l.id === lessonId);
+                        if (lesson) {
+                            lesson.thumbnail = e.target.result;
+                            this.renderCourseStructure();
+                        }
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        },
+
+        handleLessonAttachmentUpload(input, moduleId, lessonId) {
+            const file = input.files[0];
+            if (file) {
+                const module = this.courseStructure.find(m => m.id === moduleId);
+                if (module) {
+                    const lesson = module.lessons.find(l => l.id === lessonId);
+                    if (lesson) {
+                        lesson.attachmentName = file.name;
+                        // Aqui poderíamos subir o arquivo para o storage, por enquanto simulamos
+                        lesson.attachment = "file_uploaded"; 
+                        this.renderCourseStructure();
+                    }
+                }
             }
         },
 
@@ -8442,35 +8499,85 @@
             if (noMsg) noMsg.style.display = 'none';
 
             list.innerHTML = this.courseStructure.map(m => `
-                <div style="background: transparent; border-bottom: 2px solid #f5f5f5; padding: 24px 0; margin-bottom: 32px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding: 0 10px;">
-                        <input type="text" value="${m.title}" oninput="app.updateModuleTitle('${m.id}', this.value)" style="border: none; border-bottom: 2px solid #000; background: transparent; font-weight: 900; font-size: 16px; color: #000; outline: none; width: 60%; padding: 8px 0;">
+                <div style="background: #fff; border: 2px solid #f5f5f5; border-radius: 32px; padding: 24px; margin-bottom: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                        <input type="text" value="${m.title}" oninput="app.updateModuleTitle('${m.id}', this.value)" 
+                            style="border: none; border-bottom: 3px solid #000; background: transparent; font-weight: 950; font-size: 18px; color: #000; outline: none; width: 65%; padding: 8px 0; letter-spacing: -0.5px;">
                         <div style="display: flex; gap: 8px;">
-                            <button onclick="app.addCourseLesson('${m.id}')" style="background: #000; color: #fff; border: none; padding: 8px 20px; border-radius: 50px; font-size: 10px; font-weight: 950; cursor: pointer; transition: 0.3s;">+ Aula</button>
-                            <button onclick="app.removeCourseModule('${m.id}')" style="background: #f5f5f5; color: #999; border: none; padding: 8px; border-radius: 50%; cursor: pointer;"><i data-lucide="trash-2" style="width: 14px;"></i></button>
+                            <button onclick="app.addCourseLesson('${m.id}')" 
+                                style="background: #000; color: #fff; border: none; padding: 10px 24px; border-radius: 50px; font-size: 11px; font-weight: 950; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 0.5px;">+ Aula</button>
+                            <button onclick="app.removeCourseModule('${m.id}')" 
+                                style="background: #fff; color: #ff4444; border: 3px solid #fff1f1; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;"><i data-lucide="trash-2" style="width: 16px;"></i></button>
                         </div>
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 0;">
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
                         ${m.lessons.map(l => `
-                            <div style="display: flex; align-items: center; gap: 16px; padding: 16px 10px; border-bottom: 1px dashed #eee;">
-                                <div style="flex: 1; display: flex; align-items: center; gap: 16px;">
-                                    <input type="text" value="${l.title}" oninput="app.updateLessonTitle('${m.id}', '${l.id}', this.value)" placeholder="Título da aula" style="border: none; border-bottom: 1px solid #eee; background: transparent; font-weight: 700; font-size: 14px; color: #000; outline: none; flex: 1; padding: 8px 0;">
-                                    
-                                    <div onclick="this.nextElementSibling.click()" style="min-width: 130px; height: 38px; background: #fff; border: 1px solid #eee; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; gap: 8px; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
-                                        <i data-lucide="video" style="width: 14px; color: ${l.fileName ? '#22c55e' : '#ccc'};"></i>
-                                        <span style="font-size: 9px; font-weight: 800; color: ${l.fileName ? '#22c55e' : '#999'}; text-transform: uppercase;">${l.fileName ? 'Vídeo OK' : 'Subir Vídeo'}</span>
-                                    </div>
-                                    <input type="file" accept="video/*" onchange="app.handleLessonUpload(this, '${m.id}', '${l.id}')" style="display: none;">
+                            <div style="background: #fafafa; border-radius: 24px; padding: 20px; border: 1px solid #f0f0f0;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                                    <input type="text" value="${l.title}" oninput="app.updateLessonTitle('${m.id}', '${l.id}', this.value)" 
+                                        placeholder="Título da aula" 
+                                        style="border: none; background: transparent; font-weight: 900; font-size: 15px; color: #000; outline: none; flex: 1; padding: 0; letter-spacing: -0.3px;">
+                                    <button onclick="app.removeCourseLesson('${m.id}', '${l.id}')" 
+                                        style="color: #ccc; border: none; background: transparent; cursor: pointer; padding: 5px; transition: 0.3s;">
+                                        <i data-lucide="x" style="width: 18px;"></i>
+                                    </button>
                                 </div>
-                                <button onclick="app.removeCourseLesson('${m.id}', '${l.id}')" style="color: #ccc; border: none; background: transparent; cursor: pointer; padding: 5px; transition: 0.3s;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#ccc'">
-                                    <i data-lucide="x" style="width: 18px;"></i>
-                                </button>
+
+                                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                    <!-- LADO ESQUERDO: Preview -->
+                                    <div style="width: 120px; height: 68px; background: #eee; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative;">
+                                        ${l.thumbnail ? `<img src="${l.thumbnail}" style="width: 100%; height: 100%; object-fit: cover;">` : `<i data-lucide="video" style="width: 24px; color: #bbb;"></i>`}
+                                        ${l.fileName ? `<div style="position: absolute; bottom: 4px; right: 4px; background: #22c55e; color: #fff; font-size: 6px; font-weight: 900; padding: 2px 5px; border-radius: 4px;">VÍDEO OK</div>` : ''}
+                                    </div>
+
+                                    <!-- LADO DIREITO: Controles -->
+                                    <div style="flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 12px;">
+                                        <div style="display: flex; gap: 8px;">
+                                            <!-- Botão Vídeo -->
+                                            <div onclick="this.nextElementSibling.click()" style="flex: 1; height: 36px; background: #fff; border: 1px solid #eee; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; gap: 6px;">
+                                                <i data-lucide="upload-cloud" style="width: 12px; color: ${l.fileName ? '#22c55e' : '#999'};"></i>
+                                                <span style="font-size: 8px; font-weight: 900; color: ${l.fileName ? '#22c55e' : '#666'}; text-transform: uppercase;">${l.fileName ? 'Mudar Vídeo' : 'Subir Vídeo'}</span>
+                                            </div>
+                                            <input type="file" accept="video/*" onchange="app.handleLessonUpload(this, '${m.id}', '${l.id}')" style="display: none;">
+
+                                            <!-- Botão Capa -->
+                                            <div onclick="this.nextElementSibling.click()" style="flex: 1; height: 36px; background: #fff; border: 1px solid #eee; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; gap: 6px;">
+                                                <i data-lucide="image" style="width: 12px; color: ${l.thumbnail ? '#006eff' : '#999'};"></i>
+                                                <span style="font-size: 8px; font-weight: 900; color: ${l.thumbnail ? '#006eff' : '#666'}; text-transform: uppercase;">${l.thumbnail ? 'Mudar Capa' : 'Definir Capa'}</span>
+                                            </div>
+                                            <input type="file" accept="image/*" onchange="app.handleLessonThumbnailUpload(this, '${m.id}', '${l.id}')" style="display: none;">
+                                        </div>
+
+                                        <!-- Descrição Fixa -->
+                                        <textarea oninput="app.updateLessonDescription('${m.id}', '${l.id}', this.value)" 
+                                            placeholder="Descrição da aula (ex: O que aprenderemos hoje...)" 
+                                            style="width: 100%; min-height: 50px; background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 10px; font-size: 11px; font-weight: 600; color: #555; outline: none; resize: none; font-family: inherit;">${l.description || ''}</textarea>
+
+                                        <!-- Anexos (Link ou Ebook) -->
+                                        <div style="display: flex; gap: 8px; align-items: center;">
+                                            <div style="flex: 1; position: relative;">
+                                                <i data-lucide="link" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 12px; color: #ccc;"></i>
+                                                <input type="text" value="${l.attachment || ''}" oninput="app.updateLessonAttachment('${m.id}', '${l.id}', this.value)"
+                                                    placeholder="Link de anexo ou drive..." 
+                                                    style="width: 100%; height: 36px; background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 0 10px 0 30px; font-size: 10px; font-weight: 700; outline: none;">
+                                            </div>
+                                            <div onclick="this.nextElementSibling.click()" style="width: 36px; height: 36px; background: #fff; border: 1px solid #eee; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                                                <i data-lucide="file-plus" style="width: 16px; color: ${l.attachmentName && l.attachmentName !== l.attachment ? '#006eff' : '#ccc'};"></i>
+                                            </div>
+                                            <input type="file" onchange="app.handleLessonAttachmentUpload(this, '${m.id}', '${l.id}')" style="display: none;">
+                                        </div>
+                                        ${l.attachmentName && l.attachmentName !== l.attachment ? `<span style="font-size: 9px; font-weight: 900; color: #22c55e; margin-top: -8px;">📎 ${l.attachmentName}</span>` : ''}
+                                    </div>
+                                </div>
                             </div>
                         `).join('')}
                     </div>
                 </div>
             `).join('');
+
+            if (window.lucide) lucide.createIcons();
+        },
 
             if (window.lucide) lucide.createIcons();
         },

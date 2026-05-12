@@ -3263,7 +3263,7 @@
                 const [pRes, rRes] = await Promise.all([
                     // OTIMIZAÇÃO: Não baixamos 'content' nem 'description' na listagem para poupar dados
                     supabase.from('dito_market_products')
-                        .select('id, name, price, image, author, seller, category, sales, created_at')
+                        .select('id, name, price, image, author, seller, category, type, sales, visible, hasLimit, stockLimit, created_at')
                         .order('created_at', { ascending: false })
                         .limit(40),
                     // OTIMIZAÇÃO: Limitamos a busca de avaliações recentes

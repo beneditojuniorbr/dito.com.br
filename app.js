@@ -6273,6 +6273,48 @@
             if (window.lucide) lucide.createIcons();
         },
 
+        async toggleUserBlock(username, currentlyBlocked) {
+            if (username === 'Ditão' || username === 'benedito_pro') {
+                this.showNotification('Você não pode bloquear um administrador master.', 'error');
+                return;
+            }
+
+            const action = currentlyBlocked ? 'DESBLOQUEAR' : 'BLOQUEAR';
+            if (!confirm(`Tem certeza que deseja ${action} a conta de "${username}"?`)) return;
+
+            this.showLoading(true, `${currentlyBlocked ? 'Desbloqueando' : 'Bloqueando'} conta...`);
+
+            try {
+                if (supabase) {
+                    const { error } = await supabase
+                        .from('dito_users')
+                        .update({ is_blocked: !currentlyBlocked })
+                        .eq('username', username);
+
+                    if (error) throw error;
+                }
+
+                // Atualiza o cache local
+                if (this.adminUsersCache) {
+                    const user = this.adminUsersCache.find(u => u.username === username);
+                    if (user) user.is_blocked = !currentlyBlocked;
+                    this.displayAdminUsers(this.adminUsersCache);
+                }
+
+                this.showNotification(
+                    currentlyBlocked
+                        ? `Conta de ${username} desbloqueada com sucesso.`
+                        : `Conta de ${username} bloqueada com sucesso.`,
+                    'success'
+                );
+            } catch (e) {
+                console.error("Erro ao alterar bloqueio:", e);
+                this.showNotification('Erro ao alterar status da conta.', 'error');
+            } finally {
+                this.showLoading(false);
+            }
+        },
+
         async deleteUser(username, id) {
             if (username === 'Ditão' || username === 'benedito_pro') {
                 this.showNotification('Você não pode excluir um administrador master.', 'error');

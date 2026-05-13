@@ -9036,8 +9036,6 @@
             return html;
         },
 
-        // Placeholder removido para evitar sobreposição - funcionalidade real movida para renderMarketCheckout consolidado acima
-
         renderMarketLiveRoom(container) {
             // Tenta pegar a versão mais fresca do produto na memória
             if (this.selectedProduct) {
@@ -10593,15 +10591,7 @@
             if (data && data.config) {
                 this.builderConfig = data.config;
             } else {
-                const prod = this.products.find(p => String(p.id) === String(productId));
-                this.builderConfig.above = [{
-                    id: Date.now(),
-                    type: 'hero',
-                    content: {
-                        title: prod?.name || "Título Atrativo",
-                        subtitle: "Explique o maior benefício do seu produto aqui."
-                    }
-                }];
+                this.builderConfig = { above: [], below: [] };
             }
             this.renderBuilderBlocks();
         } catch (e) {

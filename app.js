@@ -10853,19 +10853,19 @@
                     </div>
 
                     <!-- Botão Pagar Agora -->
-                    <div style="width:100%; padding:18px; background:#000; color:#fff; border-radius:100px; font-weight:900; font-size:15px; text-align:center; letter-spacing:1px; margin-bottom:24px;">PAGAR AGORA</div>
+                    <div style="width:100%; padding:18px; background:#000; color:#fff; border-radius:100px; font-weight:900; font-size:15px; text-align:center; letter-spacing:1px; margin-bottom:12px;">PAGAR AGORA</div>
 
-                    <!-- Blocos ABAIXO -->
-                    <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:24px;">
-                        ${renderBlocks(cfg.below)}
+                    <!-- Rodapé legal (FIXO ABAIXO DO BOTÃO) -->
+                    <div style="text-align:center; display:flex; flex-direction:column; align-items:center; gap:8px; padding:0 10px; margin-bottom:32px;">
+                        <img src="D5.png" style="height:22px; opacity:0.6; filter:grayscale(1);" onerror="this.style.display='none'">
+                        <p style="font-size:9px; color:#bbb; font-weight:600; line-height:1.4; max-width:320px;">
+                            Ao clicar em "Pagar agora", você concorda com os <span style="text-decoration:underline; color:#999;">Termos de Compra</span> e a <span style="text-decoration:underline; color:#999;">Política de Privacidade</span>. A Dito apenas processa este pagamento e não se responsabiliza pela oferta.
+                        </p>
                     </div>
 
-                    <!-- Rodapé legal -->
-                    <div style="text-align:center; display:flex; flex-direction:column; align-items:center; gap:12px; padding:0 10px;">
-                        <img src="D5.png" style="height:28px; opacity:0.7; filter:grayscale(1);" onerror="this.style.display='none'">
-                        <p style="font-size:10px; color:#999; font-weight:600; line-height:1.5; max-width:320px;">
-                            Ao clicar em "Pagar agora", você concorda com os <span style="text-decoration:underline; color:#666;">Termos de Compra</span> e a <span style="text-decoration:underline; color:#666;">Política de Privacidade</span>. A Dito apenas processa este pagamento em nome do criador e não se responsabiliza pelo conteúdo ou oferta do produto.
-                        </p>
+                    <!-- Blocos ABAIXO (Aparecem DEPOIS dos termos) -->
+                    <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:24px;">
+                        ${renderBlocks(cfg.below)}
                     </div>
                 </div>
             </div>

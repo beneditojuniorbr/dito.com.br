@@ -3922,7 +3922,14 @@
                 if (data && data.config) {
                     const aboveCont = document.getElementById('checkout-above-blocks');
                     const belowCont = document.getElementById('checkout-below-blocks');
-                    const config = data.config;
+                    const config = data.config || {};
+                    const theme = config.theme || {};
+
+                    const checkoutCont = document.getElementById('direct-checkout-container') || document.getElementById('app');
+                    if (checkoutCont && theme.backgroundColor) {
+                        checkoutCont.style.backgroundColor = theme.backgroundColor;
+                    }
+
                     if (aboveCont) aboveCont.innerHTML = (config.above || []).map(b => this.renderPublicBlock(b)).join('');
                     if (belowCont) belowCont.innerHTML = (config.below || []).map(b => this.renderPublicBlock(b)).join('');
                     if (window.lucide) lucide.createIcons();
@@ -3938,7 +3945,27 @@
                 return `<div style="background:#f9f9f9; padding:20px; border-radius:24px;"><h4 style="font-size:11px; font-weight:900; color:#999; margin-bottom:12px;">${b.content.title}</h4><div style="display:flex; flex-direction:column; gap:8px;">${b.content.items.map(item => `<div style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:700;"><i data-lucide="check-circle" style="width:14px; color:#22c55e;"></i>${item}</div>`).join('')}</div></div>`;
             }
             if (b.type === 'testimonials') {
-                return `<div style="background:#fff; border:1px solid #eee; padding:20px; border-radius:24px; font-style:italic;"><p style="font-size:13px; color:#444; margin-bottom:12px;">"${b.content.text}"</p><div style="display:flex; align-items:center; gap:8px; font-style:normal;"><div style="width:24px; height:24px; background:#f5f5f5; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:900;">${b.content.name ? b.content.name[0] : 'U'}</div><span style="font-size:11px; font-weight:900;">${b.content.name || 'Usuário'}</span></div></div>`;
+                return `
+                    <div style="background:#fff; border:1px solid #eee; padding:20px; border-radius:24px; font-style:italic; margin-bottom:12px;">
+                        <p style="font-size:13px; color:#444; margin-bottom:12px;">"${b.content.text}"</p>
+                        <div style="display:flex; align-items:center; gap:8px; font-style:normal;">
+                            <div style="width:24px; height:24px; background:#f5f5f5; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:900;">${b.content.name ? b.content.name[0] : 'U'}</div>
+                            <span style="font-size:11px; font-weight:900;">${b.content.name || 'Usuário'}</span>
+                        </div>
+                    </div>
+                `;
+            }
+            if (b.type === 'image') {
+                return `<img src="${b.content.url}" style="width:100%; border-radius:24px; margin-bottom:12px;">`;
+            }
+            if (b.type === 'button') {
+                return `<button onclick="window.open('${b.content.link}', '_blank')" style="width:100%; padding:18px; background:${b.content.color || '#000'}; color:#fff; border:none; border-radius:100px; font-weight:900; font-size:14px; margin-bottom:12px; cursor:pointer;">${b.content.text}</button>`;
+            }
+            if (b.type === 'card') {
+                return `<div style="background:#fff; padding:24px; border-radius:24px; border:1px solid #eee; margin-bottom:12px;"><h4 style="font-weight:900; margin-bottom:8px;">${b.content.title}</h4><p style="font-size:13px; color:#666;">${b.content.text}</p></div>`;
+            }
+            if (b.type === 'offer') {
+                return `<div style="background:#fffbeb; border:2px solid #fbbf24; padding:20px; border-radius:24px; margin-bottom:12px; display:flex; align-items:center; gap:12px;"><i data-lucide="zap" style="color:#d97706;"></i><div><p style="font-weight:900; font-size:14px; color:#92400e;">${b.content.title}</p><p style="font-size:12px; color:#b45309;">${b.content.subtitle}</p></div></div>`;
             }
             return '';
         },
@@ -10579,7 +10606,7 @@
         belowCont.innerHTML = ``;
 
         this.currentBuilderProduct = productId;
-        this.builderConfig = { above: [], below: [] };
+        this.builderConfig = { theme: { backgroundColor: '#ffffff' }, above: [], below: [] };
 
         try {
             const { data } = await supabase
@@ -10590,8 +10617,7 @@
 
             if (data && data.config) {
                 this.builderConfig = data.config;
-            } else {
-                this.builderConfig = { above: [], below: [] };
+                if (!this.builderConfig.theme) this.builderConfig.theme = { backgroundColor: '#ffffff' };
             }
             this.renderBuilderBlocks();
         } catch (e) {
@@ -10604,6 +10630,14 @@
         const aboveCont = document.getElementById('builder-above');
         const belowCont = document.getElementById('builder-below');
         if (!aboveCont || !belowCont) return;
+
+        // Renderiza Seletor de Fundo
+        const themeHTML = `
+            <div style="background:#f9f9f9; padding:16px; border-radius:20px; margin-bottom:24px; display:flex; align-items:center; justify-content:space-between;">
+                <span style="font-size:11px; font-weight:900; text-transform:uppercase;">Cor do Fundo</span>
+                <input type="color" value="${this.builderConfig.theme.backgroundColor}" oninput="app.updateTheme('backgroundColor', this.value)" style="border:none; width:40px; height:40px; background:none; cursor:pointer;">
+            </div>
+        `;
 
         const renderList = (blocks, pos) => {
             if (!blocks || blocks.length === 0) return `<p style="text-align:center; padding:10px; color:#eee; font-size:10px; font-weight:900; text-transform:uppercase;">Nenhum bloco aqui</p>`;
@@ -10622,10 +10656,14 @@
             `).join('');
         };
 
-        aboveCont.innerHTML = renderList(this.builderConfig.above, 'above');
+        aboveCont.innerHTML = themeHTML + renderList(this.builderConfig.above, 'above');
         belowCont.innerHTML = renderList(this.builderConfig.below, 'below');
 
         if (window.lucide) lucide.createIcons();
+    };
+
+    app.updateTheme = function(key, value) {
+        this.builderConfig.theme[key] = value;
     };
 
     app.renderBlockEditor = function(block, pos, idx) {
@@ -10635,10 +10673,52 @@
                 <textarea oninput="app.updateBlock('${pos}', ${idx}, 'subtitle', this.value)" placeholder="Subtítulo" style="width:100%; border:none; background:#f9f9f9; padding:10px; border-radius:10px; font-weight:700; font-size:12px; min-height:60px; outline:none; font-family:inherit;">${block.content.subtitle}</textarea>
             `;
         }
-        if (block.type === 'features') {
-             return `<p style="font-size:10px; color:#999; font-weight:800; text-align:center;">Lista de benefícios carregada automaticamente.</p>`;
+        if (block.type === 'image') {
+            return `
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    ${block.content.url ? `<img src="${block.content.url}" style="width:100%; border-radius:12px; max-height:100px; object-fit:cover;">` : ''}
+                    <input type="file" accept="image/*" onchange="app.uploadBuilderImage('${pos}', ${idx}, this)" style="font-size:11px;">
+                    <p style="font-size:9px; color:#999; font-weight:700;">Limite: 500kb. Formatos: JPG, PNG, GIF.</p>
+                </div>
+            `;
         }
-        return `<p style="font-size:10px; color:#999; font-weight:800; text-align:center;">Bloco ${block.type} editável em breve.</p>`;
+        if (block.type === 'button') {
+            return `
+                <input type="text" value="${block.content.text}" oninput="app.updateBlock('${pos}', ${idx}, 'text', this.value)" placeholder="Texto do Botão" style="width:100%; border:none; background:#f9f9f9; padding:10px; border-radius:10px; font-weight:900; font-size:14px; outline:none; margin-bottom:8px;">
+                <input type="text" value="${block.content.link}" oninput="app.updateBlock('${pos}', ${idx}, 'link', this.value)" placeholder="Link (https://...)" style="width:100%; border:none; background:#f9f9f9; padding:10px; border-radius:10px; font-weight:700; font-size:12px; outline:none;">
+            `;
+        }
+        if (block.type === 'card') {
+            return `
+                <input type="text" value="${block.content.title}" oninput="app.updateBlock('${pos}', ${idx}, 'title', this.value)" placeholder="Título do Card" style="width:100%; border:none; background:#f9f9f9; padding:10px; border-radius:10px; font-weight:900; font-size:14px; outline:none; margin-bottom:8px;">
+                <textarea oninput="app.updateBlock('${pos}', ${idx}, 'text', this.value)" placeholder="Texto" style="width:100%; border:none; background:#f9f9f9; padding:10px; border-radius:10px; font-weight:700; font-size:12px; min-height:60px; outline:none; font-family:inherit;">${block.content.text}</textarea>
+            `;
+        }
+        if (block.type === 'offer') {
+            return `
+                <input type="text" value="${block.content.title}" oninput="app.updateBlock('${pos}', ${idx}, 'title', this.value)" placeholder="Chamada da Oferta" style="width:100%; border:none; background:#f9f9f9; padding:10px; border-radius:10px; font-weight:900; font-size:14px; outline:none; margin-bottom:8px;">
+                <input type="text" value="${block.content.subtitle}" oninput="app.updateBlock('${pos}', ${idx}, 'subtitle', this.value)" placeholder="Subtítulo" style="width:100%; border:none; background:#f9f9f9; padding:10px; border-radius:10px; font-weight:700; font-size:12px; outline:none;">
+            `;
+        }
+        return `<p style="font-size:10px; color:#999; font-weight:800; text-align:center;">Bloco ${block.type} editável.</p>`;
+    };
+
+    app.uploadBuilderImage = function(pos, idx, input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        if (file.size > 500 * 1024) {
+            this.showNotification("Imagem muito pesada! Limite de 500kb.", "error");
+            input.value = '';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            this.updateBlock(pos, idx, 'url', e.target.result);
+            this.renderBuilderBlocks();
+        };
+        reader.readAsDataURL(file);
     };
 
     app.updateBlock = function(pos, idx, field, value) {
@@ -10663,18 +10743,21 @@
     app.showAddSection = function(pos) {
         const types = [
             { id: 'hero', label: 'Chamada', icon: 'type' },
-            { id: 'features', label: 'Vantagens', icon: 'check-circle' },
+            { id: 'image', label: 'Imagem', icon: 'image' },
+            { id: 'button', label: 'Botão Extra', icon: 'mouse-pointer' },
+            { id: 'card', label: 'Card Texto', icon: 'credit-card' },
+            { id: 'offer', label: 'Caixa Oferta', icon: 'zap' },
             { id: 'testimonials', label: 'Depoimento', icon: 'star' }
         ];
 
         this.openModal(`
             <div style="padding:20px;">
                 <h3 style="font-weight:900; margin-bottom:20px; text-align:center; font-size:14px;">ADICIONAR AO CHECKOUT</h3>
-                <div style="display:grid; grid-template-columns:1fr; gap:10px;">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                     ${types.map(t => `
-                        <button onclick="app.addBuilderBlock('${pos}', '${t.id}')" style="display:flex; align-items:center; gap:12px; padding:16px; background:#f9f9f9; border:none; border-radius:16px; cursor:pointer;">
+                        <button onclick="app.addBuilderBlock('${pos}', '${t.id}')" style="display:flex; flex-direction:column; align-items:center; gap:8px; padding:20px; background:#f9f9f9; border:none; border-radius:16px; cursor:pointer;">
                             <i data-lucide="${t.icon}" style="width:20px; color:#000;"></i>
-                            <span style="font-size:11px; font-weight:900; text-transform:uppercase;">${t.label}</span>
+                            <span style="font-size:9px; font-weight:900; text-transform:uppercase;">${t.label}</span>
                         </button>
                     `).join('')}
                 </div>
@@ -10685,9 +10768,12 @@
 
     app.addBuilderBlock = function(pos, type) {
         const contentMap = {
-            hero: { title: "Nova Chamada", subtitle: "Detalhes do benefício" },
-            features: { title: "O QUE VOCÊ LEVA", items: ["Acesso imediato", "Suporte VIP", "Bônus Exclusivo"] },
-            testimonials: { name: "Cliente", text: "Mudou meu jogo!", role: "Usuário" }
+            hero: { title: "Título de Impacto", subtitle: "Detalhes do produto" },
+            image: { url: "" },
+            button: { text: "Saiba Mais", link: "https://", color: "#000" },
+            card: { title: "Informação", text: "Conteúdo do seu card aqui." },
+            offer: { title: "OFERTA LIMITADA", subtitle: "Aproveite agora!" },
+            testimonials: { name: "Cliente", text: "Excelente!", role: "Usuário" }
         };
 
         this.builderConfig[pos].push({

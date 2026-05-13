@@ -1166,6 +1166,17 @@
             }, 2500);
         },
 
+        openModal(content, isCenter = false) {
+            const modal = document.getElementById('modal-container');
+            const body = document.getElementById('modal-body');
+            if (modal && body) {
+                body.innerHTML = content;
+                modal.style.display = 'flex';
+                if (isCenter) modal.classList.add('center-modal');
+                setTimeout(() => modal.classList.add('active'), 10);
+            }
+        },
+
         closeModal(e) {
             if (e && e.target !== e.currentTarget && e.target.tagName !== 'BUTTON' && !e.target.closest('.modal-dialog')) return; 
             
@@ -3901,6 +3912,35 @@
             }
 
             if (window.lucide) lucide.createIcons();
+            this.renderCheckoutBlocks(this.cart[0]?.id);
+        },
+
+        async renderCheckoutBlocks(productId) {
+            if (!productId) return;
+            try {
+                const { data } = await supabase.from('dito_sales_pages').select('*').eq('product_id', productId).maybeSingle();
+                if (data && data.config) {
+                    const aboveCont = document.getElementById('checkout-above-blocks');
+                    const belowCont = document.getElementById('checkout-below-blocks');
+                    const config = data.config;
+                    if (aboveCont) aboveCont.innerHTML = (config.above || []).map(b => this.renderPublicBlock(b)).join('');
+                    if (belowCont) belowCont.innerHTML = (config.below || []).map(b => this.renderPublicBlock(b)).join('');
+                    if (window.lucide) lucide.createIcons();
+                }
+            } catch (e) { console.error(e); }
+        },
+
+        renderPublicBlock(b) {
+            if (b.type === 'hero') {
+                return `<div style="text-align:center; padding:10px 0;"><h2 style="font-size:24px; font-weight:900; margin-bottom:8px;">${b.content.title}</h2><p style="font-size:13px; color:#666; font-weight:600;">${b.content.subtitle}</p></div>`;
+            }
+            if (b.type === 'features') {
+                return `<div style="background:#f9f9f9; padding:20px; border-radius:24px;"><h4 style="font-size:11px; font-weight:900; color:#999; margin-bottom:12px;">${b.content.title}</h4><div style="display:flex; flex-direction:column; gap:8px;">${b.content.items.map(item => `<div style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:700;"><i data-lucide="check-circle" style="width:14px; color:#22c55e;"></i>${item}</div>`).join('')}</div></div>`;
+            }
+            if (b.type === 'testimonials') {
+                return `<div style="background:#fff; border:1px solid #eee; padding:20px; border-radius:24px; font-style:italic;"><p style="font-size:13px; color:#444; margin-bottom:12px;">"${b.content.text}"</p><div style="display:flex; align-items:center; gap:8px; font-style:normal;"><div style="width:24px; height:24px; background:#f5f5f5; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:900;">${b.content.name ? b.content.name[0] : 'U'}</div><span style="font-size:11px; font-weight:900;">${b.content.name || 'Usuário'}</span></div></div>`;
+            }
+            return '';
         },
 
 
@@ -5042,7 +5082,7 @@
             this.showHallDot = currentMembers > lastMembers;
         },
 
-        navigate(view, direction = null) { 
+        navigate(view, direction = null, params = null) { 
             try {
                 // Notificação de Memória (Opcional - Debug)
                 console.log("🚀 Mudando de Tela:", view);
@@ -8753,9 +8793,6 @@
         },
 
         showNotification(msg, type = 'default') {
-            // Regra: Mostrar apenas erros
-            if (type !== 'error') return;
-
             const container = document.getElementById('notification-container');
             if (!container) {
                 const newContainer = document.createElement('div');
@@ -10531,130 +10568,123 @@
 
     app.renderBuilder = async function(productId) {
         if (!productId) {
-            this.notify("ID do produto necessário para o builder.", "error");
+            this.showNotification("ID do produto necessário para o builder.", "error");
             this.navigate('produtos');
             return;
         }
 
-        const container = document.getElementById('builder-sections');
-        if (!container) return;
-        container.innerHTML = `<div style="text-align:center; padding:40px; color:#ccc;">Carregando editor...</div>`;
+        const aboveCont = document.getElementById('builder-above');
+        const belowCont = document.getElementById('builder-below');
+        if (!aboveCont || !belowCont) return;
+
+        aboveCont.innerHTML = `<div style="text-align:center; padding:20px; color:#ccc; font-size:11px;">Carregando...</div>`;
+        belowCont.innerHTML = ``;
 
         this.currentBuilderProduct = productId;
-        this.builderBlocks = [];
+        this.builderConfig = { above: [], below: [] };
 
         try {
-            // Tenta carregar página existente do Supabase
-            const { data, error } = await supabase
+            const { data } = await supabase
                 .from('dito_sales_pages')
                 .select('*')
                 .eq('product_id', productId)
                 .maybeSingle();
 
             if (data && data.config) {
-                this.builderBlocks = data.config;
+                this.builderConfig = data.config;
             } else {
-                // Default: Hero do Produto
                 const prod = this.products.find(p => String(p.id) === String(productId));
-                this.builderBlocks = [{
+                this.builderConfig.above = [{
                     id: Date.now(),
                     type: 'hero',
                     content: {
-                        title: prod?.name || "Título da sua Página",
-                        subtitle: "Explique como seu produto resolve o problema do cliente.",
-                        cta: "Comprar Agora"
+                        title: prod?.name || "Título Atrativo",
+                        subtitle: "Explique o maior benefício do seu produto aqui."
                     }
                 }];
             }
             this.renderBuilderBlocks();
         } catch (e) {
             console.error(e);
-            this.notify("Erro ao carregar builder.", "error");
+            this.showNotification("Erro ao carregar builder.", "error");
         }
     };
 
     app.renderBuilderBlocks = function() {
-        const container = document.getElementById('builder-sections');
-        if (!container) return;
+        const aboveCont = document.getElementById('builder-above');
+        const belowCont = document.getElementById('builder-below');
+        if (!aboveCont || !belowCont) return;
 
-        if (this.builderBlocks.length === 0) {
-            container.innerHTML = `<div style="text-align:center; padding:40px; color:#ccc; font-weight:800;">NENHUM BLOCO ADICIONADO</div>`;
-            return;
-        }
-
-        container.innerHTML = this.builderBlocks.map((b, idx) => `
-            <div style="background:#fff; border:1px solid #eee; border-radius:24px; padding:20px; position:relative; box-shadow:0 4px 20px rgba(0,0,0,0.02);">
-                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
-                    <span style="font-size:9px; font-weight:900; text-transform:uppercase; tracking-widest; color:#ccc;">${b.type}</span>
-                    <div style="display:flex; gap:4px;">
-                        <button onclick="app.moveBuilderBlock(${idx}, -1)" style="width:24px; height:24px; border-radius:50%; border:none; background:#f5f5f5; display:flex; align-items:center; justify-content:center;"><i data-lucide="chevron-up" style="width:12px;"></i></button>
-                        <button onclick="app.moveBuilderBlock(${idx}, 1)" style="width:24px; height:24px; border-radius:50%; border:none; background:#f5f5f5; display:flex; align-items:center; justify-content:center;"><i data-lucide="chevron-down" style="width:12px;"></i></button>
-                        <button onclick="app.removeBuilderBlock(${idx})" style="width:24px; height:24px; border-radius:50%; border:none; background:#fff1f1; color:#ff4d4d; display:flex; align-items:center; justify-content:center;"><i data-lucide="trash-2" style="width:12px;"></i></button>
+        const renderList = (blocks, pos) => {
+            if (!blocks || blocks.length === 0) return `<p style="text-align:center; padding:10px; color:#eee; font-size:10px; font-weight:900; text-transform:uppercase;">Nenhum bloco aqui</p>`;
+            return blocks.map((b, idx) => `
+                <div style="background:#fff; border:1px solid #eee; border-radius:20px; padding:16px; margin-bottom:8px; box-shadow:0 4px 12px rgba(0,0,0,0.02);">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                        <span style="font-size:9px; font-weight:900; text-transform:uppercase; color:#ccc;">${b.type}</span>
+                        <div style="display:flex; gap:4px;">
+                            <button onclick="app.moveBuilderBlock('${pos}', ${idx}, -1)" style="width:24px; height:24px; border-radius:50%; border:none; background:#f5f5f5;"><i data-lucide="chevron-up" style="width:12px;"></i></button>
+                            <button onclick="app.moveBuilderBlock('${pos}', ${idx}, 1)" style="width:24px; height:24px; border-radius:50%; border:none; background:#f5f5f5;"><i data-lucide="chevron-down" style="width:12px;"></i></button>
+                            <button onclick="app.removeBuilderBlock('${pos}', ${idx})" style="width:24px; height:24px; border-radius:50%; border:none; background:#fff1f1; color:#ff4d4d;"><i data-lucide="trash-2" style="width:12px;"></i></button>
+                        </div>
                     </div>
+                    ${this.renderBlockEditor(b, pos, idx)}
                 </div>
-                
-                <div style="display:flex; flex-direction:column; gap:12px;">
-                    ${this.renderBlockEditor(b, idx)}
-                </div>
-            </div>
-        `).join('');
+            `).join('');
+        };
+
+        aboveCont.innerHTML = renderList(this.builderConfig.above, 'above');
+        belowCont.innerHTML = renderList(this.builderConfig.below, 'below');
 
         if (window.lucide) lucide.createIcons();
     };
 
-    app.renderBlockEditor = function(block, idx) {
+    app.renderBlockEditor = function(block, pos, idx) {
         if (block.type === 'hero') {
             return `
-                <input type="text" value="${block.content.title}" oninput="app.updateBlock(${idx}, 'title', this.value)" placeholder="Título" style="width:100%; border:none; background:#f9f9f9; padding:12px; border-radius:12px; font-weight:900; font-size:16px; outline:none;">
-                <textarea oninput="app.updateBlock(${idx}, 'subtitle', this.value)" placeholder="Subtítulo" style="width:100%; border:none; background:#f9f9f9; padding:12px; border-radius:12px; font-weight:700; font-size:13px; min-height:80px; outline:none; font-family:inherit;">${block.content.subtitle}</textarea>
+                <input type="text" value="${block.content.title}" oninput="app.updateBlock('${pos}', ${idx}, 'title', this.value)" placeholder="Título" style="width:100%; border:none; background:#f9f9f9; padding:10px; border-radius:10px; font-weight:900; font-size:14px; outline:none; margin-bottom:8px;">
+                <textarea oninput="app.updateBlock('${pos}', ${idx}, 'subtitle', this.value)" placeholder="Subtítulo" style="width:100%; border:none; background:#f9f9f9; padding:10px; border-radius:10px; font-weight:700; font-size:12px; min-height:60px; outline:none; font-family:inherit;">${block.content.subtitle}</textarea>
             `;
         }
-        if (block.type === 'cta') {
-            return `
-                <input type="text" value="${block.content.price}" oninput="app.updateBlock(${idx}, 'price', this.value)" placeholder="Preço (ex: 97,00)" style="width:100%; border:none; background:#f9f9f9; padding:12px; border-radius:12px; font-weight:900; font-size:16px; outline:none;">
-                <input type="text" value="${block.content.buttonText}" oninput="app.updateBlock(${idx}, 'buttonText', this.value)" placeholder="Texto do Botão" style="width:100%; border:none; background:#f9f9f9; padding:12px; border-radius:12px; font-weight:900; font-size:13px; outline:none;">
-            `;
+        if (block.type === 'features') {
+             return `<p style="font-size:10px; color:#999; font-weight:800; text-align:center;">Lista de benefícios carregada automaticamente.</p>`;
         }
-        return `<p style="font-size:11px; color:#999; font-weight:800; text-align:center; padding:10px;">Bloco ${block.type} será editável em breve!</p>`;
+        return `<p style="font-size:10px; color:#999; font-weight:800; text-align:center;">Bloco ${block.type} editável em breve.</p>`;
     };
 
-    app.updateBlock = function(idx, field, value) {
-        this.builderBlocks[idx].content[field] = value;
+    app.updateBlock = function(pos, idx, field, value) {
+        this.builderConfig[pos][idx].content[field] = value;
     };
 
-    app.moveBuilderBlock = function(idx, dir) {
+    app.moveBuilderBlock = function(pos, idx, dir) {
+        const list = this.builderConfig[pos];
         const target = idx + dir;
-        if (target < 0 || target >= this.builderBlocks.length) return;
-        const temp = this.builderBlocks[idx];
-        this.builderBlocks[idx] = this.builderBlocks[target];
-        this.builderBlocks[target] = temp;
+        if (target < 0 || target >= list.length) return;
+        [list[idx], list[target]] = [list[target], list[idx]];
         this.renderBuilderBlocks();
     };
 
-    app.removeBuilderBlock = function(idx) {
-        if (confirm("Deseja excluir este bloco?")) {
-            this.builderBlocks.splice(idx, 1);
+    app.removeBuilderBlock = function(pos, idx) {
+        if (confirm("Excluir este bloco?")) {
+            this.builderConfig[pos].splice(idx, 1);
             this.renderBuilderBlocks();
         }
     };
 
-    app.showAddSection = function() {
+    app.showAddSection = function(pos) {
         const types = [
-            { id: 'hero', label: 'Cabeçalho', icon: 'type' },
-            { id: 'video', label: 'Vídeo/Imagem', icon: 'play-circle' },
-            { id: 'features', label: 'Benefícios', icon: 'check-circle' },
-            { id: 'testimonials', label: 'Depoimentos', icon: 'star' },
-            { id: 'cta', label: 'Preço/Checkout', icon: 'zap' }
+            { id: 'hero', label: 'Chamada', icon: 'type' },
+            { id: 'features', label: 'Vantagens', icon: 'check-circle' },
+            { id: 'testimonials', label: 'Depoimento', icon: 'star' }
         ];
 
         this.openModal(`
             <div style="padding:20px;">
-                <h3 style="font-weight:900; margin-bottom:20px; text-align:center; letter-spacing:-0.5px;">ADICIONAR BLOCO</h3>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <h3 style="font-weight:900; margin-bottom:20px; text-align:center; font-size:14px;">ADICIONAR AO CHECKOUT</h3>
+                <div style="display:grid; grid-template-columns:1fr; gap:10px;">
                     ${types.map(t => `
-                        <button onclick="app.addBuilderBlock('${t.id}')" style="display:flex; flex-direction:column; align-items:center; gap:8px; padding:20px; background:#f9f9f9; border:none; border-radius:24px; cursor:pointer; transition:0.2s;" onmouseover="this.style.background='#eee'" onmouseout="this.style.background='#f9f9f9'">
-                            <i data-lucide="${t.icon}" style="width:24px; color:#000;"></i>
-                            <span style="font-size:10px; font-weight:900; text-transform:uppercase;">${t.label}</span>
+                        <button onclick="app.addBuilderBlock('${pos}', '${t.id}')" style="display:flex; align-items:center; gap:12px; padding:16px; background:#f9f9f9; border:none; border-radius:16px; cursor:pointer;">
+                            <i data-lucide="${t.icon}" style="width:20px; color:#000;"></i>
+                            <span style="font-size:11px; font-weight:900; text-transform:uppercase;">${t.label}</span>
                         </button>
                     `).join('')}
                 </div>
@@ -10663,16 +10693,14 @@
         if (window.lucide) lucide.createIcons();
     };
 
-    app.addBuilderBlock = function(type) {
+    app.addBuilderBlock = function(pos, type) {
         const contentMap = {
-            hero: { title: "Novo Título", subtitle: "Nova Descrição", cta: "Comprar" },
-            video: { url: "", title: "Vídeo Demonstrativo" },
-            features: { title: "Benefícios", items: ["Vantagem 1", "Vantagem 2"] },
-            testimonials: { name: "Cliente", text: "Excelente!", role: "Usuário" },
-            cta: { price: "97,00", buttonText: "Garantir Vaga" }
+            hero: { title: "Nova Chamada", subtitle: "Detalhes do benefício" },
+            features: { title: "O QUE VOCÊ LEVA", items: ["Acesso imediato", "Suporte VIP", "Bônus Exclusivo"] },
+            testimonials: { name: "Cliente", text: "Mudou meu jogo!", role: "Usuário" }
         };
 
-        this.builderBlocks.push({
+        this.builderConfig[pos].push({
             id: Date.now(),
             type,
             content: contentMap[type] || {}
@@ -10683,30 +10711,23 @@
 
     app.saveSalesPage = async function() {
         if (!this.currentBuilderProduct) return;
-        
-        this.notify("Salvando página...", "info");
-        
+        this.showNotification("Turbinando Checkout...", "info");
         try {
             const payload = {
                 product_id: this.currentBuilderProduct,
                 author: this.currentUser?.username || "Dito",
                 slug: `p-${this.currentBuilderProduct}`,
-                title: this.builderBlocks.find(b => b.type === 'hero')?.content.title || "Sales Page",
-                config: this.builderBlocks,
+                title: "Checkout Turbinado",
+                config: this.builderConfig,
                 updated_at: new Date().toISOString()
             };
-
-            const { error } = await supabase
-                .from('dito_sales_pages')
-                .upsert(payload, { onConflict: 'product_id' });
-
+            const { error } = await supabase.from('dito_sales_pages').upsert(payload, { onConflict: 'product_id' });
             if (error) throw error;
-            
-            this.notify("Página salva com sucesso!", "success");
+            this.showNotification("Checkout Turbinado com sucesso!", "success");
             this.navigate('produtos');
         } catch (e) {
             console.error(e);
-            this.notify("Erro ao salvar página.", "error");
+            this.showNotification("Erro ao salvar.", "error");
         }
     };
 

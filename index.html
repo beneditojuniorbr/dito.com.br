@@ -2272,6 +2272,9 @@
                 </div>
             </div>
 
+            <!-- Conteúdo Acima do Checkout -->
+            <div id="checkout-above-blocks" style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px;"></div>
+
             <!-- Resumo do Pedido -->
             <div style="margin-bottom: 32px; padding: 0 4px;">
                 <h3
@@ -2322,6 +2325,10 @@
             </div>
 
             <div id="checkout-dynamic-actions"></div>
+            
+            <!-- Conteúdo Abaixo do Checkout -->
+            <div id="checkout-below-blocks" style="display: flex; flex-direction: column; gap: 16px; margin-top: 24px; margin-bottom: 32px;"></div>
+
             <div id="paypal-button-container" style="display: none; margin-bottom: 32px;"></div>
 
             <div
@@ -2352,6 +2359,9 @@
                     <h2 style="font-size: 24px; font-weight: 900; letter-spacing: -1px;">Finalizar Pedido</h2>
                 </div>
             </header>
+
+            <!-- Conteúdo Acima do Checkout -->
+            <div id="checkout-above-blocks" style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px;"></div>
 
             <div id="checkout-actual-content" style="margin-bottom: 24px; padding: 0 4px;">
                 <h3
@@ -2403,6 +2413,10 @@
             </div>
 
             <div id="checkout-dynamic-actions"></div>
+
+            <!-- Conteúdo Abaixo do Checkout -->
+            <div id="checkout-below-blocks" style="display: flex; flex-direction: column; gap: 16px; margin-top: 24px; margin-bottom: 32px;"></div>
+
             <div id="paypal-button-container" style="display: none; margin-bottom: 24px;"></div>
 
             <div
@@ -2887,15 +2901,34 @@
                     style="width: 44px; height: 44px; background: #f5f5f5; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
                     <i data-lucide="arrow-left" style="width: 20px; color: #000;"></i>
                 </div>
-                <h2 style="font-weight: 900; font-size: 18px; letter-spacing: -1px; text-transform: uppercase;">Página de Vendas</h2>
+                <h2 style="font-weight: 900; font-size: 14px; letter-spacing: -0.5px; text-transform: uppercase;">Turbinar Checkout</h2>
                 <div onclick="app.saveSalesPage()" style="background: #000; color: #fff; padding: 8px 16px; border-radius: 50px; font-weight: 900; font-size: 12px; cursor: pointer;">Salvar</div>
             </header>
 
-            <div id="builder-sections" style="display: flex; flex-direction: column; gap: 16px;">
-                <!-- Seções injetadas via JS -->
+            <div id="builder-above" style="display: flex; flex-direction: column; gap: 16px;">
+                <!-- Seções Acima -->
             </div>
 
-            <button onclick="app.showAddSection()" style="width: 100%; padding: 24px; border: 2px dashed #eee; border-radius: 24px; background: #fafafa; color: #999; font-weight: 900; font-size: 13px; margin-top: 24px;">+ Adicionar Bloco</button>
+            <button onclick="app.showAddSection('above')" style="width: 100%; padding: 20px; border: 2px dashed #eee; border-radius: 24px; background: #fafafa; color: #999; font-weight: 900; font-size: 11px; margin-top: 16px; margin-bottom: 32px;">+ Adicionar Acima do Checkout</button>
+
+            <!-- Mockup do Checkout -->
+            <div style="padding: 24px; background: #f9f9f9; border-radius: 32px; border: 1px solid #eee; margin-bottom: 32px; opacity: 0.6; pointer-events: none;">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                    <div style="width: 40px; height: 40px; background: #eee; border-radius: 12px;"></div>
+                    <div style="flex: 1;">
+                        <div style="width: 60%; height: 10px; background: #eee; border-radius: 5px; margin-bottom: 6px;"></div>
+                        <div style="width: 30%; height: 12px; background: #eee; border-radius: 5px;"></div>
+                    </div>
+                </div>
+                <div style="width: 100%; height: 50px; background: #eee; border-radius: 25px;"></div>
+                <p style="text-align: center; font-size: 9px; font-weight: 900; color: #ccc; margin-top: 12px;">ÁREA DO CHECKOUT (FIXA)</p>
+            </div>
+
+            <div id="builder-below" style="display: flex; flex-direction: column; gap: 16px;">
+                <!-- Seções Abaixo -->
+            </div>
+
+            <button onclick="app.showAddSection('below')" style="width: 100%; padding: 20px; border: 2px dashed #eee; border-radius: 24px; background: #fafafa; color: #999; font-weight: 900; font-size: 11px; margin-top: 16px;">+ Adicionar Abaixo do Checkout</button>
         </div>
     </template>
 

@@ -10928,11 +10928,8 @@
 
     app.showAddSection = function(pos) {
         const types = [
-            { id: 'hero', label: 'Chamada', icon: 'type' },
             { id: 'image', label: 'Imagem', icon: 'image' },
-            { id: 'button', label: 'Botão Extra', icon: 'mouse-pointer' },
             { id: 'card', label: 'Card Texto', icon: 'credit-card' },
-            { id: 'offer', label: 'Caixa Oferta', icon: 'zap' },
             { id: 'testimonials', label: 'Depoimento', icon: 'star' }
         ];
 

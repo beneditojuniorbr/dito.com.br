@@ -10761,6 +10761,41 @@
         if (contentArea) contentArea.style.backgroundColor = value;
     };
 
+    app._builderPreviewActive = false;
+    app.toggleBuilderPreview = function() {
+        const area = document.getElementById('builder-content-area');
+        const btn  = document.getElementById('btn-builder-preview');
+        const lbl  = document.getElementById('builder-preview-label');
+        if (!area) return;
+
+        this._builderPreviewActive = !this._builderPreviewActive;
+
+        if (this._builderPreviewActive) {
+            // Modo Preview: simula celular com zoom out
+            area.style.transition = 'transform 0.35s cubic-bezier(0.34,1.56,0.64,1), background 0.3s';
+            area.style.transform = 'scale(0.83)';
+            area.style.transformOrigin = 'top center';
+            area.style.background = (area.style.backgroundColor && area.style.backgroundColor !== 'rgb(255, 255, 255)') ? area.style.backgroundColor : '#f0f0f0';
+            area.style.borderRadius = '32px';
+            area.style.outline = '2px solid rgba(0,0,0,0.08)';
+            area.style.boxShadow = '0 20px 60px rgba(0,0,0,0.15)';
+            area.style.pointerEvents = 'none'; // Modo leitura
+            if (btn) { btn.style.background = '#000'; btn.querySelector('i').style.color = '#fff'; }
+            if (lbl) lbl.style.display = 'block';
+        } else {
+            // Modo Edição: volta ao normal
+            area.style.transform = 'scale(1)';
+            area.style.borderRadius = '';
+            area.style.outline = '';
+            area.style.boxShadow = '';
+            area.style.pointerEvents = '';
+            if (btn) { btn.style.background = '#f5f5f5'; btn.querySelector('i').style.color = '#000'; }
+            if (lbl) lbl.style.display = 'none';
+        }
+
+        if (window.lucide) lucide.createIcons();
+    };
+
     app.renderBlockEditor = function(block, pos, idx) {
         if (block.type === 'hero') {
             return `

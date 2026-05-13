@@ -2900,13 +2900,22 @@
 
     <template id="template-builder">
         <div style="min-height: 100vh; display: flex; flex-direction: column;">
-            <header style="display: flex; align-items: center; justify-content: space-between; padding: 24px; background: #fff; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #f0f0f0; flex-shrink: 0;">
+            <header style="display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; background: #fff; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #f0f0f0; flex-shrink: 0;">
                 <div onclick="app.navigate('produtos', 'left')"
                     style="width: 44px; height: 44px; background: #f5f5f5; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
                     <i data-lucide="arrow-left" style="width: 20px; color: #000;"></i>
                 </div>
-                <h2 style="font-weight: 900; font-size: 14px; letter-spacing: -0.5px; text-transform: uppercase;">Checkout Personalizado</h2>
-                <div onclick="app.saveSalesPage()" style="background: #000; color: #fff; padding: 10px 20px; border-radius: 50px; font-weight: 900; font-size: 12px; cursor: pointer;">Salvar</div>
+                <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+                    <h2 style="font-weight: 900; font-size: 13px; letter-spacing: -0.5px; text-transform: uppercase;">Checkout Personalizado</h2>
+                    <span id="builder-preview-label" style="font-size:9px; font-weight:900; color:#999; text-transform:uppercase; display:none;">Modo Visualização</span>
+                </div>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <div id="btn-builder-preview" onclick="app.toggleBuilderPreview()" title="Visualizar no Celular"
+                        style="width:44px; height:44px; background:#f5f5f5; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                        <i data-lucide="smartphone" style="width:18px; color:#000;"></i>
+                    </div>
+                    <div onclick="app.saveSalesPage()" style="background: #000; color: #fff; padding: 10px 20px; border-radius: 50px; font-weight: 900; font-size: 12px; cursor: pointer;">Salvar</div>
+                </div>
             </header>
             <div id="builder-content-area" style="flex: 1; padding: 24px; padding-bottom: 120px; transition: background-color 0.3s;">
             <div id="builder-above" style="display: flex; flex-direction: column; gap: 16px;">

@@ -3928,6 +3928,9 @@
                     const checkoutCont = document.getElementById('direct-checkout-container') || document.getElementById('app');
                     if (checkoutCont && theme.backgroundColor) {
                         checkoutCont.style.backgroundColor = theme.backgroundColor;
+                        if (checkoutCont === document.getElementById('app')) {
+                            document.body.style.backgroundColor = theme.backgroundColor;
+                        }
                     }
 
                     if (aboveCont) aboveCont.innerHTML = (config.above || []).map(b => this.renderPublicBlock(b)).join('');
@@ -5111,6 +5114,11 @@
 
         navigate(view, direction = null, params = null) { 
             try {
+                // Reset de cor de fundo (Garante o app sempre branco por padrão)
+                document.body.style.backgroundColor = '#ffffff';
+                const appElem = document.getElementById('app');
+                if (appElem) appElem.style.backgroundColor = '#ffffff';
+
                 // Notificação de Memória (Opcional - Debug)
                 console.log("🚀 Mudando de Tela:", view);
                 
@@ -10667,8 +10675,8 @@
 
     app.updateTheme = function(key, value) {
         this.builderConfig.theme[key] = value;
-        // Aplica no editor em tempo real
-        const builderView = document.querySelector('#template-builder').parentElement;
+        // Aplica no editor em tempo real (apenas no container do builder)
+        const builderView = document.getElementById('builder-above')?.parentElement;
         if (builderView) builderView.style.backgroundColor = value;
     };
 

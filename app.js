@@ -303,7 +303,7 @@
                 
                 // Fallback para Slugs puro no path (ex: www.ditoapp.com.br/meu-produto)
                 // Ignora paths que são claramente da raiz do app ou parâmetros UTM
-                const ignoredPaths = ['', 'index.html', 'app', 'home', 'dashboard', 'login', 'cadastro'];
+                const ignoredPaths = ['', 'index.html', 'app', 'home', 'dashboard', 'login', 'cadastro', 'builder'];
                 if (!currentCheckoutId && pathParts.length === 1 && !pathParts[0].includes('.') && !ignoredPaths.includes(pathParts[0].toLowerCase())) {
                     currentCheckoutId = pathParts[0];
                 }
@@ -5228,6 +5228,7 @@
                     case 'admin-contas': this.renderAdminUsers(); break;
                     case 'admin-produtos': this.renderAdminProducts(); break;
                     case 'produtos': this.renderMyProducts(); break;
+                    case 'builder': this.renderBuilder(params?.product); break;
                     case 'meus-cursos': this.renderPurchasedProducts(); break;
                     case 'curso-player': this.renderCoursePlayer(); break;
                     case 'missoes': this.renderMissions(); break;
@@ -10518,7 +10519,7 @@
                 </div>
                 <div style="display:flex; gap:8px;">
                     <button onclick="app.copyToClipboard('https://www.ditoapp.com.br/checkout/${p.id}', 'Link de Checkout copiado!', this)" title="Copiar Checkout" style="width:40px; height:40px; background:#f5f5f5; color:#000; border:none; border-radius:50%; cursor:pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;" onmouseover="this.style.background='#eee'" onmouseout="this.style.background='#f5f5f5'"><i data-lucide="link" style="width:18px;"></i></button>
-                    <button onclick="window.location.href='/builder?product=${p.id}'" title="Editar Página de Vendas" style="width:40px; height:40px; background:#f5f5f5; color:#000; border:none; border-radius:50%; cursor:pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;" onmouseover="this.style.background='#eee'" onmouseout="this.style.background='#f5f5f5'"><i data-lucide="monitor" style="width:18px;"></i></button>
+                    <button onclick="app.navigate('builder', 'right', { product: '${p.id}' })" title="Página de Vendas" style="width:40px; height:40px; background:#f5f5f5; color:#000; border:none; border-radius:50%; cursor:pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;" onmouseover="this.style.background='#eee'" onmouseout="this.style.background='#f5f5f5'"><i data-lucide="monitor" style="width:18px;"></i></button>
                     <button onclick="app.editProduct('${String(p.id)}')" title="Editar Produto" style="width:40px; height:40px; background:#f5f5f5; color:#000; border:none; border-radius:50%; cursor:pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;" onmouseover="this.style.background='#eee'" onmouseout="this.style.background='#f5f5f5'"><i data-lucide="edit-3" style="width:18px;"></i></button>
                     <button onclick="app.deleteProduct('${String(p.id)}', '${(p.name || '').replace(/'/g, "\\'")}')" title="Excluir" style="width:40px; height:40px; background:#f5f5f5; color:#000; border:none; border-radius:50%; cursor:pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;" onmouseover="this.style.background='#eee'" onmouseout="this.style.background='#f5f5f5'"><i data-lucide="trash-2" style="width:18px;"></i></button>
                 </div>
@@ -10527,6 +10528,187 @@
         if (window.lucide) lucide.createIcons();
     };
 
+
+    app.renderBuilder = async function(productId) {
+        if (!productId) {
+            this.notify("ID do produto necessário para o builder.", "error");
+            this.navigate('produtos');
+            return;
+        }
+
+        const container = document.getElementById('builder-sections');
+        if (!container) return;
+        container.innerHTML = `<div style="text-align:center; padding:40px; color:#ccc;">Carregando editor...</div>`;
+
+        this.currentBuilderProduct = productId;
+        this.builderBlocks = [];
+
+        try {
+            // Tenta carregar página existente do Supabase
+            const { data, error } = await supabase
+                .from('dito_sales_pages')
+                .select('*')
+                .eq('product_id', productId)
+                .maybeSingle();
+
+            if (data && data.config) {
+                this.builderBlocks = data.config;
+            } else {
+                // Default: Hero do Produto
+                const prod = this.products.find(p => String(p.id) === String(productId));
+                this.builderBlocks = [{
+                    id: Date.now(),
+                    type: 'hero',
+                    content: {
+                        title: prod?.name || "Título da sua Página",
+                        subtitle: "Explique como seu produto resolve o problema do cliente.",
+                        cta: "Comprar Agora"
+                    }
+                }];
+            }
+            this.renderBuilderBlocks();
+        } catch (e) {
+            console.error(e);
+            this.notify("Erro ao carregar builder.", "error");
+        }
+    };
+
+    app.renderBuilderBlocks = function() {
+        const container = document.getElementById('builder-sections');
+        if (!container) return;
+
+        if (this.builderBlocks.length === 0) {
+            container.innerHTML = `<div style="text-align:center; padding:40px; color:#ccc; font-weight:800;">NENHUM BLOCO ADICIONADO</div>`;
+            return;
+        }
+
+        container.innerHTML = this.builderBlocks.map((b, idx) => `
+            <div style="background:#fff; border:1px solid #eee; border-radius:24px; padding:20px; position:relative; box-shadow:0 4px 20px rgba(0,0,0,0.02);">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                    <span style="font-size:9px; font-weight:900; text-transform:uppercase; tracking-widest; color:#ccc;">${b.type}</span>
+                    <div style="display:flex; gap:4px;">
+                        <button onclick="app.moveBuilderBlock(${idx}, -1)" style="width:24px; height:24px; border-radius:50%; border:none; background:#f5f5f5; display:flex; align-items:center; justify-content:center;"><i data-lucide="chevron-up" style="width:12px;"></i></button>
+                        <button onclick="app.moveBuilderBlock(${idx}, 1)" style="width:24px; height:24px; border-radius:50%; border:none; background:#f5f5f5; display:flex; align-items:center; justify-content:center;"><i data-lucide="chevron-down" style="width:12px;"></i></button>
+                        <button onclick="app.removeBuilderBlock(${idx})" style="width:24px; height:24px; border-radius:50%; border:none; background:#fff1f1; color:#ff4d4d; display:flex; align-items:center; justify-content:center;"><i data-lucide="trash-2" style="width:12px;"></i></button>
+                    </div>
+                </div>
+                
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    ${this.renderBlockEditor(b, idx)}
+                </div>
+            </div>
+        `).join('');
+
+        if (window.lucide) lucide.createIcons();
+    };
+
+    app.renderBlockEditor = function(block, idx) {
+        if (block.type === 'hero') {
+            return `
+                <input type="text" value="${block.content.title}" oninput="app.updateBlock(${idx}, 'title', this.value)" placeholder="Título" style="width:100%; border:none; background:#f9f9f9; padding:12px; border-radius:12px; font-weight:900; font-size:16px; outline:none;">
+                <textarea oninput="app.updateBlock(${idx}, 'subtitle', this.value)" placeholder="Subtítulo" style="width:100%; border:none; background:#f9f9f9; padding:12px; border-radius:12px; font-weight:700; font-size:13px; min-height:80px; outline:none; font-family:inherit;">${block.content.subtitle}</textarea>
+            `;
+        }
+        if (block.type === 'cta') {
+            return `
+                <input type="text" value="${block.content.price}" oninput="app.updateBlock(${idx}, 'price', this.value)" placeholder="Preço (ex: 97,00)" style="width:100%; border:none; background:#f9f9f9; padding:12px; border-radius:12px; font-weight:900; font-size:16px; outline:none;">
+                <input type="text" value="${block.content.buttonText}" oninput="app.updateBlock(${idx}, 'buttonText', this.value)" placeholder="Texto do Botão" style="width:100%; border:none; background:#f9f9f9; padding:12px; border-radius:12px; font-weight:900; font-size:13px; outline:none;">
+            `;
+        }
+        return `<p style="font-size:11px; color:#999; font-weight:800; text-align:center; padding:10px;">Bloco ${block.type} será editável em breve!</p>`;
+    };
+
+    app.updateBlock = function(idx, field, value) {
+        this.builderBlocks[idx].content[field] = value;
+    };
+
+    app.moveBuilderBlock = function(idx, dir) {
+        const target = idx + dir;
+        if (target < 0 || target >= this.builderBlocks.length) return;
+        const temp = this.builderBlocks[idx];
+        this.builderBlocks[idx] = this.builderBlocks[target];
+        this.builderBlocks[target] = temp;
+        this.renderBuilderBlocks();
+    };
+
+    app.removeBuilderBlock = function(idx) {
+        if (confirm("Deseja excluir este bloco?")) {
+            this.builderBlocks.splice(idx, 1);
+            this.renderBuilderBlocks();
+        }
+    };
+
+    app.showAddSection = function() {
+        const types = [
+            { id: 'hero', label: 'Cabeçalho', icon: 'type' },
+            { id: 'video', label: 'Vídeo/Imagem', icon: 'play-circle' },
+            { id: 'features', label: 'Benefícios', icon: 'check-circle' },
+            { id: 'testimonials', label: 'Depoimentos', icon: 'star' },
+            { id: 'cta', label: 'Preço/Checkout', icon: 'zap' }
+        ];
+
+        this.openModal(`
+            <div style="padding:20px;">
+                <h3 style="font-weight:900; margin-bottom:20px; text-align:center; letter-spacing:-0.5px;">ADICIONAR BLOCO</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    ${types.map(t => `
+                        <button onclick="app.addBuilderBlock('${t.id}')" style="display:flex; flex-direction:column; align-items:center; gap:8px; padding:20px; background:#f9f9f9; border:none; border-radius:24px; cursor:pointer; transition:0.2s;" onmouseover="this.style.background='#eee'" onmouseout="this.style.background='#f9f9f9'">
+                            <i data-lucide="${t.icon}" style="width:24px; color:#000;"></i>
+                            <span style="font-size:10px; font-weight:900; text-transform:uppercase;">${t.label}</span>
+                        </button>
+                    `).join('')}
+                </div>
+            </div>
+        `);
+        if (window.lucide) lucide.createIcons();
+    };
+
+    app.addBuilderBlock = function(type) {
+        const contentMap = {
+            hero: { title: "Novo Título", subtitle: "Nova Descrição", cta: "Comprar" },
+            video: { url: "", title: "Vídeo Demonstrativo" },
+            features: { title: "Benefícios", items: ["Vantagem 1", "Vantagem 2"] },
+            testimonials: { name: "Cliente", text: "Excelente!", role: "Usuário" },
+            cta: { price: "97,00", buttonText: "Garantir Vaga" }
+        };
+
+        this.builderBlocks.push({
+            id: Date.now(),
+            type,
+            content: contentMap[type] || {}
+        });
+        this.closeModal();
+        this.renderBuilderBlocks();
+    };
+
+    app.saveSalesPage = async function() {
+        if (!this.currentBuilderProduct) return;
+        
+        this.notify("Salvando página...", "info");
+        
+        try {
+            const payload = {
+                product_id: this.currentBuilderProduct,
+                author: this.currentUser?.username || "Dito",
+                slug: `p-${this.currentBuilderProduct}`,
+                title: this.builderBlocks.find(b => b.type === 'hero')?.content.title || "Sales Page",
+                config: this.builderBlocks,
+                updated_at: new Date().toISOString()
+            };
+
+            const { error } = await supabase
+                .from('dito_sales_pages')
+                .upsert(payload, { onConflict: 'product_id' });
+
+            if (error) throw error;
+            
+            this.notify("Página salva com sucesso!", "success");
+            this.navigate('produtos');
+        } catch (e) {
+            console.error(e);
+            this.notify("Erro ao salvar página.", "error");
+        }
+    };
 
     app.toggleMarketSearch = function(show) {
         const title = document.getElementById('market-title-container');

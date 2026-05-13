@@ -30,9 +30,13 @@ interface Block {
   content: any;
 }
 
-export default function BuilderPage() {
+import { Suspense } from "react";
+
+function BuilderContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const productId = searchParams.get("product");
+  // ... rest of the existing state and functions
   const [blocks, setBlocks] = useState<Block[]>([]);
   const [editingBlock, setEditingBlock] = useState<string | null>(null);
   const [isAddingBlock, setIsAddingBlock] = useState(false);
@@ -43,7 +47,6 @@ export default function BuilderPage() {
     if (productId) {
       loadPage();
     } else {
-      // Default blocks for new page
       setBlocks([
         {
           id: "1",
@@ -71,7 +74,6 @@ export default function BuilderPage() {
         setPageData(data);
         if (data.config) setBlocks(data.config);
       } else {
-        // Fetch product info to pre-fill
         const { data: prod } = await supabase
           .from('dito_market_products')
           .select('*')
@@ -218,7 +220,7 @@ export default function BuilderPage() {
               )}
               onClick={() => setEditingBlock(block.id)}
             >
-              {/* Block Controls (Desktop/Hover only, but useful for power users) */}
+              {/* Block Controls */}
               <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                 <button onClick={(e) => { e.stopPropagation(); moveBlock(index, 'up'); }} className="p-2 bg-white/90 rounded-full shadow-sm hover:bg-black hover:text-white transition-colors">
                   <ChevronUp size={14} />
@@ -338,7 +340,7 @@ export default function BuilderPage() {
         </div>
       )}
 
-      {/* Editing Overlay (Clean and Smooth) */}
+      {/* Editing Overlay */}
       {editingBlock && (
         <div className="fixed inset-0 bg-white z-[110] flex flex-col animate-in slide-in-from-right duration-500 md:w-96 md:left-auto md:shadow-2xl">
           <header className="h-16 border-b flex items-center justify-between px-6">
@@ -399,11 +401,11 @@ export default function BuilderPage() {
               </div>
             )}
 
-            {/* Default "Em breve" for other blocks in this prototype */}
+            {/* Default for other blocks */}
             {!["hero", "cta"].includes(blocks.find(b => b.id === editingBlock)?.type || "") && (
                <div className="text-center py-20 space-y-4">
                   <Zap size={48} className="mx-auto text-gray-200" />
-                  <p className="font-black italic uppercase text-gray-400">Editor avançado em breve para este bloco!</p>
+                  <p className="font-black italic uppercase text-gray-400">Editor avançado em breve!</p>
                </div>
             )}
             
@@ -426,5 +428,17 @@ export default function BuilderPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function BuilderPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <RefreshCw className="animate-spin text-gray-200" size={32} />
+      </div>
+    }>
+      <BuilderContent />
+    </Suspense>
   );
 }

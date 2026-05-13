@@ -10763,36 +10763,86 @@
 
     app._builderPreviewActive = false;
     app.toggleBuilderPreview = function() {
-        const area = document.getElementById('builder-content-area');
-        const btn  = document.getElementById('btn-builder-preview');
-        const lbl  = document.getElementById('builder-preview-label');
-        if (!area) return;
+        // Remove preview anterior se existir
+        const existing = document.getElementById('builder-preview-modal');
+        if (existing) { existing.remove(); app._builderPreviewActive = false; return; }
 
-        this._builderPreviewActive = !this._builderPreviewActive;
+        app._builderPreviewActive = true;
+        const cfg = this.builderConfig || { theme: {}, above: [], below: [] };
+        const theme = cfg.theme || {};
+        const bgColor = theme.backgroundColor || '#f5f5f5';
 
-        if (this._builderPreviewActive) {
-            // Modo Preview: simula celular com zoom out
-            area.style.transition = 'transform 0.35s cubic-bezier(0.34,1.56,0.64,1), background 0.3s';
-            area.style.transform = 'scale(0.83)';
-            area.style.transformOrigin = 'top center';
-            area.style.background = (area.style.backgroundColor && area.style.backgroundColor !== 'rgb(255, 255, 255)') ? area.style.backgroundColor : '#f0f0f0';
-            area.style.borderRadius = '32px';
-            area.style.outline = '2px solid rgba(0,0,0,0.08)';
-            area.style.boxShadow = '0 20px 60px rgba(0,0,0,0.15)';
-            area.style.pointerEvents = 'none'; // Modo leitura
-            if (btn) { btn.style.background = '#000'; btn.querySelector('i').style.color = '#fff'; }
-            if (lbl) lbl.style.display = 'block';
-        } else {
-            // Modo Edição: volta ao normal
-            area.style.transform = 'scale(1)';
-            area.style.borderRadius = '';
-            area.style.outline = '';
-            area.style.boxShadow = '';
-            area.style.pointerEvents = '';
-            if (btn) { btn.style.background = '#f5f5f5'; btn.querySelector('i').style.color = '#000'; }
-            if (lbl) lbl.style.display = 'none';
-        }
+        // Produto atual no builder
+        const prod = (this.products || []).find(p => String(p.id) === String(this.currentBuilderProduct)) || {};
+        const price = prod.price ? `R$ ${Number(prod.price).toFixed(2).replace('.',',')}` : 'R$ --';
+        const name  = prod.name || 'Seu Produto';
+        const cover = prod.cover || prod.image || '';
 
+        // Renderiza blocos usando a mesma função do checkout real
+        const renderBlocks = (blocks) => (blocks || []).map(b => this.renderPublicBlock(b)).join('');
+
+        const previewHTML = `
+            <div id="builder-preview-modal" style="position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.6); display:flex; flex-direction:column; align-items:center; justify-content:flex-start; overflow-y:auto; backdrop-filter:blur(4px);">
+                <!-- Barra de controle -->
+                <div style="width:100%; max-width:430px; display:flex; align-items:center; justify-content:space-between; padding:16px 20px; background:#fff; border-radius:0 0 20px 20px; box-shadow:0 4px 20px rgba(0,0,0,0.1); position:sticky; top:0; z-index:10;">
+                    <span style="font-size:11px; font-weight:900; text-transform:uppercase; color:#999;">👁 Preview do Checkout</span>
+                    <button onclick="document.getElementById('builder-preview-modal').remove(); app._builderPreviewActive=false;" style="width:32px; height:32px; border-radius:50%; border:none; background:#f5f5f5; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px;">✕</button>
+                </div>
+
+                <!-- Tela do checkout (igual ao real) -->
+                <div style="width:100%; max-width:430px; min-height:100vh; background:${bgColor}; padding:24px; padding-bottom:80px; display:flex; flex-direction:column;">
+
+                    <!-- Blocos ACIMA -->
+                    <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:16px;">
+                        ${renderBlocks(cfg.above)}
+                    </div>
+
+                    <!-- Card do Checkout (exato como o cliente vê) -->
+                    <div style="background:#fff; border-radius:32px; padding:24px; box-shadow:0 10px 40px rgba(0,0,0,0.05); margin-bottom:16px;">
+
+                        <!-- Header do produto -->
+                        <div style="display:flex; align-items:center; gap:12px; margin-bottom:24px;">
+                            <div style="width:48px; height:48px; background:#f5f5f5; border-radius:14px; overflow:hidden; flex-shrink:0; display:flex; align-items:center; justify-content:center;">
+                                ${cover ? `<img src="${cover}" style="width:100%; height:100%; object-fit:cover;">` : `<span style="font-size:20px;">🛍️</span>`}
+                            </div>
+                            <div>
+                                <p style="font-weight:900; font-size:14px;">${name}</p>
+                                <p style="font-size:11px; color:#999; font-weight:700;">Resumo do pedido</p>
+                            </div>
+                        </div>
+
+                        <!-- Linha divisória -->
+                        <div style="border-top:1px dashed #eee; padding-top:16px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:12px; font-weight:700; color:#666;">Total a pagar</span>
+                            <span style="font-size:20px; font-weight:900; color:#ee4d2d;">${price}</span>
+                        </div>
+
+                        <!-- Métodos de pagamento -->
+                        <p style="font-size:10px; font-weight:900; text-transform:uppercase; color:#ccc; margin-bottom:12px;">Forma de Pagamento</p>
+                        <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:24px;">
+                            <div style="padding:14px 16px; border-radius:14px; border:2px solid #000; background:#fff; display:flex; align-items:center; gap:12px;">
+                                <span style="font-size:18px;">⚡</span>
+                                <div><p style="font-weight:900; font-size:13px;">Pix</p><p style="font-size:10px; color:#999; font-weight:700;">Aprovação imediata</p></div>
+                            </div>
+                            <div style="padding:14px 16px; border-radius:14px; border:2px solid #eee; background:#fff; display:flex; align-items:center; gap:12px;">
+                                <span style="font-size:18px;">💳</span>
+                                <div><p style="font-weight:900; font-size:13px;">Cartão de Crédito</p><p style="font-size:10px; color:#999; font-weight:700;">Até 12x via PayPal</p></div>
+                            </div>
+                        </div>
+
+                        <!-- Botão Pagar -->
+                        <div style="width:100%; padding:18px; background:#000; color:#fff; border-radius:100px; font-weight:900; font-size:15px; text-align:center; letter-spacing:0.5px;">PAGAR AGORA</div>
+                    </div>
+
+                    <!-- Blocos ABAIXO -->
+                    <div style="display:flex; flex-direction:column; gap:16px; margin-top:8px;">
+                        ${renderBlocks(cfg.below)}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', previewHTML);
         if (window.lucide) lucide.createIcons();
     };
 

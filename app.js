@@ -10682,9 +10682,14 @@
         if (block.type === 'image') {
             return `
                 <div style="display:flex; flex-direction:column; gap:8px;">
-                    ${block.content.url ? `<img src="${block.content.url}" style="width:100%; border-radius:12px; border:1px solid #eee;">` : ''}
-                    <input type="file" accept="image/*" onchange="app.uploadBuilderImage('${pos}', ${idx}, this)" style="font-size:11px;">
-                    <p style="font-size:9px; color:#999; font-weight:700;">Limite: 500kb.</p>
+                    <label style="width:100%; min-height:120px; border:2px dashed #eee; border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; background:#fafafa; overflow:hidden; position:relative; transition:0.2s;" onmouseover="this.style.borderColor='#000'" onmouseout="this.style.borderColor='#eee'">
+                        ${block.content.url ? `<img src="${block.content.url}" style="width:100%; height:100%; object-fit:cover;">` : `
+                            <i data-lucide="image" style="width:24px; color:#ccc; margin-bottom:8px;"></i>
+                            <span style="font-size:10px; font-weight:900; color:#ccc; text-transform:uppercase;">Clique para subir imagem</span>
+                        `}
+                        <input type="file" accept="image/*" onchange="app.uploadBuilderImage('${pos}', ${idx}, this)" style="display:none;">
+                    </label>
+                    <p style="font-size:9px; color:#999; font-weight:700; text-align:center;">Mínimo 500kb • Clique na imagem para trocar</p>
                 </div>
             `;
         }

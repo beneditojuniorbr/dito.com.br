@@ -10692,9 +10692,9 @@
             if (data && data.config) {
                 this.builderConfig = data.config;
                 if (!this.builderConfig.theme) this.builderConfig.theme = { backgroundColor: '#ffffff' };
-                // Aplica cor de fundo inicial
-                const builderView = document.querySelector('#template-builder').parentElement;
-                if (builderView) builderView.style.backgroundColor = this.builderConfig.theme.backgroundColor;
+                // Aplica cor de fundo na área de conteúdo (não no header)
+                const contentArea = document.getElementById('builder-content-area');
+                if (contentArea) contentArea.style.backgroundColor = this.builderConfig.theme.backgroundColor;
             }
             this.renderBuilderBlocks();
 
@@ -10757,9 +10757,9 @@
 
     app.updateTheme = function(key, value) {
         this.builderConfig.theme[key] = value;
-        // Aplica no editor em tempo real (apenas no container do builder)
-        const builderView = document.getElementById('builder-above')?.parentElement;
-        if (builderView) builderView.style.backgroundColor = value;
+        // Aplica em tempo real apenas na área de conteúdo (header sempre branco)
+        const contentArea = document.getElementById('builder-content-area');
+        if (contentArea) contentArea.style.backgroundColor = value;
     };
 
     app.renderBlockEditor = function(block, pos, idx) {

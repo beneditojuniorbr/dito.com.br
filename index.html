@@ -2899,8 +2899,8 @@
     </template>
 
     <template id="template-builder">
-        <div style="padding: 24px; padding-bottom: 120px; background: #fff; min-height: 100vh;">
-            <header style="display: flex; align-items: center; justify-content: space-between; margin: -24px -24px 32px -24px; padding: 24px; background: #fff; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #f0f0f0;">
+        <div style="min-height: 100vh; display: flex; flex-direction: column;">
+            <header style="display: flex; align-items: center; justify-content: space-between; padding: 24px; background: #fff; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #f0f0f0; flex-shrink: 0;">
                 <div onclick="app.navigate('produtos', 'left')"
                     style="width: 44px; height: 44px; background: #f5f5f5; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
                     <i data-lucide="arrow-left" style="width: 20px; color: #000;"></i>
@@ -2908,7 +2908,7 @@
                 <h2 style="font-weight: 900; font-size: 14px; letter-spacing: -0.5px; text-transform: uppercase;">Checkout Personalizado</h2>
                 <div onclick="app.saveSalesPage()" style="background: #000; color: #fff; padding: 10px 20px; border-radius: 50px; font-weight: 900; font-size: 12px; cursor: pointer;">Salvar</div>
             </header>
-
+            <div id="builder-content-area" style="flex: 1; padding: 24px; padding-bottom: 120px; transition: background-color 0.3s;">
             <div id="builder-above" style="display: flex; flex-direction: column; gap: 16px;">
                 <!-- Seções Acima -->
             </div>
@@ -2939,7 +2939,8 @@
             </div>
 
             <button onclick="app.showAddSection('below')" style="width: 100%; padding: 20px; border: 2px dashed #eee; border-radius: 24px; background: #fafafa; color: #999; font-weight: 900; font-size: 11px; margin-top: 16px;">+ Adicionar Abaixo do Checkout</button>
-        </div>
+            </div><!-- /builder-content-area -->
+        </div><!-- /builder outer -->
     </template>
 
     <template id="template-perfil-publico">

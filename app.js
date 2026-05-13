@@ -564,12 +564,77 @@
                 // FORÇA PRIORIDADE MÁXIMA PARA CHECKOUT/DEEP-LINK
                 if (!this.isProcessingDeepLink) {
                     const isLoggedIn = localStorage.getItem('is_logged_in_vanilla') === 'true';
+                    
                     if (isLoggedIn && this.currentUser) {
                         console.log("Restaurando:", lastView);
                         this.navigate(lastView);
                     } else {
-                        console.log("Indo para Welcome (Sem Link Ativo)");
-                        this.navigate('welcome');
+                        // 🔍 DETECÇÃO DE BROWSER DO INSTAGRAM E RECUPERAÇÃO DE SESSÃO
+                        // O in-app browser do Instagram não compartilha localStorage com o Chrome.
+                        // Tentamos recuperar a sessão do Supabase Auth antes de enviar pro Welcome.
+                        const isInstagramBrowser = navigator.userAgent.includes('Instagram') || 
+                                                   navigator.userAgent.includes('FBAN') || 
+                                                   navigator.userAgent.includes('FBAV') ||
+                                                   document.referrer.includes('instagram.com');
+                        
+                        if (isInstagramBrowser || !isLoggedIn) {
+                            console.log("🔍 [Auth] Tentando recuperar sessão via Supabase...");
+                            try {
+                                const { data: sessionData } = await supabase.auth.getSession();
+                                if (sessionData?.session?.user?.email) {
+                                    // Sessão ativa encontrada! Busca o usuário pelo email
+                                    const email = sessionData.session.user.email;
+                                    const { data: userData } = await supabase
+                                        .from('dito_users')
+                                        .select('*')
+                                        .eq('email', email)
+                                        .maybeSingle();
+                                    
+                                    if (userData) {
+                                        console.log("✅ [Auth] Sessão recuperada para:", userData.username);
+                                        this.currentUser = userData;
+                                        localStorage.setItem('current_user_vanilla', JSON.stringify(userData));
+                                        localStorage.setItem('is_logged_in_vanilla', 'true');
+                                        localStorage.setItem('dito_user_id', userData.id);
+                                        this.loadUserScopedData();
+                                        this.navigate(lastView);
+                                    } else {
+                                        console.log("Sem sessão ativa. Indo para Welcome.");
+                                        this.navigate('welcome');
+                                    }
+                                } else {
+                                    // Sem sessão Supabase Auth — tenta buscar pelo username salvo localmente
+                                    const savedUsername = localStorage.getItem('dito_saved_username');
+                                    if (savedUsername && supabase) {
+                                        console.log("🔍 [Auth] Tentando recuperar por username:", savedUsername);
+                                        const { data: userData } = await supabase
+                                            .from('dito_users')
+                                            .select('*')
+                                            .ilike('username', savedUsername)
+                                            .maybeSingle();
+                                        
+                                        if (userData) {
+                                            this.currentUser = userData;
+                                            localStorage.setItem('current_user_vanilla', JSON.stringify(userData));
+                                            localStorage.setItem('is_logged_in_vanilla', 'true');
+                                            this.loadUserScopedData();
+                                            this.navigate(lastView);
+                                        } else {
+                                            this.navigate('welcome');
+                                        }
+                                    } else {
+                                        console.log("Sem sessão. Indo para Welcome.");
+                                        this.navigate('welcome');
+                                    }
+                                }
+                            } catch(authErr) {
+                                console.warn("⚠️ [Auth] Erro ao recuperar sessão:", authErr);
+                                this.navigate('welcome');
+                            }
+                        } else {
+                            console.log("Indo para Welcome (Sem Link Ativo)");
+                            this.navigate('welcome');
+                        }
                     }
                 } else {
                     // Cria sessao de convidado imediatamente para nao ser bloqueado
@@ -8788,6 +8853,7 @@
                     
                     localStorage.setItem('is_logged_in_vanilla', 'true');
                     localStorage.setItem('is_guest_vanilla', 'false');
+                    localStorage.setItem('dito_saved_username', loggedUser.username); // 💾 Para recuperação no Instagram browser
                     this.saveSession(loggedUser);
                     this.currentUser = loggedUser;
                     
@@ -10631,6 +10697,16 @@
                 if (builderView) builderView.style.backgroundColor = this.builderConfig.theme.backgroundColor;
             }
             this.renderBuilderBlocks();
+
+            // 🔄 Restaura posição do scroll salva
+            const savedScroll = parseInt(sessionStorage.getItem(`builder_scroll_${productId}`) || '0');
+            if (savedScroll > 0) {
+                setTimeout(() => {
+                    const appEl = document.getElementById('app');
+                    if (appEl) appEl.scrollTop = savedScroll;
+                    else window.scrollTo(0, savedScroll);
+                }, 150);
+            }
         } catch (e) {
             console.error(e);
             this.showNotification("Erro ao carregar builder.", "error");
@@ -10814,6 +10890,12 @@
 
     app.saveSalesPage = async function() {
         if (!this.currentBuilderProduct) return;
+
+        // 💾 Salva posição do scroll antes de sair
+        const appEl = document.getElementById('app');
+        const scrollPos = appEl ? appEl.scrollTop : window.scrollY;
+        sessionStorage.setItem(`builder_scroll_${this.currentBuilderProduct}`, scrollPos);
+
         this.showNotification("Personalizando Checkout...", "info");
         try {
             const payload = {

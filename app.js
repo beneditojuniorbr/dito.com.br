@@ -10690,10 +10690,12 @@
         if (block.type === 'image') {
             return `
                 <div style="display:flex; flex-direction:column; gap:8px;">
-                    <label style="width:100%; min-height:120px; border:2px dashed #eee; border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; background:#fafafa; overflow:hidden; position:relative; transition:0.2s;" onmouseover="this.style.borderColor='#000'" onmouseout="this.style.borderColor='#eee'">
-                        ${block.content.url ? `<img src="${block.content.url}" style="width:100%; height:100%; object-fit:cover;">` : `
-                            <i data-lucide="image" style="width:24px; color:#ccc; margin-bottom:8px;"></i>
-                            <span style="font-size:10px; font-weight:900; color:#ccc; text-transform:uppercase;">Clique para subir imagem</span>
+                    <label style="width:100%; min-height:120px; border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; position:relative;">
+                        ${block.content.url ? `<img src="${block.content.url}" style="width:100%; border-radius:16px;">` : `
+                            <div style="width:100%; height:120px; background:#f9f9f9; border:2px dashed #eee; border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                                <i data-lucide="image" style="width:24px; color:#ccc; margin-bottom:8px;"></i>
+                                <span style="font-size:10px; font-weight:900; color:#ccc; text-transform:uppercase;">Clique para subir imagem</span>
+                            </div>
                         `}
                         <input type="file" accept="image/*" onchange="app.uploadBuilderImage('${pos}', ${idx}, this)" style="display:none;">
                     </label>

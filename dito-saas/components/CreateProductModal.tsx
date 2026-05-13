@@ -1,6 +1,6 @@
 "use client";
 
-import { X, BookOpen, PlayCircle, Users, UploadCloud } from "lucide-react";
+import { X, BookOpen, PlayCircle, Users, UploadCloud, ExternalLink, Package } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -87,6 +87,7 @@ export default function CreateProductModal({ isOpen, onClose }: CreateProductMod
     { id: "Ebook", icon: BookOpen, label: "Ebook" },
     { id: "Curso", icon: PlayCircle, label: "Curso" },
     { id: "Mentoria", icon: Users, label: "Mentoria" },
+    { id: "Pagina", icon: ExternalLink, label: "Página", isNew: true },
     { id: "App", icon: Package, label: "App", isSoon: true },
   ];
 
@@ -117,8 +118,20 @@ export default function CreateProductModal({ isOpen, onClose }: CreateProductMod
                     Em breve
                   </div>
                 )}
+                {type.isNew && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#FFBA09] text-black text-[7px] font-black py-1 px-3 rounded-full whitespace-nowrap shadow-lg z-10 uppercase">
+                    Novo
+                  </div>
+                )}
                 <button
-                  onClick={() => !type.isSoon && setSelectedType(type.id)}
+                  onClick={() => {
+                    if (type.id === "Pagina") {
+                        router.push("/builder");
+                        onClose();
+                        return;
+                    }
+                    if (!type.isSoon) setSelectedType(type.id);
+                  }}
                   style={{
                     background: isSelected 
                       ? "linear-gradient(#fff, #fff) padding-box, linear-gradient(90deg, #ff0045 0%, #0094ff 100%) border-box" 

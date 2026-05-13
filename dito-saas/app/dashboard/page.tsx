@@ -1,7 +1,7 @@
 "use client";
 
 import Navbar from "@/components/Navbar";
-import { BarChart3, Plus, Star, Eye, EyeOff, Users, QrCode, TrendingUp } from "lucide-react";
+import { BarChart3, Plus, Star, Eye, EyeOff, Users, QrCode, TrendingUp, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/utils";
 import { useState, useEffect } from "react";
@@ -213,6 +213,13 @@ export default function Dashboard() {
               {showHallDot && <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>}
             </div>
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-tight">Hall</span>
+          </div>
+
+          <div onClick={() => handleAction("/builder")} className="flex flex-col items-center gap-3 shrink-0 snap-start group cursor-pointer">
+            <div className="w-14 h-14 bg-white/50 rounded-full flex items-center justify-center group-hover:bg-black group-hover:text-white transition-all">
+              <ExternalLink size={22} />
+            </div>
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-tight">Páginas</span>
           </div>
 
           <div onClick={() => handleAction("/produtos")} className="flex flex-col items-center gap-3 shrink-0 snap-start group cursor-pointer">

@@ -22,7 +22,13 @@ export default function LinksPage() {
         <header className="mb-10 text-center">
           <LinkIcon size={48} className="mx-auto mb-4 text-gray-200" />
           <h2 className="text-3xl font-extrabold tracking-tight">links de venda</h2>
-          <p className="text-gray-400 font-medium">copie e compartilhe seus links para vender mais.</p>
+          <p className="text-gray-400 font-medium mb-6">copie e compartilhe seus links para vender mais.</p>
+          <button 
+            onClick={() => router.push("/builder")}
+            className="inline-flex items-center gap-2 bg-[#FFBA09] text-black px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all"
+          >
+            Criar Página de Vendas
+          </button>
         </header>
 
         <section className="space-y-4">

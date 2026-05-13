@@ -10701,19 +10701,19 @@
 
     app.saveSalesPage = async function() {
         if (!this.currentBuilderProduct) return;
-        this.showNotification("Turbinando Checkout...", "info");
+        this.showNotification("Personalizando Checkout...", "info");
         try {
             const payload = {
                 product_id: this.currentBuilderProduct,
                 author: this.currentUser?.username || "Dito",
                 slug: `p-${this.currentBuilderProduct}`,
-                title: "Checkout Turbinado",
+                title: "Checkout Personalizado",
                 config: this.builderConfig,
                 updated_at: new Date().toISOString()
             };
             const { error } = await supabase.from('dito_sales_pages').upsert(payload, { onConflict: 'product_id' });
             if (error) throw error;
-            this.showNotification("Checkout Turbinado com sucesso!", "success");
+            this.showNotification("Checkout Personalizado com sucesso!", "success");
             this.navigate('produtos');
         } catch (e) {
             console.error(e);

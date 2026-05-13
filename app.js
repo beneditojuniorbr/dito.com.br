@@ -10739,9 +10739,9 @@
                     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:${isImage ? '8px' : '12px'}; ${isImage ? 'background:rgba(255,255,255,0.8); padding:8px 12px; border-radius:12px; backdrop-filter:blur(4px);' : ''}">
                         <span style="font-size:9px; font-weight:900; text-transform:uppercase; color:#ccc;">${b.type}</span>
                         <div style="display:flex; gap:4px;">
-                            <button onclick="app.moveBuilderBlock('${pos}', ${idx}, -1)" style="width:24px; height:24px; border-radius:50%; border:none; background:#f5f5f5;"><i data-lucide="chevron-up" style="width:12px;"></i></button>
-                            <button onclick="app.moveBuilderBlock('${pos}', ${idx}, 1)" style="width:24px; height:24px; border-radius:50%; border:none; background:#f5f5f5;"><i data-lucide="chevron-down" style="width:12px;"></i></button>
-                            <button onclick="app.removeBuilderBlock('${pos}', ${idx})" style="width:24px; height:24px; border-radius:50%; border:none; background:#fff1f1; color:#ff4d4d;"><i data-lucide="trash-2" style="width:12px;"></i></button>
+                            <button onclick="app.moveBuilderBlock('${pos}', ${idx}, -1)" style="width:28px; height:28px; border-radius:50%; border:none; background:#f5f5f5; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Mover para cima"><i data-lucide="chevron-up" style="width:14px; pointer-events:none;"></i></button>
+                            <button onclick="app.moveBuilderBlock('${pos}', ${idx}, 1)" style="width:28px; height:28px; border-radius:50%; border:none; background:#f5f5f5; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Mover para baixo"><i data-lucide="chevron-down" style="width:14px; pointer-events:none;"></i></button>
+                            <button onclick="app.removeBuilderBlock('${pos}', ${idx})" style="width:28px; height:28px; border-radius:50%; border:none; background:#fff1f1; color:#ff4d4d; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Excluir"><i data-lucide="trash-2" style="width:14px; pointer-events:none;"></i></button>
                         </div>
                     </div>
                     ${this.renderBlockEditor(b, pos, idx)}
@@ -10909,11 +10909,17 @@
     app.moveBuilderBlock = function(pos, idx, dir) {
         const list = this.builderConfig[pos];
         const target = idx + dir;
-        if (target < 0 || target >= list.length) return;
-        [list[idx], list[target]] = [list[target], list[idx]];
+        if (target >= 0 && target < list.length) {
+            [list[idx], list[target]] = [list[target], list[idx]];
+            this.renderBuilderBlocks();
+            return;
+        }
+        const otherPos = pos === 'above' ? 'below' : 'above';
+        const otherList = this.builderConfig[otherPos];
+        const block = list.splice(idx, 1)[0];
+        if (dir > 0) { otherList.unshift(block); } else { otherList.push(block); }
         this.renderBuilderBlocks();
     };
-
     app.removeBuilderBlock = function(pos, idx) {
         if (confirm("Excluir este bloco?")) {
             this.builderConfig[pos].splice(idx, 1);

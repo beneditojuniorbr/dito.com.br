@@ -10736,12 +10736,11 @@
 
                 return `
                 <div style="${containerStyle}">
-                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:${isImage ? '8px' : '12px'}; ${isImage ? 'background:rgba(255,255,255,0.8); padding:8px 12px; border-radius:12px; backdrop-filter:blur(4px);' : ''}">
-                        <span style="font-size:9px; font-weight:900; text-transform:uppercase; color:#ccc;">${b.type}</span>
+                    ${isImage ? `<div style="display:flex; justify-content:flex-end; gap:4px; margin-bottom:8px;">` : `<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;"><span style="font-size:9px; font-weight:900; text-transform:uppercase; color:#ccc;">${b.type}</span>`}
                         <div style="display:flex; gap:4px;">
-                            <button onclick="app.moveBuilderBlock('${pos}', ${idx}, -1)" style="width:28px; height:28px; border-radius:50%; border:none; background:#f5f5f5; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Mover para cima"><i data-lucide="chevron-up" style="width:14px; pointer-events:none;"></i></button>
-                            <button onclick="app.moveBuilderBlock('${pos}', ${idx}, 1)" style="width:28px; height:28px; border-radius:50%; border:none; background:#f5f5f5; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Mover para baixo"><i data-lucide="chevron-down" style="width:14px; pointer-events:none;"></i></button>
-                            <button onclick="app.removeBuilderBlock('${pos}', ${idx})" style="width:28px; height:28px; border-radius:50%; border:none; background:#fff1f1; color:#ff4d4d; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Excluir"><i data-lucide="trash-2" style="width:14px; pointer-events:none;"></i></button>
+                            <button onclick="app.moveBuilderBlock('${pos}', ${idx}, -1)" style="width:28px; height:28px; border-radius:50%; border:none; background:${isImage ? 'rgba(0,0,0,0.3)' : '#f5f5f5'}; color:${isImage ? '#fff' : '#000'}; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Mover para cima"><i data-lucide="chevron-up" style="width:14px; pointer-events:none;"></i></button>
+                            <button onclick="app.moveBuilderBlock('${pos}', ${idx}, 1)" style="width:28px; height:28px; border-radius:50%; border:none; background:${isImage ? 'rgba(0,0,0,0.3)' : '#f5f5f5'}; color:${isImage ? '#fff' : '#000'}; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Mover para baixo"><i data-lucide="chevron-down" style="width:14px; pointer-events:none;"></i></button>
+                            <button onclick="app.removeBuilderBlock('${pos}', ${idx})" style="width:28px; height:28px; border-radius:50%; border:none; background:${isImage ? 'rgba(220,50,50,0.7)' : '#fff1f1'}; color:#ff4d4d; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Excluir"><i data-lucide="trash-2" style="width:14px; pointer-events:none;"></i></button>
                         </div>
                     </div>
                     ${this.renderBlockEditor(b, pos, idx)}

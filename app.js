@@ -10652,9 +10652,15 @@
 
         const renderList = (blocks, pos) => {
             if (!blocks || blocks.length === 0) return `<p style="text-align:center; padding:10px; color:#eee; font-size:10px; font-weight:900; text-transform:uppercase;">Nenhum bloco aqui</p>`;
-            return blocks.map((b, idx) => `
-                <div style="background:#fff; border:1px solid #eee; border-radius:20px; padding:16px; margin-bottom:8px; box-shadow:0 4px 12px rgba(0,0,0,0.02);">
-                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+            return blocks.map((b, idx) => {
+                const isImage = b.type === 'image';
+                const containerStyle = isImage 
+                    ? `padding:0; margin-bottom:16px; position:relative;`
+                    : `background:#fff; border:1px solid #eee; border-radius:20px; padding:16px; margin-bottom:8px; box-shadow:0 4px 12px rgba(0,0,0,0.02); position:relative;`;
+
+                return `
+                <div style="${containerStyle}">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:${isImage ? '8px' : '12px'}; ${isImage ? 'background:rgba(255,255,255,0.8); padding:8px 12px; border-radius:12px; backdrop-filter:blur(4px);' : ''}">
                         <span style="font-size:9px; font-weight:900; text-transform:uppercase; color:#ccc;">${b.type}</span>
                         <div style="display:flex; gap:4px;">
                             <button onclick="app.moveBuilderBlock('${pos}', ${idx}, -1)" style="width:24px; height:24px; border-radius:50%; border:none; background:#f5f5f5;"><i data-lucide="chevron-up" style="width:12px;"></i></button>
@@ -10664,7 +10670,7 @@
                     </div>
                     ${this.renderBlockEditor(b, pos, idx)}
                 </div>
-            `).join('');
+            `}).join('');
         };
 
         aboveCont.innerHTML = themeHTML + renderList(this.builderConfig.above, 'above');

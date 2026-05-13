@@ -10618,6 +10618,9 @@
             if (data && data.config) {
                 this.builderConfig = data.config;
                 if (!this.builderConfig.theme) this.builderConfig.theme = { backgroundColor: '#ffffff' };
+                // Aplica cor de fundo inicial
+                const builderView = document.querySelector('#template-builder').parentElement;
+                if (builderView) builderView.style.backgroundColor = this.builderConfig.theme.backgroundColor;
             }
             this.renderBuilderBlocks();
         } catch (e) {
@@ -10664,6 +10667,9 @@
 
     app.updateTheme = function(key, value) {
         this.builderConfig.theme[key] = value;
+        // Aplica no editor em tempo real
+        const builderView = document.querySelector('#template-builder').parentElement;
+        if (builderView) builderView.style.backgroundColor = value;
     };
 
     app.renderBlockEditor = function(block, pos, idx) {
@@ -10676,9 +10682,9 @@
         if (block.type === 'image') {
             return `
                 <div style="display:flex; flex-direction:column; gap:8px;">
-                    ${block.content.url ? `<img src="${block.content.url}" style="width:100%; border-radius:12px; max-height:100px; object-fit:cover;">` : ''}
+                    ${block.content.url ? `<img src="${block.content.url}" style="width:100%; border-radius:12px; border:1px solid #eee;">` : ''}
                     <input type="file" accept="image/*" onchange="app.uploadBuilderImage('${pos}', ${idx}, this)" style="font-size:11px;">
-                    <p style="font-size:9px; color:#999; font-weight:700;">Limite: 500kb. Formatos: JPG, PNG, GIF.</p>
+                    <p style="font-size:9px; color:#999; font-weight:700;">Limite: 500kb.</p>
                 </div>
             `;
         }

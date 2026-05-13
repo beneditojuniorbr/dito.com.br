@@ -10772,8 +10772,8 @@
         if (block.type === 'image') {
             return `
                 <div style="display:flex; flex-direction:column; gap:8px;">
-                    <label style="width:100%; min-height:120px; border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; position:relative;">
-                        ${block.content.url ? `<img src="${block.content.url}" style="width:100%; border-radius:16px;">` : `
+                    <label style="width:100%; min-height:120px; border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; position:relative;">
+                        ${block.content.url ? `<img src="${block.content.url}" style="width:100%; border-radius:8px;">` : `
                             <div style="width:100%; height:120px; background:#f9f9f9; border:2px dashed #eee; border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
                                 <i data-lucide="image" style="width:24px; color:#ccc; margin-bottom:8px;"></i>
                                 <span style="font-size:10px; font-weight:900; color:#ccc; text-transform:uppercase;">Clique para subir imagem</span>
@@ -10809,20 +10809,98 @@
     app.uploadBuilderImage = function(pos, idx, input) {
         const file = input.files[0];
         if (!file) return;
-
         if (file.size > 500 * 1024) {
             this.showNotification("Imagem muito pesada! Limite de 500kb.", "error");
             input.value = '';
             return;
         }
-
         const reader = new FileReader();
         reader.onload = (e) => {
-            this.updateBlock(pos, idx, 'url', e.target.result);
-            this.renderBuilderBlocks();
+            this._cropCallback = (croppedUrl) => {
+                this.updateBlock(pos, idx, 'url', croppedUrl);
+                this.renderBuilderBlocks();
+            };
+            this._showImageCropper(e.target.result);
         };
         reader.readAsDataURL(file);
     };
+
+    app._showImageCropper = function(imageUrl) {
+        const g = Array(9).fill('<div style="border:0.5px solid rgba(255,255,255,0.25);"></div>').join('');
+        this.openModal('<div style="padding:16px; display:flex; flex-direction:column; gap:12px;"><h3 style="font-weight:900; font-size:13px; text-align:center; text-transform:uppercase; letter-spacing:1px;">Recortar Imagem</h3><div style="display:flex; gap:6px;"><button id="crop-btn-free" onclick="app._setCropRatio(\'free\')" style="flex:1; padding:8px 4px; background:#000; color:#fff; border:none; border-radius:8px; font-size:10px; font-weight:900; cursor:pointer;">Livre</button><button id="crop-btn-11" onclick="app._setCropRatio(\'1:1\')" style="flex:1; padding:8px 4px; background:#f5f5f5; border:none; border-radius:8px; font-size:10px; font-weight:900; cursor:pointer;">Quadrado</button><button id="crop-btn-169" onclick="app._setCropRatio(\'16:9\')" style="flex:1; padding:8px 4px; background:#f5f5f5; border:none; border-radius:8px; font-size:10px; font-weight:900; cursor:pointer;">Banner</button><button id="crop-btn-43" onclick="app._setCropRatio(\'4:3\')" style="flex:1; padding:8px 4px; background:#f5f5f5; border:none; border-radius:8px; font-size:10px; font-weight:900; cursor:pointer;">4:3</button></div><div id="crop-wrap" style="position:relative; background:#111; border-radius:8px; overflow:hidden; touch-action:none; user-select:none; max-height:55vh;"><img id="crop-img" src="' + imageUrl + '" style="width:100%; display:block; pointer-events:none;" draggable="false"><div id="crop-sh-top" style="position:absolute; background:rgba(0,0,0,0.55); left:0; right:0; top:0;"></div><div id="crop-sh-bottom" style="position:absolute; background:rgba(0,0,0,0.55); left:0; right:0; bottom:0;"></div><div id="crop-sh-left" style="position:absolute; background:rgba(0,0,0,0.55); top:0; bottom:0; left:0;"></div><div id="crop-sh-right" style="position:absolute; background:rgba(0,0,0,0.55); top:0; bottom:0; right:0;"></div><div id="crop-box" style="position:absolute; border:2px solid #fff; cursor:move; box-sizing:border-box;"><div data-h="nw" style="position:absolute; width:18px; height:18px; background:#fff; border-radius:3px; top:-9px; left:-9px; cursor:nw-resize;"></div><div data-h="ne" style="position:absolute; width:18px; height:18px; background:#fff; border-radius:3px; top:-9px; right:-9px; cursor:ne-resize;"></div><div data-h="sw" style="position:absolute; width:18px; height:18px; background:#fff; border-radius:3px; bottom:-9px; left:-9px; cursor:sw-resize;"></div><div data-h="se" style="position:absolute; width:18px; height:18px; background:#fff; border-radius:3px; bottom:-9px; right:-9px; cursor:se-resize;"></div><div style="position:absolute; inset:0; display:grid; grid-template-columns:1fr 1fr 1fr; grid-template-rows:1fr 1fr 1fr; pointer-events:none;">' + g + '</div></div></div><p id="crop-size-label" style="text-align:center; font-size:9px; font-weight:900; color:#999; text-transform:uppercase;"></p><button onclick="app._confirmCrop()" style="width:100%; padding:16px; background:#000; color:#fff; border:none; border-radius:50px; font-weight:900; font-size:14px; cursor:pointer;">Confirmar Recorte</button></div>');
+        setTimeout(() => app._initCropEngine(imageUrl), 80);
+    };
+
+    app._initCropEngine = function(imageUrl) {
+        const img = document.getElementById('crop-img');
+        const wrap = document.getElementById('crop-wrap');
+        const box = document.getElementById('crop-box');
+        if (!img || !wrap || !box) return;
+        const wW = wrap.offsetWidth, wH = wrap.offsetHeight;
+        const S = { x: wW*0.1, y: wH*0.1, w: wW*0.8, h: wH*0.8, ratio: null, dragging: false, resizing: null, startX: 0, startY: 0, sb: {} };
+        app._cropState = S; app._cropImageUrl = imageUrl; app._cropWrapEl = wrap; app._cropImgEl = img;
+        const clamp = (v,a,b) => Math.max(a,Math.min(b,v)), MIN = 40;
+        const draw = () => {
+            const {x,y,w,h} = S, bW = wrap.offsetWidth, bH = wrap.offsetHeight;
+            const st = document.getElementById('crop-sh-top'), sb2 = document.getElementById('crop-sh-bottom');
+            const sl = document.getElementById('crop-sh-left'), sr = document.getElementById('crop-sh-right');
+            if(st) st.style.height=y+'px'; if(sb2) sb2.style.height=(bH-y-h)+'px';
+            if(sl){sl.style.top=y+'px';sl.style.height=h+'px';sl.style.width=x+'px';}
+            if(sr){sr.style.top=y+'px';sr.style.height=h+'px';sr.style.width=(bW-x-w)+'px';}
+            box.style.left=x+'px';box.style.top=y+'px';box.style.width=w+'px';box.style.height=h+'px';
+            const lbl=document.getElementById('crop-size-label'); if(lbl) lbl.textContent=Math.round(w)+' x '+Math.round(h)+' px';
+        };
+        const getXY = (e) => e.touches ? {x:e.touches[0].clientX,y:e.touches[0].clientY} : {x:e.clientX,y:e.clientY};
+        const onDown = (e) => {
+            const {x,y}=getXY(e), h=e.target.dataset&&e.target.dataset.h;
+            S.startX=x;S.startY=y;S.sb={x:S.x,y:S.y,w:S.w,h:S.h};
+            if(h){S.resizing=h;S.dragging=false;} else {S.dragging=true;S.resizing=null;} e.preventDefault();
+        };
+        const onMove = (e) => {
+            if(!S.dragging&&!S.resizing) return;
+            const {x,y}=getXY(e), dx=x-S.startX, dy=y-S.startY, bW=wrap.offsetWidth, bH=wrap.offsetHeight;
+            if(S.dragging){S.x=clamp(S.sb.x+dx,0,bW-S.w);S.y=clamp(S.sb.y+dy,0,bH-S.h);}
+            else {
+                let {x:sx,y:sy,w:sw,h:sh}=S.sb, r=S.resizing;
+                if(r.includes('e')) sw=clamp(sw+dx,MIN,bW-sx);
+                if(r.includes('s')) sh=clamp(sh+dy,MIN,bH-sy);
+                if(r.includes('w')){const nw=clamp(sw-dx,MIN,sx+sw);sx=sx+sw-nw;sw=nw;}
+                if(r.includes('n')){const nh=clamp(sh-dy,MIN,sy+sh);sy=sy+sh-nh;sh=nh;}
+                if(S.ratio){if(r.includes('e')||r.includes('w'))sh=sw/S.ratio;else sw=sh*S.ratio;sw=clamp(sw,MIN,bW);sh=clamp(sh,MIN,bH);}
+                S.x=sx;S.y=sy;S.w=sw;S.h=sh;
+            }
+            draw(); e.preventDefault();
+        };
+        const onUp = () => {S.dragging=false;S.resizing=null;};
+        box.addEventListener('mousedown',onDown); box.addEventListener('touchstart',onDown,{passive:false});
+        document.addEventListener('mousemove',onMove); document.addEventListener('touchmove',onMove,{passive:false});
+        document.addEventListener('mouseup',onUp); document.addEventListener('touchend',onUp);
+        app._cropCleanup = () => {
+            document.removeEventListener('mousemove',onMove); document.removeEventListener('touchmove',onMove);
+            document.removeEventListener('mouseup',onUp); document.removeEventListener('touchend',onUp);
+        };
+        draw();
+    };
+
+    app._setCropRatio = function(r) {
+        ['free','11','169','43'].forEach(id=>{const b=document.getElementById('crop-btn-'+id);if(b){b.style.background='#f5f5f5';b.style.color='#000';}});
+        const m={'free':'free','1:1':'11','16:9':'169','4:3':'43'}, btn=document.getElementById('crop-btn-'+(m[r]||'free'));
+        if(btn){btn.style.background='#000';btn.style.color='#fff';}
+        app._cropState.ratio = r==='free'?null:(r==='1:1'?1:r==='16:9'?16/9:4/3);
+    };
+
+    app._confirmCrop = function() {
+        const {x,y,w,h}=app._cropState, img=app._cropImgEl, wrap=app._cropWrapEl;
+        if(!img||!wrap) return;
+        const sX=img.naturalWidth/wrap.offsetWidth, sY=img.naturalHeight/wrap.offsetHeight;
+        const c=document.createElement('canvas'); c.width=Math.round(w*sX); c.height=Math.round(h*sY);
+        c.getContext('2d').drawImage(img,x*sX,y*sY,c.width,c.height,0,0,c.width,c.height);
+        const url=c.toDataURL('image/jpeg',0.9);
+        if(app._cropCallback) app._cropCallback(url);
+        if(app._cropCleanup) app._cropCleanup();
+        this.closeModal();
+    };
+
 
     app.updateBlock = function(pos, idx, field, value) {
         this.builderConfig[pos][idx].content[field] = value;

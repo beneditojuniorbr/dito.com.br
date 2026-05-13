@@ -10785,8 +10785,8 @@
             </div>
 
             <!-- CHECKOUT IDÊNTICO AO REAL -->
-            <div style="padding:24px; min-height:100vh; padding-bottom:80px; display:flex; flex-direction:column; align-items:center; width:100%; background:${bgColor};">
-                <div style="width:100%; max-width:500px; background:#fff; border-radius:32px; padding:24px; box-shadow:0 10px 40px rgba(0,0,0,0.05);">
+            <div style="padding:24px 24px 0 24px; display:flex; flex-direction:column; align-items:center; width:100%; background:${bgColor};">
+                <div style="width:100%; max-width:500px; background:#fff; border-radius:32px 32px 0 0; padding:24px; min-height:calc(100vh - 52px); box-shadow:0 -4px 40px rgba(0,0,0,0.05);">
 
                     <!-- Header: seta + shield + título -->
                     <header style="display:flex; align-items:center; gap:16px; margin-bottom:32px;">

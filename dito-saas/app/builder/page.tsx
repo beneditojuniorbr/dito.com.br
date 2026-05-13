@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { 
   Plus, 
   Type, 
@@ -30,13 +30,11 @@ interface Block {
   content: any;
 }
 
-import { Suspense } from "react";
-
 function BuilderContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const productId = searchParams.get("product");
-  // ... rest of the existing state and functions
+  
   const [blocks, setBlocks] = useState<Block[]>([]);
   const [editingBlock, setEditingBlock] = useState<string | null>(null);
   const [isAddingBlock, setIsAddingBlock] = useState(false);
@@ -183,6 +181,7 @@ function BuilderContent() {
         <button onClick={() => router.back()} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
           <ArrowLeft size={24} />
         </button>
+        <h1 className="font-black italic text-lg uppercase tracking-tighter">Page Builder</h1>
         <div className="flex gap-2">
           {pageData?.slug && (
             <button 

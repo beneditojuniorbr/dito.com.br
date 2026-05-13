@@ -16,7 +16,8 @@ import {
   Trash2,
   ExternalLink,
   Zap,
-  RefreshCw
+  RefreshCw,
+  Eye
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -117,12 +118,15 @@ export default function BuilderPage() {
         updated_at: new Date().toISOString()
       };
 
-      const { error } = await supabase
+      const { data: savedPage, error } = await supabase
         .from('dito_sales_pages')
-        .upsert(payload, { onConflict: 'product_id' });
+        .upsert(payload, { onConflict: 'product_id' })
+        .select()
+        .single();
 
       if (error) throw error;
 
+      setPageData(savedPage);
       (window as any).notify?.("Página de vendas salva com sucesso!", "success");
     } catch (err) {
       console.error("Erro ao salvar:", err);
@@ -177,15 +181,25 @@ export default function BuilderPage() {
         <button onClick={() => router.back()} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
           <ArrowLeft size={24} />
         </button>
-        <h1 className="font-black italic text-lg uppercase tracking-tighter">Page Builder</h1>
-        <button 
-          onClick={handleSave}
-          disabled={isSaving}
-          className="bg-black text-white px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest flex items-center gap-2 shadow-lg active:scale-95 transition-transform disabled:opacity-50"
-        >
-          {isSaving ? <RefreshCw size={14} className="animate-spin" /> : <Save size={14} />} 
-          {isSaving ? "Salvando..." : "Salvar"}
-        </button>
+        <div className="flex gap-2">
+          {pageData?.slug && (
+            <button 
+              onClick={() => window.open(`/v/${pageData.slug}`, '_blank')}
+              className="p-2 bg-gray-100 hover:bg-black hover:text-white rounded-full transition-colors"
+              title="Ver Página Pública"
+            >
+              <Eye size={20} />
+            </button>
+          )}
+          <button 
+            onClick={handleSave}
+            disabled={isSaving}
+            className="bg-black text-white px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest flex items-center gap-2 shadow-lg active:scale-95 transition-transform disabled:opacity-50"
+          >
+            {isSaving ? <RefreshCw size={14} className="animate-spin" /> : <Save size={14} />} 
+            {isSaving ? "Salvando..." : "Salvar"}
+          </button>
+        </div>
       </header>
 
       {/* Main Content / Preview Area */}

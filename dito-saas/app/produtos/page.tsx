@@ -141,7 +141,7 @@ export default function ProdutosPage() {
                       onClick={() => copyLink(product)}
                       className="flex-1 min-w-[100px] h-11 bg-gray-50 hover:bg-black hover:text-white rounded-full flex items-center justify-center gap-2 transition-all group/btn"
                     >
-                      <LinkIcon size={14} className="text-gray-400 group-hover/btn:text-white" />
+                      <LinkIcon size={14} className="text-black group-hover/btn:text-white transition-colors" />
                       <span className="text-[9px] font-black uppercase tracking-widest">Link</span>
                     </button>
 
@@ -149,16 +149,16 @@ export default function ProdutosPage() {
                       onClick={() => (window as any).notify?.("Editor de produto em breve!", "info")}
                       className="flex-1 min-w-[100px] h-11 bg-gray-50 hover:bg-black hover:text-white rounded-full flex items-center justify-center gap-2 transition-all group/btn"
                     >
-                      <Edit3 size={14} className="text-gray-400 group-hover/btn:text-white" />
+                      <Edit3 size={14} className="text-black group-hover/btn:text-white transition-colors" />
                       <span className="text-[9px] font-black uppercase tracking-widest">Editar</span>
                     </button>
 
                     <button 
                       onClick={() => router.push(`/builder?product=${product.id}`)}
-                      className="flex-[1.5] min-w-[150px] h-11 bg-[#FFBA09] text-black rounded-full flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-yellow-500/10"
+                      className="flex-1 min-w-[100px] h-11 bg-gray-50 hover:bg-black hover:text-white rounded-full flex items-center justify-center gap-2 transition-all group/btn"
                     >
-                      <ExternalLink size={14} />
-                      <span className="text-[9px] font-black uppercase tracking-widest">Página de Vendas</span>
+                      <ExternalLink size={14} className="text-black group-hover/btn:text-white transition-colors" />
+                      <span className="text-[9px] font-black uppercase tracking-widest">Página</span>
                     </button>
                     
                     <button 

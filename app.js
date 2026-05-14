@@ -10713,16 +10713,42 @@
         }
     };
 
+    app._builderSettingsOpen = false;
     app.renderBuilderBlocks = function() {
         const aboveCont = document.getElementById('builder-above');
         const belowCont = document.getElementById('builder-below');
         if (!aboveCont || !belowCont) return;
 
-        // Renderiza Seletor de Fundo
-        const themeHTML = `
-            <div style="background:#f9f9f9; padding:16px; border-radius:20px; margin-bottom:24px; display:flex; align-items:center; justify-content:space-between;">
-                <span style="font-size:11px; font-weight:900; text-transform:uppercase;">Cor do Fundo</span>
-                <input type="color" value="${this.builderConfig.theme.backgroundColor}" oninput="app.updateTheme('backgroundColor', this.value)" style="border:none; width:40px; height:40px; background:none; cursor:pointer;">
+        // Cabeçalho de Configurações
+        const settingsHTML = `
+            <div style="margin-bottom: 24px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                    <div>
+                        <h3 style="font-size: 16px; font-weight: 900; letter-spacing: -0.5px;">Design da Página</h3>
+                        <p style="font-size: 10px; color: #999; font-weight: 700; text-transform: uppercase;">Personalize as cores e elementos</p>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button onclick="app.toggleBuilderSettings()" style="width: 44px; height: 44px; background: #fff; border: 1px solid #eee; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                            <i data-lucide="settings" style="width: 18px; color: ${this._builderSettingsOpen ? '#000' : '#999'};"></i>
+                        </button>
+                        <button onclick="app.showAddSection('above')" style="background: #000; color: #fff; padding: 0 16px; height: 44px; border-radius: 12px; font-weight: 900; font-size: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; border: none;">
+                            <i data-lucide="plus" style="width: 16px;"></i> Adicionar Bloco
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Painel de Configurações (Toggle) -->
+                <div id="builder-settings-panel" style="display: ${this._builderSettingsOpen ? 'block' : 'none'}; background: #fff; border: 1px solid #eee; border-radius: 16px; padding: 16px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); animation: slideDown 0.3s ease;">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <p style="font-size: 11px; font-weight: 900; margin-bottom: 4px;">Cor de Fundo da Página</p>
+                            <p style="font-size: 10px; color: #999;">Escolha a cor principal do checkout</p>
+                        </div>
+                        <input type="color" value="${this.builderConfig.theme.backgroundColor || '#f5f5f5'}" 
+                            oninput="app.updateTheme('backgroundColor', this.value)" 
+                            style="border: none; width: 44px; height: 44px; background: none; cursor: pointer; border-radius: 8px;">
+                    </div>
+                </div>
             </div>
         `;
 
@@ -10748,10 +10774,15 @@
             `}).join('');
         };
 
-        aboveCont.innerHTML = themeHTML + renderList(this.builderConfig.above, 'above');
+        aboveCont.innerHTML = settingsHTML + renderList(this.builderConfig.above, 'above');
         belowCont.innerHTML = renderList(this.builderConfig.below, 'below');
 
         if (window.lucide) lucide.createIcons();
+    };
+
+    app.toggleBuilderSettings = function() {
+        this._builderSettingsOpen = !this._builderSettingsOpen;
+        this.renderBuilderBlocks();
     };
 
     app.updateTheme = function(key, value) {

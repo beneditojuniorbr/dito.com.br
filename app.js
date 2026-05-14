@@ -10719,7 +10719,6 @@
         const belowCont = document.getElementById('builder-below');
         if (!aboveCont || !belowCont) return;
 
-        // Cabeçalho de Configurações
         const settingsHTML = `
             <div style="margin-bottom: 24px;">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
@@ -10737,46 +10736,37 @@
                     </div>
                 </div>
 
-                <!-- Painel de Configurações (Toggle) -->
-                <div id="builder-settings-panel" style="display: ${this._builderSettingsOpen ? 'block' : 'none'}; background: #fff; border: 1px solid #eee; border-radius: 16px; padding: 16px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); animation: slideDown 0.3s ease;">
+                <div id="builder-settings-panel" style="display: ${this._builderSettingsOpen ? 'block' : 'none'}; background: #fff; border: 1px solid #eee; border-radius: 16px; padding: 16px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
                     <div style="display: flex; align-items: center; justify-content: space-between;">
                         <div>
                             <p style="font-size: 11px; font-weight: 900; margin-bottom: 4px;">Cor de Fundo da Página</p>
                             <p style="font-size: 10px; color: #999;">Escolha a cor principal do checkout</p>
                         </div>
-                        <input type="color" value="${this.builderConfig.theme.backgroundColor || '#f5f5f5'}" 
-                            oninput="app.updateTheme('backgroundColor', this.value)" 
-                            style="border: none; width: 44px; height: 44px; background: none; cursor: pointer; border-radius: 8px;">
+                        <input type="color" value="${this.builderConfig.theme.backgroundColor || '#f5f5f5'}" oninput="app.updateTheme('backgroundColor', this.value)" style="border: none; width: 44px; height: 44px; background: none; cursor: pointer; border-radius: 8px;">
                     </div>
                 </div>
             </div>
         `;
 
         const renderList = (blocks, pos) => {
-            if (!blocks || blocks.length === 0) return `<p style="text-align:center; padding:10px; color:#eee; font-size:10px; font-weight:900; text-transform:uppercase;">Nenhum bloco aqui</p>`;
+            if (!blocks || blocks.length === 0) return `<p style="text-align:center; padding:20px; color:#ccc; font-size:10px; font-weight:900; text-transform:uppercase; border:2px dashed #f0f0f0; border-radius:20px; margin-bottom:16px;">Lista Vazia</p>`;
             return blocks.map((b, idx) => {
                 const isImage = b.type === 'image';
-                const containerStyle = isImage 
-                    ? `padding:0; margin-bottom:16px; position:relative;`
-                    : `background:#fff; border:1px solid #eee; border-radius:20px; padding:16px; margin-bottom:8px; box-shadow:0 4px 12px rgba(0,0,0,0.02); position:relative;`;
-
+                const style = isImage ? `padding:0; margin-bottom:16px; position:relative;` : `background:#fff; border:1px solid #eee; border-radius:20px; padding:16px; margin-bottom:12px; position:relative;`;
                 return `
-                <div style="${containerStyle}">
-                    ${isImage ? `<div style="display:flex; justify-content:flex-end; gap:4px; margin-bottom:8px;">` : `<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;"><span style="font-size:9px; font-weight:900; text-transform:uppercase; color:#ccc;">${b.type}</span>`}
-                        <div style="display:flex; gap:4px;">
-                            <button onclick="app.moveBuilderBlock('${pos}', ${idx}, -1)" style="width:28px; height:28px; border-radius:50%; border:none; background:${isImage ? 'rgba(0,0,0,0.3)' : '#f5f5f5'}; color:${isImage ? '#fff' : '#000'}; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Mover para cima"><i data-lucide="chevron-up" style="width:14px; pointer-events:none;"></i></button>
-                            <button onclick="app.moveBuilderBlock('${pos}', ${idx}, 1)" style="width:28px; height:28px; border-radius:50%; border:none; background:${isImage ? 'rgba(0,0,0,0.3)' : '#f5f5f5'}; color:${isImage ? '#fff' : '#000'}; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Mover para baixo"><i data-lucide="chevron-down" style="width:14px; pointer-events:none;"></i></button>
-                            <button onclick="app.removeBuilderBlock('${pos}', ${idx})" style="width:28px; height:28px; border-radius:50%; border:none; background:${isImage ? 'rgba(220,50,50,0.7)' : '#fff1f1'}; color:#ff4d4d; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Excluir"><i data-lucide="trash-2" style="width:14px; pointer-events:none;"></i></button>
-                        </div>
+                <div style="${style}">
+                    <div style="display:flex; justify-content:flex-end; gap:4px; margin-bottom:${isImage ? '8px' : '12px'};">
+                        <button onclick="app.moveBuilderBlock('${pos}', ${idx}, -1)" style="width:28px; height:28px; border-radius:50%; border:none; background:#f5f5f5; cursor:pointer; display:flex; align-items:center; justify-content:center;"><i data-lucide="chevron-up" style="width:14px;"></i></button>
+                        <button onclick="app.moveBuilderBlock('${pos}', ${idx}, 1)" style="width:28px; height:28px; border-radius:50%; border:none; background:#f5f5f5; cursor:pointer; display:flex; align-items:center; justify-content:center;"><i data-lucide="chevron-down" style="width:14px;"></i></button>
+                        <button onclick="app.removeBuilderBlock('${pos}', ${idx})" style="width:28px; height:28px; border-radius:50%; border:none; background:#fff1f1; color:#ff4d4d; cursor:pointer; display:flex; align-items:center; justify-content:center;"><i data-lucide="trash-2" style="width:14px;"></i></button>
                     </div>
                     ${this.renderBlockEditor(b, pos, idx)}
-                </div>
-            `}).join('');
+                </div>`;
+            }).join('');
         };
 
         aboveCont.innerHTML = settingsHTML + renderList(this.builderConfig.above, 'above');
         belowCont.innerHTML = renderList(this.builderConfig.below, 'below');
-
         if (window.lucide) lucide.createIcons();
     };
 
@@ -10787,9 +10777,8 @@
 
     app.updateTheme = function(key, value) {
         this.builderConfig.theme[key] = value;
-        // Aplica em tempo real apenas na área de conteúdo (header sempre branco)
-        const contentArea = document.getElementById('builder-content-area');
-        if (contentArea) contentArea.style.backgroundColor = value;
+        const area = document.getElementById('builder-content-area');
+        if (area) area.style.backgroundColor = value;
     };
 
     app._builderPreviewActive = false;
@@ -10798,110 +10787,68 @@
         if (existing) { existing.remove(); app._builderPreviewActive = false; return; }
 
         app._builderPreviewActive = true;
-        const cfg   = this.builderConfig || { theme: {}, above: [], below: [] };
+        const cfg = this.builderConfig || { theme: {}, above: [], below: [] };
         const bgColor = (cfg.theme || {}).backgroundColor || '#f5f5f5';
-        const prod  = (this.products || []).find(p => String(p.id) === String(this.currentBuilderProduct)) || {};
+        const prod = (this.products || []).find(p => String(p.id) === String(this.currentBuilderProduct)) || {};
         const price = prod.price ? `R$ ${Number(prod.price).toFixed(2).replace('.',',')}` : 'R$ --';
-        const name  = prod.name || 'Seu Produto';
+        const name = prod.name || 'Seu Produto';
         const cover = prod.cover || prod.image || '';
         const renderBlocks = (blocks) => (blocks || []).map(b => this.renderPublicBlock(b)).join('');
 
         document.body.insertAdjacentHTML('beforeend', `
-        <div id="builder-preview-modal" style="position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.6); display:flex; flex-direction:column; align-items:center; overflow-y:auto; backdrop-filter:blur(6px);">
-
-            <!-- Barra superior do preview -->
-            <div style="width:100%; max-width:500px; display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:#fff; position:sticky; top:0; z-index:10; border-bottom:1px solid #f0f0f0;">
-                <span style="font-size:10px; font-weight:900; text-transform:uppercase; color:#999; display:flex; align-items:center; gap:6px;">👁 Preview do Checkout</span>
-                <button onclick="document.getElementById('builder-preview-modal').remove(); app._builderPreviewActive=false;" style="width:32px; height:32px; border-radius:50%; border:none; background:#f5f5f5; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center;">✕</button>
-            </div>
-
-            <!-- CHECKOUT IDÊNTICO AO REAL -->
-            <div style="padding:24px 24px 0 24px; display:flex; flex-direction:column; align-items:center; width:100%; background:${bgColor};">
-                <div style="width:100%; max-width:500px; background:#fff; border-radius:8px 8px 0 0; padding:24px; min-height:calc(100vh - 52px); box-shadow:0 -4px 40px rgba(0,0,0,0.05);">
-
-                    <!-- Header: seta + shield + título -->
-                    <header style="display:flex; align-items:center; gap:16px; margin-bottom:32px;">
-                        <div style="width:44px; height:44px; background:#f5f5f5; border-radius:50%; display:flex; align-items:center; justify-content:center;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                        </div>
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
-                            <h2 style="font-size:24px; font-weight:900; letter-spacing:-1px;">Finalizar Pedido</h2>
-                        </div>
-                    </header>
-
-                    <!-- Blocos ACIMA -->
-                    <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:24px;">
-                        ${renderBlocks(cfg.above)}
-                    </div>
-
-                    <!-- Resumo do Pedido -->
-                    <div style="margin-bottom:32px; padding:0 4px;">
-                        <h3 style="font-size:11px; font-weight:900; text-transform:uppercase; color:#999; margin-bottom:16px; display:flex; align-items:center; gap:8px;">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 01-8 0"></path></svg>
-                            Resumo da Compra
-                        </h3>
-                        <!-- Item -->
-                        <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
-                            <div style="width:56px; height:56px; background:#f5f5f5; border-radius:14px; overflow:hidden; flex-shrink:0; display:flex; align-items:center; justify-content:center;">
-                                ${cover ? `<img src="${cover}" style="width:100%; height:100%; object-fit:cover;">` : `<span style="font-size:22px;">🛍️</span>`}
+            <div id="builder-preview-modal" style="position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.6); display:flex; flex-direction:column; align-items:center; overflow-y:auto; backdrop-filter:blur(6px);">
+                <div style="width:100%; max-width:500px; display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:#fff; position:sticky; top:0; z-index:10; border-bottom:1px solid #f0f0f0;">
+                    <span style="font-size:10px; font-weight:900; text-transform:uppercase; color:#999; display:flex; align-items:center; gap:6px;">👁 Preview do Checkout</span>
+                    <button onclick="document.getElementById('builder-preview-modal').remove(); app._builderPreviewActive=false;" style="width:32px; height:32px; border-radius:50%; border:none; background:#f5f5f5; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center;">✕</button>
+                </div>
+                <div style="padding:24px 24px 0 24px; display:flex; flex-direction:column; align-items:center; width:100%; background:${bgColor};">
+                    <div style="width:100%; max-width:500px; background:#fff; border-radius:8px 8px 0 0; padding:24px; min-height:calc(100vh - 52px); box-shadow:0 -4px 40px rgba(0,0,0,0.05);">
+                        <header style="display:flex; align-items:center; gap:16px; margin-bottom:32px;">
+                            <div style="width:44px; height:44px; background:#f5f5f5; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
                             </div>
-                            <div>
-                                <p style="font-weight:900; font-size:14px; margin-bottom:4px;">${name}</p>
-                                <p style="font-size:13px; font-weight:700; color:#ee4d2d;">${price}</p>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
+                                <h2 style="font-size:24px; font-weight:900; letter-spacing:-1px;">Finalizar Pedido</h2>
+                            </div>
+                        </header>
+                        <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:24px;">${renderBlocks(cfg.above)}</div>
+                        <div style="margin-bottom:32px; padding:0 4px;">
+                            <h3 style="font-size:11px; font-weight:900; text-transform:uppercase; color:#999; margin-bottom:16px; display:flex; align-items:center; gap:8px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 01-8 0"></path></svg>
+                                Resumo da Compra
+                            </h3>
+                            <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+                                <div style="width:56px; height:56px; background:#f5f5f5; border-radius:14px; overflow:hidden; flex-shrink:0; display:flex; align-items:center; justify-content:center;">
+                                    ${cover ? `<img src="${cover}" style="width:100%; height:100%; object-fit:cover;">` : `<span style="font-size:22px;">🛍️</span>`}
+                                </div>
+                                <div><p style="font-weight:900; font-size:14px; margin-bottom:4px;">${name}</p><p style="font-size:13px; font-weight:700; color:#ee4d2d;">${price}</p></div>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; padding-top:16px; border-top:1px dashed #ddd;">
+                                <span style="font-weight:700;">Total</span><span style="font-weight:900; font-size:20px; color:#ee4d2d;">${price}</span>
                             </div>
                         </div>
-                        <!-- Total -->
-                        <div style="display:flex; justify-content:space-between; padding-top:16px; border-top:1px dashed #ddd;">
-                            <span style="font-weight:700;">Total</span>
-                            <span style="font-weight:900; font-size:20px; color:#ee4d2d;">${price}</span>
-                        </div>
-                    </div>
-
-                    <!-- Métodos de Pagamento -->
-                    <h3 style="font-size:11px; font-weight:950; margin-bottom:16px; text-transform:uppercase; color:#999; letter-spacing:0.5px;">Meio de Pagamento</h3>
-                    <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:24px;">
-                        <!-- Pix -->
-                        <div style="padding:16px; border-radius:16px; border:2px solid #000; background:#fff; display:flex; align-items:center; gap:12px;">
-                            <div style="width:40px; height:40px; background:#f5f5f5; border-radius:12px; display:flex; align-items:center; justify-content:center;">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        <h3 style="font-size:11px; font-weight:950; margin-bottom:16px; text-transform:uppercase; color:#999; letter-spacing:0.5px;">Meio de Pagamento</h3>
+                        <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:24px;">
+                            <div style="padding:16px; border-radius:16px; border:2px solid #000; background:#fff; display:flex; align-items:center; gap:12px;">
+                                <div style="width:40px; height:40px; background:#f5f5f5; border-radius:12px; display:flex; align-items:center; justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                                <div><p style="font-weight:950; font-size:14px; color:#000;">Pix Instantâneo</p><p style="font-size:10px; color:#999; font-weight:800;">Liberação imediata</p></div>
                             </div>
-                            <div>
-                                <p style="font-weight:950; font-size:14px; color:#000;">Pix Instantâneo</p>
-                                <p style="font-size:10px; color:#999; font-weight:800;">Liberação imediata</p>
+                            <div style="padding:16px; border-radius:16px; border:2px solid #f0f0f0; background:#fff; display:flex; align-items:center; gap:12px;">
+                                <div style="width:40px; height:40px; background:#f5f5f5; border-radius:12px; display:flex; align-items:center; justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="11" x2="22" y2="11"></line></svg></div>
+                                <div><p style="font-weight:950; font-size:14px; color:#000;">Cartão de Crédito</p><p style="font-size:10px; color:#999; font-weight:800;">Até 12x via PayPal</p></div>
                             </div>
                         </div>
-                        <!-- Cartão -->
-                        <div style="padding:16px; border-radius:16px; border:2px solid #f0f0f0; background:#fff; display:flex; align-items:center; gap:12px;">
-                            <div style="width:40px; height:40px; background:#f5f5f5; border-radius:12px; display:flex; align-items:center; justify-content:center;">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="11" x2="22" y2="11"></line></svg>
-                            </div>
-                            <div>
-                                <p style="font-weight:950; font-size:14px; color:#000;">Cartão de Crédito</p>
-                                <p style="font-size:10px; color:#999; font-weight:800;">Até 12x via PayPal</p>
-                            </div>
+                        <div style="width:100%; padding:18px; background:#000; color:#fff; border-radius:100px; font-weight:900; font-size:15px; text-align:center; letter-spacing:1px; margin-bottom:12px;">PAGAR AGORA</div>
+                        <div style="text-align:center; display:flex; flex-direction:column; align-items:center; gap:8px; padding:0 10px; margin-bottom:32px;">
+                            <img src="D5.png" style="height:22px; opacity:0.6; filter:grayscale(1);" onerror="this.style.display='none'">
+                            <p style="font-size:9px; color:#bbb; font-weight:600; line-height:1.4; max-width:320px;">Ao clicar em "Pagar agora", você concorda com os <span style="text-decoration:underline; color:#999;">Termos de Compra</span> e a <span style="text-decoration:underline; color:#999;">Política de Privacidade</span>. A Dito apenas processa este pagamento e não se responsabiliza pela oferta.</p>
                         </div>
-                    </div>
-
-                    <!-- Botão Pagar Agora -->
-                    <div style="width:100%; padding:18px; background:#000; color:#fff; border-radius:100px; font-weight:900; font-size:15px; text-align:center; letter-spacing:1px; margin-bottom:12px;">PAGAR AGORA</div>
-
-                    <!-- Rodapé legal (FIXO ABAIXO DO BOTÃO) -->
-                    <div style="text-align:center; display:flex; flex-direction:column; align-items:center; gap:8px; padding:0 10px; margin-bottom:32px;">
-                        <img src="D5.png" style="height:22px; opacity:0.6; filter:grayscale(1);" onerror="this.style.display='none'">
-                        <p style="font-size:9px; color:#bbb; font-weight:600; line-height:1.4; max-width:320px;">
-                            Ao clicar em "Pagar agora", você concorda com os <span style="text-decoration:underline; color:#999;">Termos de Compra</span> e a <span style="text-decoration:underline; color:#999;">Política de Privacidade</span>. A Dito apenas processa este pagamento e não se responsabiliza pela oferta.
-                        </p>
-                    </div>
-
-                    <!-- Blocos ABAIXO (Aparecem DEPOIS dos termos) -->
-                    <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:24px;">
-                        ${renderBlocks(cfg.below)}
+                        <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:24px;">${renderBlocks(cfg.below)}</div>
                     </div>
                 </div>
             </div>
-        </div>`);
-
+        `);
         if (window.lucide) lucide.createIcons();
     };
 

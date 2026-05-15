@@ -7787,12 +7787,16 @@
                     let parsed = [];
                     if (Array.isArray(rawContent)) {
                         parsed = rawContent;
-                    } else if (typeof rawContent === 'string' && rawContent.startsWith('[')) {
+                    } else if (typeof rawContent === 'string' && rawContent.trim().startsWith('[')) {
                         try { parsed = JSON.parse(rawContent); } catch(e) { parsed = []; }
                     }
                     this.courseStructure = JSON.parse(JSON.stringify(parsed));
-                    console.log("📦 Estrutura de curso resgatada:", this.courseStructure.length, "módulos");
-                    setTimeout(() => this.renderCourseStructure(), 400);
+                    console.log("📦 Estrutura de curso hidratada:", this.courseStructure.length, "módulos");
+                    
+                    // Garante que a renderização ocorra após a mudança de tela
+                    setTimeout(() => {
+                        this.renderCourseStructure();
+                    }, 500);
                 } else {
                     this.courseStructure = [];
                 }
@@ -7936,9 +7940,11 @@
             // Avança para o passo 2 automaticamente após um pequeno delay para feedback visual
             setTimeout(() => this.setProductCreateStep(2), 400);
             
-            // Reset filenames e previews
-            document.querySelectorAll('.file-name-display').forEach(el => el.innerText = '');
-            this.courseStructure = []; 
+            // Reset filenames e previews - APENAS se NÃO for edição
+            if (!this.editingProductId) {
+                document.querySelectorAll('.file-name-display').forEach(el => el.innerText = '');
+                this.courseStructure = []; 
+            }
         },
 
         handleProductImage(input) {

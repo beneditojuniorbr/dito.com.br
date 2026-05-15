@@ -10668,8 +10668,6 @@
             </div>`;
         }).join("");
             
-        if (window.lucide) lucide.createIcons();
-    };
             
         if (window.lucide) lucide.createIcons();
     };

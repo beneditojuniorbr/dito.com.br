@@ -10627,8 +10627,6 @@
         const list = document.getElementById('my-products-list');
         if (!list) return;
         
-        // Usa a lista global sincronizada com o Supabase
-        // Garante que temos produtos carregados (fallback do storage)
         if (!this.products || this.products.length === 0) {
             this.products = JSON.parse(localStorage.getItem('dito_products_vanilla') || '[]');
         }
@@ -10636,36 +10634,42 @@
         const myUser = (this.currentUser?.username || "").toLowerCase();
         const myP = this.products.filter(p => {
             const seller = (p.seller || "").toLowerCase();
-            return seller === myUser || (p.author && p.author.toLowerCase() === myUser);
+            const author = (p.author || "").toLowerCase();
+            return seller === myUser || author === myUser;
         });
         
         if (myP.length === 0) {
-            list.innerHTML = `
-                <div style="text-align: center; padding: 40px; background: #fafafa; border-radius: 24px; border: 1px dashed #eee;">
-                    <i data-lucide="package-search" style="width: 32px; color: #ccc; margin-bottom: 12px;"></i>
-                    <p style="font-size: 13px; font-weight: 800; color: #999;">Voce ainda nao criou produtos.</p>
-                </div>
-            `;
+            list.innerHTML = `<div style="text-align: center; padding: 40px; background: #fafafa; border-radius: 24px; border: 1px dashed #eee;"><i data-lucide="package-search" style="width: 32px; color: #ccc; margin-bottom: 12px;"></i><p style="font-size: 13px; font-weight: 800; color: #999;">Você ainda não criou produtos.</p></div>`;
             if (window.lucide) lucide.createIcons();
             return;
         }
         
-        list.innerHTML = myP.map(p => `
+        list.innerHTML = myP.map(p => {
+            const price = parseFloat(p.price || 0).toFixed(2);
+            const img = this.rGetPImage(p.image, p.name, p.type);
+            const checkoutLink = "https://www.ditoapp.com.br/checkout/" + p.id;
+            const pName = (p.name || "").replace(/'/g, ""); // Remove aspas para evitar quebra no onclick
+            
+            return `
             <div style="background:#fff; border:1px solid #eee; border-radius:24px; padding:16px; display:flex; align-items:center; gap:16px; margin-bottom: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.02);">
                 <div style="width:60px; height:60px; background:#f9f9f9; border-radius:16px; display:flex; align-items:center; justify-content:center; overflow:hidden; border: 1px solid #f2f2f2;">
-                    <img src="${this.rGetPImage(p.image, p.name, p.type)}" style="width:100%; height:100%; object-fit:cover;">
+                    <img src="${img}" style="width:100%; height:100%; object-fit:cover;">
                 </div>
                 <div style="flex:1;">
                     <h4 style="font-weight:950; font-size:14px; color: #000; margin-bottom: 2px;">${p.name}</h4>
-                    <p style="font-size:10px; color:#999; font-weight: 700;">${p.type || 'Infoproduto'} • R$ ${parseFloat(p.price || 0).toFixed(2)}</p>
+                    <p style="font-size:10px; color:#999; font-weight: 700;">${p.type || 'Infoproduto'} • R$ ${price}</p>
                 </div>
                 <div style="display:flex; gap:8px;">
-                    <button onclick="app.copyToClipboard('https://www.ditoapp.com.br/checkout/${p.id}', 'Link de Checkout copiado!', this)" title="Copiar Checkout" style="width:40px; height:40px; background:#f5f5f5; color:#000; border:none; border-radius:50%; cursor:pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;" onmouseover="this.style.background='#eee'" onmouseout="this.style.background='#f5f5f5'"><i data-lucide="link" style="width:18px;"></i></button>
-                    <button onclick="app.navigate('builder', 'right', { product: '${p.id}' })" title="Página de Vendas" style="width:40px; height:40px; background:#f5f5f5; color:#000; border:none; border-radius:50%; cursor:pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;" onmouseover="this.style.background='#eee'" onmouseout="this.style.background='#f5f5f5'"><i data-lucide="file-text" style="width:18px;"></i></button>
-                    <button onclick="app.editProduct('${String(p.id)}')" title="Editar Produto" style="width:40px; height:40px; background:#f5f5f5; color:#000; border:none; border-radius:50%; cursor:pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;" onmouseover="this.style.background='#eee'" onmouseout="this.style.background='#f5f5f5'"><i data-lucide="edit-3" style="width:18px;"></i></button>
-                    <button onclick="app.deleteProduct('${String(p.id)}', '${(p.name || '').replace(/'/g, "\\'")}')" title="Excluir" style="width:40px; height:40px; background:#f5f5f5; color:#000; border:none; border-radius:50%; cursor:pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;" onmouseover="this.style.background='#eee'" onmouseout="this.style.background='#f5f5f5'"><i data-lucide="trash-2" style="width:18px;"></i></button>
+                    <button onclick="app.copyToClipboard('${checkoutLink}', 'Link copiado!', this)" style="width:40px; height:40px; background:#f5f5f5; border:none; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;"><i data-lucide="link" style="width:18px;"></i></button>
+                    <button onclick="app.navigate('builder', 'right', { product: '${p.id}' })" style="width:40px; height:40px; background:#f5f5f5; border:none; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;"><i data-lucide="file-text" style="width:18px;"></i></button>
+                    <button onclick="app.editProduct('${p.id}')" style="width:40px; height:40px; background:#f5f5f5; border:none; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;"><i data-lucide="edit-3" style="width:18px;"></i></button>
+                    <button onclick="app.deleteProduct('${p.id}', '${pName}')" style="width:40px; height:40px; background:#f5f5f5; border:none; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;"><i data-lucide="trash-2" style="width:18px;"></i></button>
                 </div>
-            </div>`).join('');
+            </div>`;
+        }).join("");
+            
+        if (window.lucide) lucide.createIcons();
+    };
             
         if (window.lucide) lucide.createIcons();
     };

@@ -10673,43 +10673,33 @@
 
     app.renderBuilder = async function(productId) {
         if (!productId) {
-            this.showNotification("ID do produto necessário para o builder.", "error");
+            this.showNotification("ID do produto necessário.", "error");
             this.navigate('produtos');
             return;
         }
-
         const aboveCont = document.getElementById('builder-above');
         const belowCont = document.getElementById('builder-below');
         if (!aboveCont || !belowCont) return;
 
         aboveCont.innerHTML = `<div style="text-align:center; padding:20px; color:#ccc; font-size:11px;">Carregando...</div>`;
-        belowCont.innerHTML = ``;
-
+        belowCont.innerHTML = "";
         this.currentBuilderProduct = productId;
         this.builderConfig = { theme: { backgroundColor: '#ffffff' }, above: [], below: [] };
 
         try {
-            const { data } = await supabase
-                .from('dito_sales_pages')
-                .select('*')
-                .eq('product_id', productId)
-                .maybeSingle();
-
+            const { data } = await supabase.from('dito_sales_pages').select('*').eq('product_id', productId).maybeSingle();
             if (data && data.config) {
                 this.builderConfig = data.config;
                 if (!this.builderConfig.theme) this.builderConfig.theme = { backgroundColor: '#ffffff' };
-                // Aplica cor de fundo na área de conteúdo (não no header)
-                const contentArea = document.getElementById('builder-content-area');
-                if (contentArea) contentArea.style.backgroundColor = this.builderConfig.theme.backgroundColor;
+                const area = document.getElementById('builder-content-area');
+                if (area) area.style.backgroundColor = this.builderConfig.theme.backgroundColor;
             }
             this.renderBuilderBlocks();
-
-            // 🔄 Restaura posição do scroll salva
             const savedScroll = parseInt(sessionStorage.getItem(`builder_scroll_${productId}`) || '0');
             if (savedScroll > 0) {
                 setTimeout(() => {
-                    const appEl = document.getElementById('app');
-                    if (appEl) appEl.scrollTop = savedScroll;
+                    const editor = document.getElementById('builder-editor-container');
+                    if (editor) editor.scrollTo(0, savedScroll);
                     else window.scrollTo(0, savedScroll);
                 }, 150);
             }
@@ -10741,13 +10731,9 @@
                         </button>
                     </div>
                 </div>
-
                 <div id="builder-settings-panel" style="display: ${this._builderSettingsOpen ? 'block' : 'none'}; background: #fff; border: 1px solid #eee; border-radius: 16px; padding: 16px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
                     <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <div>
-                            <p style="font-size: 11px; font-weight: 900; margin-bottom: 4px;">Cor de Fundo da Página</p>
-                            <p style="font-size: 10px; color: #999;">Escolha a cor principal do checkout</p>
-                        </div>
+                        <div><p style="font-size: 11px; font-weight: 900; margin-bottom: 4px;">Cor de Fundo da Página</p></div>
                         <input type="color" value="${this.builderConfig.theme.backgroundColor || '#f5f5f5'}" oninput="app.updateTheme('backgroundColor', this.value)" style="border: none; width: 44px; height: 44px; background: none; cursor: pointer; border-radius: 8px;">
                     </div>
                 </div>
@@ -10757,14 +10743,14 @@
         const renderList = (blocks, pos) => {
             if (!blocks || blocks.length === 0) return `<p style="text-align:center; padding:20px; color:#ccc; font-size:10px; font-weight:900; text-transform:uppercase; border:2px dashed #f0f0f0; border-radius:20px; margin-bottom:16px;">Lista Vazia</p>`;
             return blocks.map((b, idx) => {
-                const isImage = b.type === 'image';
-                const style = isImage ? `padding:0; margin-bottom:16px; position:relative;` : `background:#fff; border:1px solid #eee; border-radius:20px; padding:16px; margin-bottom:12px; position:relative;`;
+                const isImg = b.type === 'image';
+                const style = isImg ? "padding:0; margin-bottom:16px; position:relative;" : "background:#fff; border:1px solid #eee; border-radius:20px; padding:16px; margin-bottom:12px; position:relative;";
                 return `
                 <div style="${style}">
-                    <div style="display:flex; justify-content:flex-end; gap:4px; margin-bottom:${isImage ? '8px' : '12px'};">
-                        <button onclick="app.moveBuilderBlock('${pos}', ${idx}, -1)" style="width:28px; height:28px; border-radius:50%; border:none; background:#f5f5f5; cursor:pointer; display:flex; align-items:center; justify-content:center;"><i data-lucide="chevron-up" style="width:14px;"></i></button>
-                        <button onclick="app.moveBuilderBlock('${pos}', ${idx}, 1)" style="width:28px; height:28px; border-radius:50%; border:none; background:#f5f5f5; cursor:pointer; display:flex; align-items:center; justify-content:center;"><i data-lucide="chevron-down" style="width:14px;"></i></button>
-                        <button onclick="app.removeBuilderBlock('${pos}', ${idx})" style="width:28px; height:28px; border-radius:50%; border:none; background:#fff1f1; color:#ff4d4d; cursor:pointer; display:flex; align-items:center; justify-content:center;"><i data-lucide="trash-2" style="width:14px;"></i></button>
+                    <div style="display:flex; justify-content:flex-end; gap:4px; margin-bottom:${isImg ? '8px' : '12px'};">
+                        <button onclick="app.moveBuilderBlock('${pos}', ${idx}, -1)" style="width:28px; height:28px; border-radius:50%; border:none; background:#f5f5f5; cursor:pointer;"><i data-lucide="chevron-up" style="width:14px;"></i></button>
+                        <button onclick="app.moveBuilderBlock('${pos}', ${idx}, 1)" style="width:28px; height:28px; border-radius:50%; border:none; background:#f5f5f5; cursor:pointer;"><i data-lucide="chevron-down" style="width:14px;"></i></button>
+                        <button onclick="app.removeBuilderBlock('${pos}', ${idx})" style="width:28px; height:28px; border-radius:50%; border:none; background:#fff1f1; color:#ff4d4d; cursor:pointer;"><i data-lucide="trash-2" style="width:14px;"></i></button>
                     </div>
                     ${this.renderBlockEditor(b, pos, idx)}
                 </div>`;
@@ -10848,7 +10834,7 @@
                         <div style="width:100%; padding:18px; background:#000; color:#fff; border-radius:100px; font-weight:900; font-size:15px; text-align:center; letter-spacing:1px; margin-bottom:12px;">PAGAR AGORA</div>
                         <div style="text-align:center; display:flex; flex-direction:column; align-items:center; gap:8px; padding:0 10px; margin-bottom:32px;">
                             <img src="D5.png" style="height:22px; opacity:0.6; filter:grayscale(1);" onerror="this.style.display='none'">
-                            <p style="font-size:9px; color:#bbb; font-weight:600; line-height:1.4; max-width:320px;">Ao clicar em "Pagar agora", você concorda com os <span style="text-decoration:underline; color:#999;">Termos de Compra</span> e a <span style="text-decoration:underline; color:#999;">Política de Privacidade</span>. A Dito apenas processa este pagamento e não se responsabiliza pela oferta.</p>
+                            <p style="font-size:9px; color:#bbb; font-weight:600; line-height:1.4; max-width:320px;">Ao clicar em "Pagar agora", você concorda com os <span style="text-decoration:underline; color:#999;">Termos de Compra</span> e a <span style="text-decoration:underline; color:#999;">Política de Privacidade</span>.</p>
                         </div>
                         <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:24px;">${renderBlocks(cfg.below)}</div>
                     </div>
@@ -10860,26 +10846,13 @@
 
     app.renderBlockEditor = function(block, pos, idx) {
         if (block.type === 'hero') {
-            return `
-                <input type="text" value="${block.content.title}" oninput="app.updateBlock('${pos}', ${idx}, 'title', this.value)" placeholder="Título" style="width:100%; border:none; background:#f9f9f9; padding:10px; border-radius:10px; font-weight:900; font-size:14px; outline:none; margin-bottom:8px;">
-                <textarea oninput="app.updateBlock('${pos}', ${idx}, 'subtitle', this.value)" placeholder="Subtítulo" style="width:100%; border:none; background:#f9f9f9; padding:10px; border-radius:10px; font-weight:700; font-size:12px; min-height:60px; outline:none; font-family:inherit;">${block.content.subtitle}</textarea>
-            `;
+            return `<input type="text" value="${block.content.title}" oninput="app.updateBlock('${pos}', ${idx}, 'title', this.value)" placeholder="Título" style="width:100%; border:none; background:#f9f9f9; padding:10px; border-radius:10px; font-weight:900; font-size:14px; outline:none; margin-bottom:8px;">
+            <textarea oninput="app.updateBlock('${pos}', ${idx}, 'subtitle', this.value)" placeholder="Subtítulo" style="width:100%; border:none; background:#f9f9f9; padding:10px; border-radius:10px; font-weight:700; font-size:12px; min-height:60px; outline:none; font-family:inherit;">${block.content.subtitle}</textarea>`;
         }
         if (block.type === 'image') {
-            return `
-                <div style="display:flex; flex-direction:column; gap:8px;">
-                    <label style="width:100%; min-height:120px; border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; position:relative;">
-                        ${block.content.url ? `<img src="${block.content.url}" style="width:100%; border-radius:8px;">` : `
-                            <div style="width:100%; height:120px; background:#f9f9f9; border:2px dashed #eee; border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-                                <i data-lucide="image" style="width:24px; color:#ccc; margin-bottom:8px;"></i>
-                                <span style="font-size:10px; font-weight:900; color:#ccc; text-transform:uppercase;">Clique para subir imagem</span>
-                            </div>
-                        `}
-                        <input type="file" accept="image/*" onchange="app.uploadBuilderImage('${pos}', ${idx}, this)" style="display:none;">
-                    </label>
-                    <p style="font-size:9px; color:#999; font-weight:700; text-align:center;">Mínimo 500kb • Clique na imagem para trocar</p>
-                </div>
-            `;
+            return `<div style="display:flex; flex-direction:column; gap:8px;"><label style="width:100%; min-height:120px; border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; position:relative;">
+            ${block.content.url ? `<img src="${block.content.url}" style="width:100%; border-radius:8px;">` : `<div style="width:100%; height:120px; background:#f9f9f9; border:2px dashed #eee; border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center;"><i data-lucide="image" style="width:24px; color:#ccc; margin-bottom:8px;"></i><span style="font-size:10px; font-weight:900; color:#ccc; text-transform:uppercase;">Upload</span></div>`}
+            <input type="file" accept="image/*" onchange="app.uploadBuilderImage('${pos}', ${idx}, this)" style="display:none;"></label></div>`;
         }
         if (block.type === 'button') {
             return `

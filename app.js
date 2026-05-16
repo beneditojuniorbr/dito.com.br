@@ -8739,16 +8739,16 @@
                                     <div style="flex: 1; min-width: 240px; display: flex; flex-direction: column; gap: 16px;">
                                         <div style="display: flex; gap: 10px;">
                                             <!-- Botão Vídeo -->
-                                            <div onclick="this.nextElementSibling.click()" style="flex: 1; height: 40px; background: #fff; border: 2.5px solid #eee; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; gap: 8px; transition: 0.3s;" onmouseover="this.style.borderColor='#000'" onmouseout="this.style.borderColor='#eee'">
-                                                <i data-lucide="upload-cloud" style="width: 14px; color: ${l.fileName ? '#22c55e' : '#aaa'};"></i>
-                                                <span style="font-size: 9px; font-weight: 950; color: ${l.fileName ? '#22c55e' : '#777'}; text-transform: uppercase; letter-spacing: 0.5px;">${l.fileName ? 'Mudar Vídeo' : 'Subir Vídeo (Máx 60s)'}</span>
+                                            <div onclick="this.nextElementSibling.click()" style="flex: 1; height: 40px; background: #fff; border: 2.5px solid #000; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; gap: 8px; transition: 0.3s;">
+                                                <i data-lucide="upload-cloud" style="width: 14px; color: ${l.fileName ? '#22c55e' : '#000'};"></i>
+                                                <span style="font-size: 9px; font-weight: 950; color: #000; text-transform: uppercase; letter-spacing: 0.5px;">${l.fileName ? 'Mudar Vídeo' : 'Subir Vídeo (Máx 60s)'}</span>
                                             </div>
                                             <input type="file" accept="video/*" onchange="app.handleLessonUpload(this, '${m.id}', '${l.id}')" style="display: none;">
 
                                             <!-- Botão Capa -->
-                                            <div onclick="this.nextElementSibling.click()" style="flex: 1; height: 40px; background: #fff; border: 2.5px solid #eee; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; gap: 8px; transition: 0.3s;" onmouseover="this.style.borderColor='#000'" onmouseout="this.style.borderColor='#eee'">
-                                                <i data-lucide="image" style="width: 14px; color: ${l.thumbnail ? '#006eff' : '#aaa'};"></i>
-                                                <span style="font-size: 9px; font-weight: 950; color: ${l.thumbnail ? '#006eff' : '#777'}; text-transform: uppercase; letter-spacing: 0.5px;">${l.thumbnail ? 'Mudar Capa' : 'Definir Capa'}</span>
+                                            <div onclick="this.nextElementSibling.click()" style="flex: 1; height: 40px; background: #fff; border: 2.5px solid #000; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; gap: 8px; transition: 0.3s;">
+                                                <i data-lucide="image" style="width: 14px; color: ${l.thumbnail ? '#006eff' : '#000'};"></i>
+                                                <span style="font-size: 9px; font-weight: 950; color: #000; text-transform: uppercase; letter-spacing: 0.5px;">${l.thumbnail ? 'Mudar Capa' : 'Definir Capa'}</span>
                                             </div>
                                             <input type="file" accept="image/*" onchange="app.handleLessonThumbnailUpload(this, '${m.id}', '${l.id}')" style="display: none;">
                                         </div>

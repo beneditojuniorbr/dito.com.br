@@ -10816,10 +10816,10 @@
                         <p style="font-size: 10px; color: #999; font-weight: 700; text-transform: uppercase;">Personalize as cores e elementos</p>
                     </div>
                     <div style="display: flex; gap: 8px;">
-                        <button onclick="app.toggleBuilderSettings()" style="width: 44px; height: 44px; background: #fff; border: 1px solid #eee; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                        <button onclick="app.toggleBuilderSettings()" style="width: 44px; height: 44px; background: #fff; border: 1px solid #eee; border-radius: 100px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
                             <i data-lucide="settings" style="width: 18px; color: ${this._builderSettingsOpen ? '#000' : '#999'};"></i>
                         </button>
-                        <button onclick="app.showAddSection('above')" style="background: #000; color: #fff; padding: 0 16px; height: 44px; border-radius: 12px; font-weight: 900; font-size: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; border: none;">
+                        <button onclick="app.showAddSection('above')" style="background: #000; color: #fff; padding: 0 20px; height: 44px; border-radius: 100px; font-weight: 900; font-size: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; border: none;">
                             <i data-lucide="plus" style="width: 16px;"></i> Adicionar Bloco
                         </button>
                     </div>

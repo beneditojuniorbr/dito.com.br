@@ -4024,7 +4024,11 @@
                 `;
             }
             if (b.type === 'image') {
-                return `<img src="${b.content.url}" style="width:100%; border-radius:24px; margin-bottom:12px;">`;
+                return `
+                    <div style="margin: 16px -24px; width: calc(100% + 48px); overflow: hidden;">
+                        <img src="${b.content.url}" style="width: 100%; display: block; object-fit: cover;">
+                    </div>
+                `;
             }
             if (b.type === 'button') {
                 return `<button onclick="window.open('${b.content.link}', '_blank')" style="width:100%; padding:18px; background:${b.content.color || '#000'}; color:#fff; border:none; border-radius:100px; font-weight:900; font-size:14px; margin-bottom:12px; cursor:pointer;">${b.content.text}</button>`;

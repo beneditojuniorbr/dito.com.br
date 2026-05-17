@@ -466,24 +466,30 @@
         }
 
         function renderBlocksHTML(blocks) {
-            return blocks.map(block => {
-                if (block.type === 'text') {
+            return blocks.map(b => {
+                if (b.type === 'image') {
                     return `
-                        <div style="margin: 20px 0; text-align: ${block.align || 'left'}; color: ${block.color || '#000'};">
-                            <h2 style="font-weight: 950; font-size: ${block.titleSize || '18'}px; margin-bottom: 8px; letter-spacing: -0.5px;">${block.title || ''}</h2>
-                            <p style="font-weight: 600; font-size: ${block.textSize || '13'}px; line-height: 1.6; white-space: pre-wrap; margin: 0;">${block.content || ''}</p>
+                        <div style="margin: 16px -24px; width: calc(100% + 48px); overflow: hidden;">
+                            <img src="${b.content.url}" style="width: 100%; display: block; object-fit: cover;">
                         </div>
                     `;
-                } else if (block.type === 'image') {
+                }
+                if (b.type === 'card') {
                     return `
-                        <div style="margin: 20px 0; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
-                            <img src="${block.url}" style="width: 100%; display: block; object-fit: cover;">
+                        <div style="background:#fff; padding:24px; border-radius:24px; border:1px solid #eee; margin-bottom:12px;">
+                            <h4 style="font-weight:900; margin-bottom:8px;">${b.content.title}</h4>
+                            <p style="font-size:13px; color:#666;">${b.content.text}</p>
                         </div>
                     `;
-                } else if (block.type === 'video') {
+                }
+                if (b.type === 'testimonials') {
                     return `
-                        <div style="margin: 20px 0; border-radius: 20px; overflow: hidden; background: #000; aspect-ratio: 16/9; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
-                            <video src="${block.url}" controls style="width: 100%; height: 100%; display: block;"></video>
+                        <div style="background:#fff; border:1px solid #eee; padding:20px; border-radius:24px; font-style:italic; margin-bottom:12px;">
+                            <p style="font-size:13px; color:#444; margin-bottom:12px;">"${b.content.text}"</p>
+                            <div style="display:flex; align-items:center; gap:8px; font-style:normal;">
+                                <div style="width:24px; height:24px; background:#f5f5f5; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:900;">${b.content.name ? b.content.name[0] : 'U'}</div>
+                                <span style="font-size:11px; font-weight:900;">${b.content.name || 'Usuário'}</span>
+                            </div>
                         </div>
                     `;
                 }

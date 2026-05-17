@@ -4351,14 +4351,11 @@
             }
         },
 
-        copyPaymentCode() {
+                copyPaymentCode() {
             const link = (this.paymentMethod === 'pix') ? "00020126360014BR.GOV.BCB.PIX0114+5511999999999..." : this.paypalLink;
-            navigator.clipboard.writeText(link).then(() => {
-                this.showNotification("Copiado com sucesso!", "success");
-            });
+            app.copyToClipboard(link, "Copiado com sucesso!");
         },
-
-        selectPayment(method, btn) {
+selectPayment(method, btn) {
             this.paymentMethod = method;
             document.querySelectorAll('.payment-opt').forEach(opt => {
                 opt.style.background = '#fff';
@@ -5882,14 +5879,11 @@
             }
         },
 
-        inviteToSociety() {
+                inviteToSociety() {
             const url = window.location.origin + "?soc=" + this.currentSocietyId;
-            navigator.clipboard.writeText(url).then(() => {
-                this.showNotification("Link de convite copiado! Quem clicar pedirá acesso.", "success");
-            });
+            app.copyToClipboard(url, "Link de convite copiado! Quem clicar pedirá acesso.");
         },
-
-        async postToMural() {
+async postToMural() {
             const input = document.getElementById('soc-mural-input');
             const content = input.value.trim();
             if (!content) return;
@@ -10445,19 +10439,13 @@
         }
     };
 
-    app.copyReferralLink = function() {
+        app.copyReferralLink = function() {
         const textEl = document.getElementById('referral-link-text');
         if (!textEl) return;
 
         const workingLink = textEl.innerText;
-
-        navigator.clipboard.writeText(workingLink).then(() => {
-            app.showSystemNotification('Link Copiado!', 'Mande para seus amigos e garanta seus +100 cupons.', 'success');
-            
-            document.getElementById('referral-modal').style.display = 'none';
-        }).catch(err => {
-            app.showNotification('Erro ao copiar.', 'error');
-        });
+        app.copyToClipboard(workingLink, 'Link Copiado!');
+        document.getElementById('referral-modal').style.display = 'none';
     };
 
     app.toggleFan = async function() {
@@ -11934,13 +11922,13 @@
     // 🛠️ UTILS & HELPERS
     // ==========================================
 
-    app.copyToClipboard = function(text, successMsg, btn) {
+        app.copyToClipboard = function(text, successMsg, btn) {
         // Feedback visual tátil e cromático (Novo estilo Dito)
         if (btn) {
-            const originalBg = btn.style.background || '#f5f5f5';
-            const originalColor = btn.style.color || '#000';
+            const originalBg = btn.style.background || '#000';
+            const originalColor = btn.style.color || '#fff';
             const icon = btn.querySelector('i');
-            const originalIcon = icon ? icon.getAttribute('data-lucide') : 'link';
+            const originalIcon = icon ? icon.getAttribute('data-lucide') : 'share-2';
 
             // Estado de Sucesso
             btn.style.transform = 'scale(0.85)';
@@ -11966,8 +11954,8 @@
             }, 150);
         }
 
-        // Tenta HTTPS Clipboard API primeiro
-        if (navigator.clipboard) {
+        // Tenta HTTPS Clipboard API primeiro (somente em contexto seguro HTTPS/Localhost)
+        if (navigator.clipboard && window.isSecureContext) {
             navigator.clipboard.writeText(text).then(() => {
                 this.showNotification(successMsg || 'Copiado!', 'success');
             }).catch(() => this.fallbackCopy(text, successMsg));
@@ -11980,14 +11968,30 @@
         const inp = document.createElement('textarea');
         inp.value = text;
         inp.style.position = 'fixed';
-        inp.style.opacity = '0';
+        inp.style.top = '0';
+        inp.style.left = '0';
+        inp.style.width = '2em';
+        inp.style.height = '2em';
+        inp.style.padding = '0';
+        inp.style.border = 'none';
+        inp.style.outline = 'none';
+        inp.style.boxShadow = 'none';
+        inp.style.background = 'transparent';
         document.body.appendChild(inp);
+        inp.focus();
         inp.select();
+        inp.setSelectionRange(0, 99999);
+        let success = false;
         try {
-            document.execCommand('copy');
-            this.showNotification(successMsg || 'Copiado!', 'success');
+            success = document.execCommand('copy');
+            if (success) {
+                this.showNotification(successMsg || 'Copiado!', 'success');
+            } else {
+                window.prompt("Copie o seu link:", text);
+            }
         } catch (err) {
             console.error('Falha ao copiar:', err);
+            window.prompt("Copie o seu link:", text);
         }
         document.body.removeChild(inp);
     };

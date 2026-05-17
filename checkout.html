@@ -831,15 +831,35 @@
         // Copy Pix Code to Clipboard
         function copyPixCode() {
             const copyText = document.getElementById("pix-code");
+            copyText.focus();
             copyText.select();
             copyText.setSelectionRange(0, 99999);
             
+            let success = false;
             try {
-                navigator.clipboard.writeText(copyText.value);
-                alert("Código de Pix copiado com sucesso! 🎉");
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(copyText.value);
+                    success = true;
+                    alert("Código de Pix copiado com sucesso! 🎉");
+                } else {
+                    success = document.execCommand("copy");
+                    if (success) {
+                        alert("Código de Pix copiado!");
+                    } else {
+                        window.prompt("Copie o código Pix abaixo:", copyText.value);
+                    }
+                }
             } catch (err) {
-                document.execCommand("copy");
-                alert("Código de Pix copiado!");
+                try {
+                    success = document.execCommand("copy");
+                    if (success) {
+                        alert("Código de Pix copiado!");
+                    } else {
+                        window.prompt("Copie o código Pix abaixo:", copyText.value);
+                    }
+                } catch (e) {
+                    window.prompt("Copie o código Pix abaixo:", copyText.value);
+                }
             }
         }
 

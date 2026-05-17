@@ -11903,10 +11903,11 @@
         }
 
         container.innerHTML = myProducts.map(p => {
-            // Gera o link de checkout dinâmico e amigável baseado no ambiente atual (localhost, IP ou domínio de produção)
-            const baseUrl = window.location.origin + window.location.pathname;
-            const checkoutParam = p.slug || p.id;
-            const shareUrl = `${baseUrl}?checkout=${checkoutParam}`;
+            // Gera o link de checkout dinâmico direcionando para a nova página estática checkout.html
+            const cleanOrigin = window.location.origin;
+            const pathParts = window.location.pathname.split('/');
+            pathParts[pathParts.length - 1] = 'checkout.html';
+            const shareUrl = `${cleanOrigin}${pathParts.join('/')}?id=${p.slug || p.id}`;
 
             return `
                 <div style="background: #fff; border-radius: 20px; padding: 16px; display: flex; align-items: center; gap: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">

@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dito • Checkout Seguro</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css?v=20240427_fix5">
+    
+    <!-- Font Awesome & Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Outfit', 'Inter', sans-serif;
+            background-color: #fafafa;
+            color: #000;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .checkout-wrapper {
+            width: 100%;
+            max-width: 480px;
+            background: #fff;
+            min-height: 100vh;
+            box-shadow: 0 0 40px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        @media (min-width: 480px) {
+            .checkout-wrapper {
+                min-height: 92vh;
+                margin: 24px 0;
+                border-radius: 32px;
+                overflow: hidden;
+                border: 1px solid #f0f0f0;
+            }
+        }
+
+        .checkout-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid #f5f5f5;
+            background: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: #eee;
+            transform: scale(1.05);
+        }
+
+        .product-card {
+            background: #fff;
+            border: 1px solid #f2f2f2;
+            border-radius: 24px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+
+        .product-img-container {
+            width: 64px;
+            height: 64px;
+            background: #f9f9f9;
+            border-radius: 16px;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 1px solid #f0f0f0;
+        }
+
+        .product-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: #999;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            width: 100%;
+            height: 54px;
+            border-radius: 16px;
+            border: 1px solid #e5e5e5;
+            padding: 0 18px;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 14px;
+            outline: none;
+            box-sizing: border-box;
+            background: #fafafa;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: #ffba09;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(255, 186, 9, 0.1);
+        }
+
+        .checkout-btn {
+            width: 100%;
+            height: 60px;
+            background: #000;
+            color: #fff;
+            border: none;
+            border-radius: 100px;
+            font-family: inherit;
+            font-weight: 900;
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+        }
+
+        .checkout-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Pix Modal Styling */
+        .pix-modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .pix-modal-content {
+            background: #fff;
+            width: 100%;
+            border-radius: 28px;
+            padding: 32px 24px 24px;
+            box-sizing: border-box;
+            text-align: center;
+            position: relative;
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(40px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Confetti Canvas Overlay */
+        #confetti-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2000;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="checkout-wrapper">
+        <!-- Top Bar -->
+        <header class="checkout-header">
+            <button class="back-btn" onclick="goBack()">
+                <i data-lucide="chevron-left" style="width: 20px; color: #000;"></i>
+            </button>
+            <div style="text-align: center;">
+                <span style="font-size: 10px; font-weight: 900; color: #999; text-transform: uppercase; letter-spacing: 1px;">Checkout Seguro</span>
+                <h3 style="font-size: 15px; font-weight: 950; margin: 2px 0 0 0; letter-spacing: -0.5px;">Dito Pay</h3>
+            </div>
+            <div style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                <i data-lucide="shield-check" style="width: 22px; color: #22c55e;"></i>
+            </div>
+        </header>
+
+        <!-- Loading State -->
+        <div id="loading-screen" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center;">
+            <div style="width: 50px; height: 50px; border: 4px solid #f3f3f3; border-top: 4px solid #ffba09; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 24px;"></div>
+            <h4 style="font-weight: 900; font-size: 16px; margin: 0 0 8px 0;">Buscando produto seguro...</h4>
+            <p style="font-size: 13px; color: #666; font-weight: 600; margin: 0;">Aguarde alguns instantes.</p>
+        </div>
+
+        <!-- Checkout Main Content -->
+        <div id="checkout-content" style="display: none; flex: 1; flex-direction: column;">
+            <!-- Product Card -->
+            <div class="product-card">
+                <div class="product-img-container">
+                    <img id="prod-img" src="" alt="Produto">
+                </div>
+                <div style="flex: 1; min-width: 0;">
+                    <span id="prod-category" style="font-size: 9px; font-weight: 900; background: #000; color: #fff; padding: 4px 8px; border-radius: 50px; text-transform: uppercase; display: inline-block; margin-bottom: 6px;">EBOOK</span>
+                    <h4 id="prod-title" style="font-weight: 850; font-size: 15px; color: #000; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Nome do Produto</h4>
+                    <p style="font-weight: 900; font-size: 16px; color: #000; margin: 4px 0 0 0;">R$ <span id="prod-price">0.00</span></p>
+                </div>
+            </div>
+
+            <!-- Custom Builder Layout (Above Checkout) -->
+            <div id="builder-above-blocks" style="padding: 0 24px;"></div>
+
+            <!-- Customer Details Block -->
+            <div style="padding: 24px; flex: 1;">
+                <div id="account-status-badge" style="background: #f0fdf4; border: 1px solid #dcfce7; border-radius: 16px; padding: 14px 18px; display: flex; align-items: center; gap: 12px; margin-bottom: 24px; display: none;">
+                    <div style="width: 24px; height: 24px; border-radius: 50%; background: #22c55e; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i data-lucide="check" style="width: 14px; color: #fff;"></i>
+                    </div>
+                    <div style="flex: 1; min-width: 0;">
+                        <p style="font-size: 12px; font-weight: 850; margin: 0; color: #166534;">Conta Conectada</p>
+                        <p id="connected-username" style="font-size: 11px; font-weight: 700; margin: 1px 0 0 0; color: #15803d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@usuario</p>
+                    </div>
+                </div>
+
+                <!-- Registration Form for Guests -->
+                <div id="registration-form" style="margin-bottom: 32px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                        <div style="background: #000; color: #fff; width: 24px; height: 24px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900;">1</div>
+                        <h3 style="font-size: 13px; font-weight: 900; color: #000; margin: 0; letter-spacing: 0.5px; text-transform: uppercase;">CRIE SUA CONTA DITO</h3>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="reg-name">Seu Nome Completo</label>
+                        <input type="text" id="reg-name" placeholder="Ex: João da Silva" class="form-input">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="reg-username">Escolha um Usuário</label>
+                        <input type="text" id="reg-username" placeholder="Ex: joaosilva" class="form-input" oninput="this.value = this.value.toLowerCase().replace(/[^a-z0-9]/g, '')">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="reg-password">Crie uma Senha Segura</label>
+                        <input type="password" id="reg-password" placeholder="Crie sua senha de acesso" class="form-input">
+                    </div>
+                </div>
+
+                <!-- Final Action Block -->
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                    <div style="background: #000; color: #fff; width: 24px; height: 24px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900;">2</div>
+                    <h3 style="font-size: 13px; font-weight: 900; color: #000; margin: 0; letter-spacing: 0.5px; text-transform: uppercase;">CONCLUIR COMPRA</h3>
+                </div>
+
+                <button class="checkout-btn" onclick="handlePayClick()">
+                    <i data-lucide="credit-card" style="width: 18px;"></i>
+                    <span id="btn-pay-text">GERAR PIX AGORA</span>
+                </button>
+            </div>
+
+            <!-- Custom Builder Layout (Below Checkout) -->
+            <div id="builder-below-blocks" style="padding: 0 24px 32px 24px;"></div>
+        </div>
+
+        <!-- Pix Modal Overlay -->
+        <div id="pix-modal" class="pix-modal-overlay">
+            <div class="pix-modal-content">
+                <button onclick="closePixModal()" style="position: absolute; top: 16px; left: 16px; width: 36px; height: 36px; border-radius: 50%; border: none; background: #f5f5f5; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                    <i data-lucide="x" style="width: 18px; color: #000;"></i>
+                </button>
+
+                <div style="width: 52px; height: 52px; background: #f0fdf4; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                    <i data-lucide="qr-code" style="width: 26px; color: #22c55e;"></i>
+                </div>
+
+                <h3 style="font-weight: 950; font-size: 18px; margin: 0 0 4px 0; letter-spacing: -0.5px;">Finalize seu Pix</h3>
+                <div id="pix-timer" style="font-size: 10px; font-weight: 900; color: #666; text-transform: uppercase; margin-bottom: 20px; letter-spacing: 0.5px;">
+                    Aguardando Pagamento • 30:00
+                </div>
+
+                <p style="font-size: 13px; font-weight: 800; color: #000; margin-bottom: 20px;">Total: <span style="font-weight: 900; color: #22c55e;">R$ <span id="pix-price">0.00</span></span></p>
+
+                <div style="background: #fff; padding: 20px; border-radius: 24px; border: 1px solid #f0f0f0; margin-bottom: 20px;">
+                    <img id="pix-qr-img" src="" style="width: 160px; height: 160px; margin: 0 auto 16px; border-radius: 12px; display: block;">
+                    
+                    <div style="position: relative; margin-bottom: 12px;">
+                        <input id="pix-code" readonly value="" style="width: 100%; height: 48px; border: 1px solid #eee; border-radius: 12px; font-family: monospace; font-size: 11px; color: #000; background: #fafafa; padding: 0 12px; box-sizing: border-box; text-align: center; text-overflow: ellipsis; overflow: hidden;">
+                    </div>
+
+                    <button onclick="copyPixCode()" style="width: 100%; height: 50px; background: #000; color: #fff; border: none; border-radius: 14px; font-size: 12px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i data-lucide="copy" style="width: 16px;"></i> COPIAR CÓDIGO PIX
+                    </button>
+                </div>
+
+                <p style="font-size: 11px; color: #666; font-weight: 600; line-height: 1.5; margin-bottom: 16px;">Abra o app do seu banco e pague por <b>Pix Copia e Cola</b> ou <b>QR Code</b>.</p>
+
+                <button onclick="verifyPaymentDirectly()" style="background: #fff; color: #000; border: 1px solid #ddd; padding: 12px; border-radius: 14px; font-size: 12px; font-weight: 900; cursor: pointer; width: 100%;">
+                    VERIFICAR PAGAMENTO AGORA
+                </button>
+            </div>
+        </div>
+
+        <!-- Success Success Overlay -->
+        <div id="success-screen" style="display: none; flex: 1; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center; background: #fff;">
+            <div style="width: 72px; height: 72px; background: #f0fdf4; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
+                <i data-lucide="party-popper" style="width: 36px; color: #22c55e;"></i>
+            </div>
+            <h3 style="font-size: 24px; font-weight: 950; letter-spacing: -1px; margin: 0 0 8px 0;">Pagamento Confirmado!</h3>
+            <p style="font-size: 14px; color: #666; font-weight: 600; line-height: 1.6; margin: 0 0 32px 0;">Seu acesso ao produto foi liberado com sucesso. Entre na plataforma para começar!</p>
+            
+            <button onclick="enterApp()" style="width: 100%; max-width: 280px; height: 56px; background: #000; color: #fff; border: none; border-radius: 50px; font-weight: 900; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <i data-lucide="rocket" style="width: 18px;"></i> ACESSAR MEUS PRODUTOS
+            </button>
+        </div>
+    </div>
+
+    <!-- Supabase Client Setup -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Supabase Configurations
+        const SUPABASE_URL = "https://hlzmahaekybidmwielsr.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhsem1haGFla3liaWRtd2llbHNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5MDEzNjEsImV4cCI6MjA5MjQ3NzM2MX0.7LFLCe72ZyE245raNtJzi72meVhrhkO_45leQMUfHFM";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let activeProduct = null;
+        let activeUser = null;
+        let activePaymentId = null;
+        let paymentPollingTimer = null;
+        let pixCountdownTimer = null;
+
+        // On Load Page
+        window.addEventListener('DOMContentLoaded', async () => {
+            if (window.lucide) lucide.createIcons();
+            await fetchAndRenderProduct();
+            checkUserSession();
+        });
+
+        // 1. Fetch & Render Product
+        async function fetchAndRenderProduct() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const checkoutId = urlParams.get('id');
+
+            if (!checkoutId) {
+                showErrorScreen("Nenhum identificador de produto foi passado.");
+                return;
+            }
+
+            try {
+                // Tenta buscar por ID
+                let { data, error } = await supabaseClient.from('dito_market_products').select('*').eq('id', checkoutId).maybeSingle();
+                if (!data) {
+                    // Tenta buscar por Slug
+                    const res = await supabaseClient.from('dito_market_products').select('*').eq('slug', checkoutId).maybeSingle();
+                    data = res.data;
+                }
+
+                if (!data) {
+                    showErrorScreen("O produto solicitado não foi encontrado.");
+                    return;
+                }
+
+                activeProduct = data;
+                
+                // Popula a interface
+                document.getElementById('prod-title').innerText = activeProduct.name;
+                document.getElementById('prod-price').innerText = parseFloat(activeProduct.price || 0).toFixed(2);
+                document.getElementById('prod-category').innerText = activeProduct.type || 'Produto';
+                
+                const productImg = (activeProduct.images && activeProduct.images.length > 0) ? activeProduct.images[0] : (activeProduct.image || activeProduct.image_url || "");
+                document.getElementById('prod-img').src = productImg || 'D2.png';
+
+                // Se houver preço grátis, ajusta o botão
+                if (parseFloat(activeProduct.price || 0) <= 0) {
+                    document.getElementById('btn-pay-text').innerText = "OBTER ACESSO GRÁTIS";
+                }
+
+                // Carrega páginas customizadas do Builder
+                await loadBuilderBlocks(activeProduct.id);
+
+                // Oculta Loading e mostra conteúdo
+                document.getElementById('loading-screen').style.display = 'none';
+                document.getElementById('checkout-content').style.display = 'flex';
+                if (window.lucide) lucide.createIcons();
+
+            } catch (err) {
+                console.error("Erro ao carregar produto:", err);
+                showErrorScreen("Erro na conexão com o banco de dados.");
+            }
+        }
+
+        // 2. Custom Builder Blocks Loader
+        async function loadBuilderBlocks(productId) {
+            try {
+                const { data } = await supabaseClient.from('dito_sales_pages').select('*').eq('product_id', productId).maybeSingle();
+                if (data && data.config) {
+                    const config = data.config;
+                    const aboveBlocks = config.above || [];
+                    const belowBlocks = config.below || [];
+                    const theme = config.theme || {};
+
+                    // Tema de fundo
+                    if (theme.backgroundColor) {
+                        document.body.style.backgroundColor = theme.backgroundColor;
+                        document.querySelector('.checkout-wrapper').style.backgroundColor = theme.backgroundColor;
+                    }
+
+                    // Renderiza blocos acima
+                    const aboveContainer = document.getElementById('builder-above-blocks');
+                    if (aboveContainer && aboveBlocks.length > 0) {
+                        aboveContainer.innerHTML = renderBlocksHTML(aboveBlocks);
+                    }
+
+                    // Renderiza blocos abaixo
+                    const belowContainer = document.getElementById('builder-below-blocks');
+                    if (belowContainer && belowBlocks.length > 0) {
+                        belowContainer.innerHTML = renderBlocksHTML(belowBlocks);
+                    }
+                }
+            } catch (e) {
+                console.warn("Sem páginas customizadas:", e);
+            }
+        }
+
+        function renderBlocksHTML(blocks) {
+            return blocks.map(block => {
+                if (block.type === 'text') {
+                    return `
+                        <div style="margin: 20px 0; text-align: ${block.align || 'left'}; color: ${block.color || '#000'};">
+                            <h2 style="font-weight: 950; font-size: ${block.titleSize || '18'}px; margin-bottom: 8px; letter-spacing: -0.5px;">${block.title || ''}</h2>
+                            <p style="font-weight: 600; font-size: ${block.textSize || '13'}px; line-height: 1.6; white-space: pre-wrap; margin: 0;">${block.content || ''}</p>
+                        </div>
+                    `;
+                } else if (block.type === 'image') {
+                    return `
+                        <div style="margin: 20px 0; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+                            <img src="${block.url}" style="width: 100%; display: block; object-fit: cover;">
+                        </div>
+                    `;
+                } else if (block.type === 'video') {
+                    return `
+                        <div style="margin: 20px 0; border-radius: 20px; overflow: hidden; background: #000; aspect-ratio: 16/9; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+                            <video src="${block.url}" controls style="width: 100%; height: 100%; display: block;"></video>
+                        </div>
+                    `;
+                }
+                return '';
+            }).join('');
+        }
+
+        // 3. User Session check
+        function checkUserSession() {
+            const isLoggedIn = localStorage.getItem('is_logged_in_vanilla') === 'true';
+            const isGuest = localStorage.getItem('is_guest_vanilla') === 'true';
+            
+            if (isLoggedIn && !isGuest) {
+                // Tenta carregar informações do usuário conectado
+                try {
+                    const rawUser = localStorage.getItem('dito_session_user');
+                    if (rawUser) {
+                        activeUser = JSON.parse(rawUser);
+                        
+                        document.getElementById('registration-form').style.display = 'none';
+                        document.getElementById('connected-username').innerText = `@${activeUser.username}`;
+                        document.getElementById('account-status-badge').style.display = 'flex';
+                    }
+                } catch (e) {
+                    console.error("Erro ao ler sessão do usuário:", e);
+                }
+            }
+        }
+
+        // 4. Handle Pay Button Click
+        async function handlePayClick() {
+            // Se for convidado, cria conta
+            if (!activeUser) {
+                const name = document.getElementById('reg-name').value.trim();
+                const user = document.getElementById('reg-username').value.trim();
+                const pass = document.getElementById('reg-password').value.trim();
+
+                if (!name || !user || !pass) {
+                    alert("Por favor, preencha todos os campos da conta para receber o acesso.");
+                    return;
+                }
+
+                showLoadingOverlay(true, "Criando sua conta comercial...");
+
+                try {
+                    // Verifica se o usuário já existe
+                    const { data: existing } = await supabaseClient.from('dito_users').select('username').eq('username', user).maybeSingle();
+                    if (existing) {
+                        showLoadingOverlay(false);
+                        alert("Este nome de usuário já está em uso. Escolha outro!");
+                        return;
+                    }
+
+                    // Cria usuário na nuvem
+                    const { data, error } = await supabaseClient.from('dito_users').insert([{
+                        username: user,
+                        password: pass,
+                        name: name,
+                        balance: 0,
+                        sales: 0,
+                        bio: "Membro Dito",
+                        referred_by: localStorage.getItem('dito_pending_ref') || null,
+                        created_at: new Date().toISOString()
+                    }]).select().single();
+
+                    if (error) throw error;
+
+                    // Faz login automático
+                    activeUser = data;
+                    localStorage.setItem('is_logged_in_vanilla', 'true');
+                    localStorage.setItem('is_guest_vanilla', 'false');
+                    localStorage.setItem('dito_session_user', JSON.stringify(data));
+
+                    // Atualiza UI da conta
+                    document.getElementById('registration-form').style.display = 'none';
+                    document.getElementById('connected-username').innerText = `@${activeUser.username}`;
+                    document.getElementById('account-status-badge').style.display = 'flex';
+                    
+                } catch (err) {
+                    console.error("Erro de cadastro:", err);
+                    showLoadingOverlay(false);
+                    alert("Erro técnico ao criar sua conta. Tente novamente.");
+                    return;
+                }
+            }
+
+            // Inicia fluxo de pagamento real
+            const total = parseFloat(activeProduct.price || 0);
+            
+            if (total <= 0) {
+                showLoadingOverlay(true, "Liberando acesso gratuito...");
+                setTimeout(async () => {
+                    await finalizeSuccessfulPurchase();
+                }, 1500);
+                return;
+            }
+
+            const paymentId = 'pay_' + Date.now();
+            activePaymentId = paymentId;
+
+            showLoadingOverlay(true, "Gerando seu código Pix real...");
+
+            try {
+                let email = activeUser.email;
+                if (!email || !email.includes('@')) {
+                    email = `${activeUser.username}@dito.app`;
+                }
+
+                // Dispara a Edge Function de Pix
+                const response = await fetch(`${SUPABASE_URL}/functions/v1/create-pix`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    },
+                    body: JSON.stringify({
+                        productId: activeProduct.id,
+                        amount: total.toFixed(2),
+                        email: email,
+                        userId: activeUser.username,
+                        paymentId: paymentId
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error("O servidor de pagamentos recusou a chamada.");
+                }
+
+                const payData = await response.json();
+                showLoadingOverlay(false);
+
+                if (payData.qr_code) {
+                    displayPixModal(payData.qr_code, total, paymentId);
+                } else {
+                    throw new Error("A resposta não continha o código Pix.");
+                }
+
+            } catch (err) {
+                console.error("Erro na geração de Pix:", err);
+                showLoadingOverlay(false);
+                alert("Erro ao processar código Pix Mercado Pago. Tente de novo.");
+            }
+        }
+
+        // 5. Display Pix Modal
+        function displayPixModal(qrCode, amount, paymentId) {
+            document.getElementById('pix-price').innerText = amount.toFixed(2);
+            document.getElementById('pix-code').value = qrCode;
+            document.getElementById('pix-qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrCode)}`;
+            
+            document.getElementById('pix-modal').style.display = 'flex';
+
+            // Polling de pagamento
+            startPaymentPolling(paymentId);
+
+            // Cronômetro
+            startPixCountdown(30 * 60);
+        }
+
+        function closePixModal() {
+            document.getElementById('pix-modal').style.display = 'none';
+            if (paymentPollingTimer) clearInterval(paymentPollingTimer);
+            if (pixCountdownTimer) clearInterval(pixCountdownTimer);
+        }
+
+        // 6. Polling & Verification Logic
+        function startPaymentPolling(paymentId) {
+            if (paymentPollingTimer) clearInterval(paymentPollingTimer);
+            
+            paymentPollingTimer = setInterval(async () => {
+                await checkPaymentStatus(paymentId);
+            }, 5000); // A cada 5 segundos
+        }
+
+        async function verifyPaymentDirectly() {
+            if (!activePaymentId) return;
+            showLoadingOverlay(true, "Verificando seu pagamento...");
+            const approved = await checkPaymentStatus(activePaymentId);
+            showLoadingOverlay(false);
+            if (!approved) {
+                alert("Pagamento ainda não identificado. Se você já pagou, aguarde alguns instantes.");
+            }
+        }
+
+        async function checkPaymentStatus(paymentId) {
+            try {
+                const { data, error } = await supabaseClient.from('dito_payments').select('*').eq('id', paymentId).maybeSingle();
+                if (data && data.status === 'approved') {
+                    await finalizeSuccessfulPurchase();
+                    return true;
+                }
+            } catch (err) {
+                console.warn("Erro no polling de pagamento:", err);
+            }
+            return false;
+        }
+
+        function startPixCountdown(durationSeconds) {
+            if (pixCountdownTimer) clearInterval(pixCountdownTimer);
+            let timeLeft = durationSeconds;
+            
+            pixCountdownTimer = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                
+                document.getElementById('pix-timer').innerText = `Aguardando Pagamento • ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+                
+                timeLeft--;
+                if (timeLeft < 0) {
+                    clearInterval(pixCountdownTimer);
+                    closePixModal();
+                }
+            }, 1000);
+        }
+
+        // 7. Finalize Purchase
+        async function finalizeSuccessfulPurchase() {
+            if (paymentPollingTimer) clearInterval(paymentPollingTimer);
+            if (pixCountdownTimer) clearInterval(pixCountdownTimer);
+
+            showLoadingOverlay(true, "Liberando acesso ao seu produto...");
+
+            try {
+                // 1. CREDITA O VENDEDOR
+                const sellerName = activeProduct.author || activeProduct.seller;
+                if (sellerName && sellerName !== 'Ditão' && sellerName !== 'Visitante') {
+                    const price = parseFloat(activeProduct.price || 0);
+                    const appFee = price * 0.03;
+                    const sellerNet = price - appFee;
+
+                    const { data: sellerData } = await supabaseClient.from('dito_users').select('*').eq('username', sellerName).maybeSingle();
+                    if (sellerData) {
+                        const isGuaranteed = activeProduct.guarantee === true || activeProduct.guarantee === 'true';
+                        const currentBal = parseFloat(sellerData.balance || 0);
+                        const currentPend = parseFloat(sellerData.pending_balance || 0);
+                        
+                        let newBal = currentBal;
+                        let newPend = currentPend;
+
+                        if (isGuaranteed) {
+                            newPend = (currentPend + sellerNet).toFixed(2);
+                        } else {
+                            newBal = (currentBal + sellerNet).toFixed(2);
+                        }
+
+                        const newSales = (parseFloat(sellerData.sales || 0) + sellerNet).toFixed(2);
+                        
+                        let history = [];
+                        try {
+                            history = sellerData.purchases ? (typeof sellerData.purchases === 'string' ? JSON.parse(sellerData.purchases) : sellerData.purchases) : [];
+                        } catch(e) {}
+                        history.push({ item: activeProduct.name, value: sellerNet, timestamp: new Date().toISOString(), type: 'sale', guarantee: isGuaranteed, fee_deducted: appFee.toFixed(2) });
+
+                        await supabaseClient.from('dito_users').update({
+                            balance: newBal,
+                            pending_balance: newPend,
+                            sales: newSales,
+                            purchases: JSON.stringify(history)
+                        }).eq('username', sellerName);
+
+                        // Envia notificação ao vendedor
+                        const msg = isGuaranteed ? 
+                            `Você vendeu "${activeProduct.name}". R$ ${sellerNet.toFixed(2)} em garantia.` : 
+                            `Venda Realizada! R$ ${sellerNet.toFixed(2)} disponível para saque!`;
+
+                        await supabaseClient.from('dito_notifications').insert([{
+                            username: sellerName,
+                            title: isGuaranteed ? 'Venda Garantida 🔒' : 'Dinheiro na Mão! ⚡',
+                            message: msg,
+                            type: 'venda',
+                            read: false,
+                            created_at: new Date().toISOString()
+                        }]);
+                    }
+                }
+
+                // 2. ADICIONA PRODUTO AO HISTÓRICO DO COMPRADOR E SINCRONIZA NUVEM
+                let userPurchases = [];
+                const buyerKey = activeUser.username || 'Guest';
+                try {
+                    const localP = localStorage.getItem(`dito_purchased_products_${buyerKey}`);
+                    userPurchases = localP ? JSON.parse(localP) : [];
+                } catch(e) {}
+
+                if (!userPurchases.some(p => p.id === activeProduct.id)) {
+                    userPurchases.push({
+                        ...activeProduct,
+                        purchased_at: Date.now()
+                    });
+                }
+
+                localStorage.setItem(`dito_purchased_products_${buyerKey}`, JSON.stringify(userPurchases));
+
+                // Sincroniza nuvem
+                await supabaseClient.from('dito_users').update({ 
+                    purchases: userPurchases 
+                }).eq('username', activeUser.username);
+
+                // Mostra animação de sucesso
+                showLoadingOverlay(false);
+                closePixModal();
+                
+                document.getElementById('checkout-content').style.display = 'none';
+                document.getElementById('success-screen').style.display = 'flex';
+                
+                // Explode Confetti!
+                triggerConfetti();
+
+            } catch (err) {
+                console.error("Erro ao liberar compras:", err);
+                showLoadingOverlay(false);
+                alert("Seu pagamento foi aprovado, mas houve um erro ao liberar seu acesso. Entre em contato com o suporte!");
+            }
+        }
+
+        // Confetti Explosion
+        function triggerConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 180,
+                    spread: 80,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+
+        // Loading Overlay Control
+        function showLoadingOverlay(show, text = "") {
+            const load = document.getElementById('loading-screen');
+            if (show) {
+                load.querySelector('h4').innerText = text || "Carregando...";
+                load.style.display = 'flex';
+                document.getElementById('checkout-content').style.display = 'none';
+            } else {
+                load.style.display = 'none';
+            }
+        }
+
+        // Copy Pix Code to Clipboard
+        function copyPixCode() {
+            const copyText = document.getElementById("pix-code");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            
+            try {
+                navigator.clipboard.writeText(copyText.value);
+                alert("Código de Pix copiado com sucesso! 🎉");
+            } catch (err) {
+                document.execCommand("copy");
+                alert("Código de Pix copiado!");
+            }
+        }
+
+        // Navigation
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        function enterApp() {
+            window.location.href = 'index.html';
+        }
+
+        function showErrorScreen(message) {
+            document.getElementById('loading-screen').innerHTML = `
+                <div style="width: 72px; height: 72px; background: #fff5f5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; margin-left: auto; margin-right: auto;">
+                    <i data-lucide="alert-triangle" style="width: 32px; color: #ef4444;"></i>
+                </div>
+                <h3 style="font-size: 20px; font-weight: 950; letter-spacing: -0.5px; margin: 0 0 8px 0; color: #ef4444;">Checkout Indisponível</h3>
+                <p style="font-size: 13px; color: #666; font-weight: 600; line-height: 1.5; margin-bottom: 32px; max-width: 260px; margin-left: auto; margin-right: auto;">${message}</p>
+                <button onclick="goBack()" style="background: #000; color: #fff; border: none; border-radius: 50px; padding: 12px 28px; font-weight: 900; font-size: 13px; cursor: pointer;">Voltar ao Dito</button>
+            `;
+            document.getElementById('loading-screen').style.display = 'block';
+            document.getElementById('checkout-content').style.display = 'none';
+            if (window.lucide) lucide.createIcons();
+        }
+    </script>
+</body>
+</html>

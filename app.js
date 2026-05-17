@@ -10834,7 +10834,7 @@
         `;
 
         const renderList = (blocks, pos) => {
-            if (!blocks || blocks.length === 0) return `<p style="text-align:center; padding:20px; color:#ccc; font-size:10px; font-weight:900; text-transform:uppercase; border:2px dashed #f0f0f0; border-radius:20px; margin-bottom:16px;">Lista Vazia</p>`;
+            if (!blocks || blocks.length === 0) return '';
             return blocks.map((b, idx) => {
                 const isImg = b.type === 'image';
                 const style = isImg ? "padding:0; margin-bottom:16px; position:relative;" : "background:#fff; border:1px solid #eee; border-radius:20px; padding:16px; margin-bottom:12px; position:relative;";

@@ -10888,13 +10888,9 @@
                 </div>
                 <div style="padding:24px 24px 0 24px; display:flex; flex-direction:column; align-items:center; width:100%; background:${bgColor};">
                     <div style="width:100%; max-width:500px; background:#fff; border-radius:8px 8px 0 0; padding:24px; min-height:calc(100vh - 52px); box-shadow:0 -4px 40px rgba(0,0,0,0.05);">
-                        <header style="display:flex; align-items:center; gap:16px; margin-bottom:32px;">
+                                                <header style="display:flex; align-items:center; gap:16px; margin-bottom:32px;">
                             <div style="width:44px; height:44px; background:#f5f5f5; border-radius:50%; display:flex; align-items:center; justify-content:center;">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                            </div>
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
-                                <h2 style="font-size:24px; font-weight:900; letter-spacing:-1px;">Finalizar Pedido</h2>
                             </div>
                         </header>
                         <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:24px;">${renderBlocks(cfg.above)}</div>

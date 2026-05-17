@@ -4658,6 +4658,27 @@
                 this.activePlayerTab = 'aulas';
                 this.openModules = {}; // Reseta acordeão
                 
+                // Normaliza o content para ser um array para simplificar a renderização no player
+                let raw = this.activeCourse.content || [];
+                let parsed = [];
+                if (typeof raw === 'string') {
+                    try { parsed = JSON.parse(raw); } catch(e) { parsed = []; }
+                } else {
+                    parsed = raw;
+                }
+                if (!Array.isArray(parsed) && parsed && typeof parsed === 'object') {
+                    if (Array.isArray(parsed.items)) {
+                        parsed = parsed.items;
+                    } else if (Array.isArray(parsed.modules)) {
+                        parsed = parsed.modules;
+                    } else {
+                        parsed = [];
+                    }
+                } else if (!Array.isArray(parsed)) {
+                    parsed = [];
+                }
+                this.activeCourse.content = parsed;
+
                 // Seleciona a primeira aula por padrão se houver conteúdo real
                 if (this.activeCourse.content && this.activeCourse.content.length > 0) {
                     const firstModule = this.activeCourse.content[0];
@@ -4687,11 +4708,25 @@
                 contentArea.innerHTML = `<div style="text-align: center;"><i data-lucide="users" style="width: 60px; margin-bottom: 12px;"></i><p style="font-weight: 900; font-size: 14px;">MENTORIA AO VIVO</p><button onclick="app.enterMentorshipRoom('${course.id}')" style="margin-top: 16px; background: #ee4d2d; color: #fff; border: none; padding: 12px 28px; border-radius: 30px; font-weight: 900; font-size: 12px; cursor: pointer; text-transform: uppercase;">Entrar na Sala</button></div>`;
                 controls.style.display = 'none';
             } else {
-                // Course (Video) - Usando um vídeo demo premium para dar realismo
+                // Encontra a aula ativa para tocar o vídeo dela
+                let activeLesson = null;
+                const structure = course.content || [];
+                for (const m of structure) {
+                    if (m.lessons) {
+                        const found = m.lessons.find(l => l.id === this.currentLessonId);
+                        if (found) {
+                            activeLesson = found;
+                            break;
+                        }
+                    }
+                }
+                const videoSrc = (activeLesson && activeLesson.video) || "https://assets.mixkit.co/videos/preview/mixkit-star-field-in-deep-space-9736-large.mp4";
+
+                // Course (Video) - Toca o vídeo da aula correspondente
                 contentArea.innerHTML = `
                     <div style="position: relative; width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden;">
                         <video id="course-main-video" style="width: 100%; height: 100%; object-fit: cover;" playsinline>
-                            <source src="https://assets.mixkit.co/videos/preview/mixkit-star-field-in-deep-space-9736-large.mp4" type="video/mp4">
+                            <source src="${videoSrc}" type="video/mp4">
                         </video>
                         <div id="video-overlay-play" onclick="app.toggleMainVideo()" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); cursor: pointer; transition: 0.3s;">
                             <i data-lucide="play" style="width: 48px; height: 48px; color: #fff;"></i>
@@ -7707,18 +7742,48 @@
             }
         },
 
-        editProduct(id) {
-            const prod = this.products.find(p => String(p.id) === String(id));
+        async editProduct(id) {
+            this.showLoading(true, 'Carregando produto...');
+            let prod = null;
+            
+            // 1. Tenta buscar no banco de dados completo (Supabase)
+            if (supabase) {
+                try {
+                    const { data, error } = await supabase
+                        .from('dito_market_products')
+                        .select('*')
+                        .eq('id', id)
+                        .maybeSingle();
+                    if (data && !error) {
+                        prod = data;
+                        // Faz o parse do content do Supabase se vier como string
+                        if (prod.content && typeof prod.content === 'string') {
+                            try {
+                                prod.content = JSON.parse(prod.content);
+                            } catch (e) {
+                                console.error("Erro parse content:", e);
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error("Erro fetch completo produto:", e);
+                }
+            }
+            
+            // 2. Fallback para os dados locais se não achar na nuvem ou estiver offline
             if (!prod) {
                 const market = JSON.parse(localStorage.getItem('dito_products_vanilla') || '[]');
-                const localProd = market.find(p => String(p.id) === String(id));
-                if (!localProd) return;
-                this.selectedProduct = localProd;
-            } else {
-                this.selectedProduct = prod;
+                prod = market.find(p => String(p.id) === String(id));
             }
-            const p = this.selectedProduct;
-
+            
+            this.showLoading(false);
+            if (!prod) {
+                this.showNotification("Não foi possível encontrar os dados completos do produto.", "error");
+                return;
+            }
+            
+            const p = prod;
+            this.selectedProduct = p;
             this.editingProductId = id;
             
             // Navega e inicializa apenas a estrutura básica sem resetar campos
@@ -7748,8 +7813,6 @@
                     priceInp.style.cursor = 'not-allowed';
                     this.calculateNetProfit(p.price || 0);
                 }
-
-                this.selectedProduct = p; // Armazena o produto original para preservar dados não editáveis (como vendas)
 
                 // Configurações
                 if(document.getElementById('prod-visible')) document.getElementById('prod-visible').checked = p.visible !== false;
@@ -7785,11 +7848,27 @@
                     // Tenta resgatar de 'content' ou 'modules' com parsing robusto
                     const rawContent = p.content || p.modules || [];
                     let parsed = [];
-                    if (Array.isArray(rawContent)) {
-                        parsed = rawContent;
-                    } else if (typeof rawContent === 'string' && rawContent.trim().startsWith('[')) {
+                    
+                    if (typeof rawContent === 'string') {
                         try { parsed = JSON.parse(rawContent); } catch(e) { parsed = []; }
+                    } else {
+                        parsed = rawContent;
                     }
+                    
+                    if (Array.isArray(parsed)) {
+                        parsed = parsed;
+                    } else if (parsed && typeof parsed === 'object') {
+                        if (Array.isArray(parsed.items)) {
+                            parsed = parsed.items;
+                        } else if (Array.isArray(parsed.modules)) {
+                            parsed = parsed.modules;
+                        } else {
+                            parsed = [];
+                        }
+                    } else {
+                        parsed = [];
+                    }
+
                     this.courseStructure = JSON.parse(JSON.stringify(parsed));
                     console.log("📦 Estrutura de curso hidratada:", this.courseStructure.length, "módulos");
                     
@@ -8646,16 +8725,19 @@
         handleLessonAttachmentUpload(input, moduleId, lessonId) {
             const file = input.files[0];
             if (file) {
-                const module = this.courseStructure.find(m => m.id === moduleId);
-                if (module) {
-                    const lesson = module.lessons.find(l => l.id === lessonId);
-                    if (lesson) {
-                        lesson.attachmentName = file.name;
-                        // Aqui poderíamos subir o arquivo para o storage, por enquanto simulamos
-                        lesson.attachment = "file_uploaded"; 
-                        this.renderCourseStructure();
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const module = this.courseStructure.find(m => m.id === moduleId);
+                    if (module) {
+                        const lesson = module.lessons.find(l => l.id === lessonId);
+                        if (lesson) {
+                            lesson.attachmentName = file.name;
+                            lesson.attachment = e.target.result; // Salva o anexo completo como base64
+                            this.renderCourseStructure();
+                        }
                     }
-                }
+                };
+                reader.readAsDataURL(file);
             }
         },
 
@@ -8676,15 +8758,20 @@
                         return;
                     }
 
-                    const module = this.courseStructure.find(m => m.id === moduleId);
-                    if (module) {
-                        const lesson = module.lessons.find(l => l.id === lessonId);
-                        if (lesson) {
-                            lesson.fileName = file.name;
-                            this.renderCourseStructure();
-                            this.updateProductProgress();
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const module = this.courseStructure.find(m => m.id === moduleId);
+                        if (module) {
+                            const lesson = module.lessons.find(l => l.id === lessonId);
+                            if (lesson) {
+                                lesson.fileName = file.name;
+                                lesson.video = e.target.result; // Salva o vídeo completo como base64
+                                this.renderCourseStructure();
+                                this.updateProductProgress();
+                            }
                         }
-                    }
+                    };
+                    reader.readAsDataURL(file);
                 };
 
                 video.src = URL.createObjectURL(file);

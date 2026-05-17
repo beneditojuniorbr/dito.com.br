@@ -11902,16 +11902,12 @@
             return;
         }
 
-        const prodDomain = "https://www.ditoapp.com.br";
-        const isLocalFile = window.location.protocol === 'file:';
-
         container.innerHTML = myProducts.map(p => {
-            // Link de Producao (O que voce vai mandar para clientes)
-            const shareUrl = `${prodDomain}/checkout/${p.id}`;
-            // Link de Teste Local (So funciona no seu PC)
-            const localTestUrl = `${window.location.pathname}?checkout=${p.id}`;
+            // Gera o link de checkout dinâmico e amigável baseado no ambiente atual (localhost, IP ou domínio de produção)
+            const baseUrl = window.location.origin + window.location.pathname;
+            const checkoutParam = p.slug || p.id;
+            const shareUrl = `${baseUrl}?checkout=${checkoutParam}`;
 
-            
             return `
                 <div style="background: #fff; border-radius: 20px; padding: 16px; display: flex; align-items: center; gap: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
                     <div style="width: 50px; height: 50px; background: #f5f5f5; border-radius: 12px; background-image: url('${p.image || ''}'); background-size: cover; background-position: center;">

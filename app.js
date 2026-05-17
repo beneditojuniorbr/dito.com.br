@@ -4638,9 +4638,9 @@ selectPayment(method, btn) {
                     this.showNotification("Erro ao processar reembolso.", "error");
                 }
             }
-        },
-
-        openCourse(id) {
+        },        async openCourse(id) {
+            this.showLoading(true, 'Carregando conteúdo...');
+            
             // Busca nas compras ou, se for o dono, busca na vitrine global
             let product = this.purchasedProducts.find(p => p.id === id);
             
@@ -4649,6 +4649,24 @@ selectPayment(method, btn) {
                 const isOwnerCourse = globalP && (globalP.seller === this.currentUser?.username || globalP.author === this.currentUser?.username);
                 if (isOwnerCourse) product = globalP;
             }
+
+            // Tenta buscar o produto completo com todos os dados (incluindo content) na Nuvem (Supabase)
+            if (supabase) {
+                try {
+                    const { data, error } = await supabase
+                        .from('dito_market_products')
+                        .select('*')
+                        .eq('id', id)
+                        .maybeSingle();
+                    if (data && !error) {
+                        product = data;
+                    }
+                } catch (e) {
+                    console.error("Erro fetch completo curso:", e);
+                }
+            }
+
+            this.showLoading(false);
 
             this.activeCourse = product;
             if (this.activeCourse) {
@@ -8291,17 +8309,29 @@ async postToMural() {
                 const networkProd = { ...newProd };
                 if (networkProd.image && networkProd.image.length > 200000) {
                      console.warn("Imagem muito grande para nuvem, enviando compactada...");
-                }
-
-                // Salva na lista global local com proteção de cota
+                }                // Salva na lista global local com proteção de cota
                 try {
+                    // OTIMIZAÇÃO EXTRAORDINÁRIA: Criamos uma cópia para o localStorage e removemos dados pesados (vídeos/imagens/anexos base64) para evitar QuotaExceededError
+                    let localProd = JSON.parse(JSON.stringify(newProd));
+                    if (localProd.type === 'Curso' && Array.isArray(localProd.content)) {
+                        localProd.content = localProd.content.map(m => ({
+                            ...m,
+                            lessons: m.lessons ? m.lessons.map(l => ({
+                                ...l,
+                                video: l.video && l.video.length > 50000 ? '[VÍDEO_SALVO_NA_NUVEM]' : l.video,
+                                thumbnail: l.thumbnail && l.thumbnail.length > 50000 ? '[IMAGEM_SALVA_NA_NUVEM]' : l.thumbnail,
+                                attachment: l.attachment && l.attachment.length > 50000 ? '[ANEXO_SALVO_NA_NUVEM]' : l.attachment
+                            })) : []
+                        }));
+                    }
+
                     let marketProducts = JSON.parse(localStorage.getItem('dito_products_vanilla') || '[]');
                     if (isEdit) {
                         const idx = marketProducts.findIndex(p => p.id === this.editingProductId);
-                        if (idx !== -1) marketProducts[idx] = newProd;
-                        else marketProducts.unshift(newProd);
+                        if (idx !== -1) marketProducts[idx] = localProd;
+                        else marketProducts.unshift(localProd);
                     } else {
-                        marketProducts.unshift(newProd);
+                        marketProducts.unshift(localProd);
                     }
                     localStorage.setItem('dito_products_vanilla', JSON.stringify(marketProducts));
                     localStorage.setItem('dito_products', JSON.stringify(marketProducts));

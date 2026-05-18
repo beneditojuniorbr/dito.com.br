@@ -390,10 +390,18 @@
                             const buyerKey = this.getUserKey();
                             
                             if (localStorage.getItem('is_logged_in_vanilla') !== 'true') {
-                                localStorage.setItem('is_logged_in_vanilla', 'true');
-                                localStorage.setItem('is_guest_vanilla', 'true');
-                                this.currentUser = { username: "Convidado", name: "Visitante", isGuest: true };
-                                console.log("Sessao de Convidado iniciada para compra.");
+                                this.cart = [targetProd];
+                                localStorage.setItem('dito_cart_guest', JSON.stringify(this.cart));
+                                localStorage.setItem(`dito_cart_${buyerKey}`, JSON.stringify(this.cart));
+                                localStorage.setItem('dito_pending_checkout_after_register', 'true');
+                                
+                                this.navigate('cadastro');
+                                this.showNotification("Cadastre sua conta para concluir a compra! ✨", "info");
+                                
+                                if (window.location.protocol !== 'file:') {
+                                    window.history.replaceState({}, document.title, '/'); 
+                                }
+                                return;
                             }
 
                             this.cart = [targetProd];
@@ -8659,7 +8667,19 @@ async postToMural() {
             
             this.showNotification('Cadastro realizado com sucesso! Bem-vindo ao Dito 🚀');
             this.launchVictoryConfetti();
-            this.navigate('dashboard'); 
+            
+            if (localStorage.getItem('dito_pending_checkout_after_register') === 'true') {
+                localStorage.removeItem('dito_pending_checkout_after_register');
+                const guestCart = JSON.parse(localStorage.getItem('dito_cart_guest') || '[]');
+                if (guestCart.length > 0) {
+                    const buyerKey = this.getUserKey();
+                    this.cart = guestCart;
+                    localStorage.setItem(`dito_cart_${buyerKey}`, JSON.stringify(this.cart));
+                }
+                this.navigate('checkout-direto');
+            } else {
+                this.navigate('dashboard'); 
+            } 
         },
 
         // --- Gerenciamento de Estrutura de Curso ---
@@ -11848,7 +11868,7 @@ async postToMural() {
                         .eq('status', 'approved');
 
                     if (dbPurchases && dbPurchases.length > 0 && !dbPurchError) {
-                        if (!this.purchasedProducts) this.purchasedProducts = [];
+                        if (!Array.isArray(this.purchasedProducts)) this.purchasedProducts = [];
                         let missingProductIds = [];
                         for (const dp of dbPurchases) {
                             if (!this.purchasedProducts.some(pp => String(pp.id) === String(dp.product_id))) {

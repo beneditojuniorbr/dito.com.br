@@ -303,10 +303,11 @@
         },
 
         async init() {
-            const hideSplash = () => {
+                        const hideSplash = () => {
                 const s = document.getElementById('splash-screen');
                 if (s) { s.style.opacity = '0'; s.style.pointerEvents = 'none'; setTimeout(() => s.remove(), 400); }
             };
+            app.hideSplash = hideSplash;
 
             try {
                 // 1. Conecta ao banco imediatamente e aguarda
@@ -346,8 +347,10 @@
                     localStorage.setItem('dito_last_processed_checkout', currentCheckoutId);
                 }
 
-                // 3. Gerencia o Splash Screen
-                setTimeout(hideSplash, currentCheckoutId ? 300 : 1500); 
+                                // 3. Gerencia o Splash Screen (Mantém ativo durante deep link para não ter tela em branco)
+                if (!currentCheckoutId) {
+                    setTimeout(hideSplash, 1500);
+                } 
 
                 // Captura Link de Convite (Suporta ?ref=CODE e /convite/CODE)
                 let refCode = urlParams.get('ref');
@@ -370,7 +373,10 @@
 
                     
                     const tryLoadProduct = async (attempts = 0) => {
-                        if (attempts > 12) return; // Aumentado para ~3 segundos de tolerância
+                        if (attempts > 12) {
+                            if (typeof app.hideSplash === 'function') app.hideSplash();
+                            return; 
+                        }
 
                         // Tenta local primeiro (ID ou Slug)
                         let allProducts = JSON.parse(localStorage.getItem('dito_products_vanilla') || '[]');
@@ -386,9 +392,10 @@
                             }
                         }
 
-                        if (targetProd) {
+                                                if (targetProd) {
                             const buyerKey = this.getUserKey();
                             
+                            // Se não tiver logado, salva o produto pendente no carrinho e redireciona imediatamente para o cadastro!
                             if (localStorage.getItem('is_logged_in_vanilla') !== 'true') {
                                 this.cart = [targetProd];
                                 localStorage.setItem('dito_cart_guest', JSON.stringify(this.cart));
@@ -396,6 +403,7 @@
                                 localStorage.setItem('dito_pending_checkout_after_register', 'true');
                                 
                                 this.navigate('cadastro');
+                                if (typeof app.hideSplash === 'function') app.hideSplash();
                                 this.showNotification("Cadastre sua conta para concluir a compra! ✨", "info");
                                 
                                 if (window.location.protocol !== 'file:') {
@@ -408,6 +416,7 @@
                             localStorage.setItem(`dito_cart_${buyerKey}`, JSON.stringify(this.cart));
                             
                             this.navigate('checkout-direto');
+                            if (typeof app.hideSplash === 'function') app.hideSplash();
                             if (window.location.protocol !== 'file:') {
                                 window.history.replaceState({}, document.title, '/'); 
                             }

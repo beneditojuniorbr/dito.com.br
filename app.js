@@ -68,6 +68,28 @@
     }
 
     const app = {
+
+        parseBrazilianFloat(valStr) {
+            if (!valStr) return 0;
+            let clean = String(valStr).trim();
+            if (clean.includes('.') && clean.includes(',')) {
+                clean = clean.replace(/\./g, '').replace(',', '.');
+            } else if (clean.includes(',')) {
+                clean = clean.replace(',', '.');
+            } else if (clean.includes('.')) {
+                const parts = clean.split('.');
+                if (parts[parts.length - 1].length === 3) {
+                    clean = clean.replace(/\./g, '');
+                }
+            }
+            return parseFloat(clean) || 0;
+        },
+
+        formatPriceBrazilian(price) {
+            const val = parseFloat(price || 0);
+            return val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        },
+    
         currentUser: null,
         currentView: 'dashboard',
         marketView: 'home',
@@ -7532,13 +7554,9 @@ async postToMural() {
             const priceInp = document.getElementById('prod-price');
             let price = 0;
             if (priceInp) {
-                // Remove qualquer caractere que não seja número, ponto ou vírgula
-                let cleanVal = priceInp.value.toString().replace(/[^0-9,.]/g, '');
-                // Se houver vírgula e ponto, assume que a vírgula é decimal (BR) ou vice-versa
-                // Para simplificar, vamos apenas trocar vírgula por ponto
-                price = parseFloat(cleanVal.replace(',', '.')) || 0;
+                price = app.parseBrazilianFloat(priceInp.value);
             }
-            const formattedPrice = `R$ ${price.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            const formattedPrice = `R$ ${app.formatPriceBrazilian(price)}`;
             const type = this.selectedProductType;
             const img = this.selectedProductImage;
 
@@ -7809,10 +7827,10 @@ async postToMural() {
                 
                 if(document.getElementById('prod-price')) {
                     const priceInp = document.getElementById('prod-price');
-                    priceInp.value = p.price || '';
-                    priceInp.readOnly = true; // Não permite editar preço
-                    priceInp.style.opacity = '0.6';
-                    priceInp.style.cursor = 'not-allowed';
+                    priceInp.value = app.formatPriceBrazilian(p.price || 0);
+                    priceInp.readOnly = false; // Permite alterar o valor
+                    priceInp.style.opacity = '1';
+                    priceInp.style.cursor = 'text';
                     this.calculateNetProfit(p.price || 0);
                 }
 
@@ -8166,15 +8184,15 @@ async postToMural() {
             const elFee = document.getElementById('breakdown-fee');
             const elNet = document.getElementById('breakdown-net');
             
-            const numPrice = parseFloat(price) || 0;
+            const numPrice = this.parseBrazilianFloat(price);
             const fee = numPrice * 0.03;
             const net = numPrice - fee;
 
             if (numPrice > 0) {
                 if (container) container.style.display = 'flex';
-                if (elPrice) elPrice.innerText = `R$ ${numPrice.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-                if (elFee) elFee.innerText = `R$ ${fee.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-                if (elNet) elNet.innerText = `R$ ${net.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+                if (elPrice) elPrice.innerText = `R$ ${this.formatPriceBrazilian(numPrice)}`;
+                if (elFee) elFee.innerText = `R$ ${this.formatPriceBrazilian(fee)}`;
+                if (elNet) elNet.innerText = `R$ ${this.formatPriceBrazilian(net)}`;
             } else {
                 if (container) container.style.display = 'none';
             }
@@ -8219,7 +8237,7 @@ async postToMural() {
         saveProduct() {
             const name = document.getElementById('prod-name').value.trim();
             const desc = document.getElementById('prod-desc')?.value.trim() || "";
-            const price = parseFloat(document.getElementById('prod-price').value) || 0;
+            const price = app.parseBrazilianFloat(document.getElementById("prod-price").value) || 0;
             const category = document.getElementById('prod-category')?.value || "Dinheiro";
             const visible = document.getElementById('prod-visible').checked;
             const hasGuarantee = document.getElementById('prod-guarantee').checked;

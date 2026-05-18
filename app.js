@@ -778,9 +778,14 @@
         async processPaymentMP(method = 'pix', paymentId = null) {
             console.log("Iniciando processPaymentMP...");
             
-            // Permite convidados pagarem (eles se cadastram no formulário integrado)
+                        // Se a conta não for identificada, salva o estado pendente de checkout e envia para o cadastro
             if (!this.currentUser) {
-                this.showNotification('Erro: Conta não identificada.', 'error');
+                localStorage.setItem('dito_pending_checkout_after_register', 'true');
+                if (this.cart && this.cart.length > 0) {
+                    localStorage.setItem('dito_cart_guest', JSON.stringify(this.cart));
+                }
+                this.navigate('cadastro');
+                this.showNotification('Crie sua conta para concluir a compra! ✨', 'info');
                 return;
             }
 

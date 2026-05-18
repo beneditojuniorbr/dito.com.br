@@ -71,7 +71,7 @@ export default function BottomNav() {
         {/* Botão Baixar App Simples Abaixo com Degradê */}
         <div 
           onClick={() => (window as any).installPWA?.()}
-          className="text-[11px] font-black bg-gradient-to-r from-[#ff0045] to-[#0094ff] bg-clip-text text-transparent tracking-tight pointer-events-auto hover:scale-105 transition-transform cursor-pointer uppercase"
+          className="text-[11px] font-black bg-gradient-to-r from-[#ad0039] to-[#ff751f] bg-clip-text text-transparent tracking-tight pointer-events-auto hover:scale-105 transition-transform cursor-pointer uppercase"
         >
           Dito 2026 - App
         </div>

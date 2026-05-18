@@ -111,7 +111,7 @@ export default function LoginPage() {
             alt="Dito Logo" 
             className="w-20 h-20 rounded-[2rem] mx-auto mb-6 shadow-2xl rotate-3 hover:rotate-0 transition-transform object-cover"
           />
-          <h1 className="text-4xl font-black tracking-tighter bg-gradient-to-r from-[#ff0045] to-[#0094ff] bg-clip-text text-transparent">Dito</h1>
+          <h1 className="text-4xl font-black tracking-tighter bg-gradient-to-r from-[#ad0039] to-[#ff751f] bg-clip-text text-transparent">Dito</h1>
           <p className="text-gray-400 font-medium text-sm mt-2">seu ecossistema de infoprodutos.</p>
         </header>
 

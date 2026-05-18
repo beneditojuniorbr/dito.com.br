@@ -17,7 +17,7 @@ body {
 
 @layer utilities {
   .pulse-dot {
-    @apply h-2 w-2 rounded-full bg-[#ffd600];
+    @apply h-2 w-2 rounded-full bg-[#ff751f];
   }
   
   .gradient-icon {

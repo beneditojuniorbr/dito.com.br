@@ -165,7 +165,7 @@ export default function MercadoPage() {
                       <div key={p.id} onClick={() => { setSelectedProduct(p); setView('product'); }} className="cursor-pointer">
                          <div className="aspect-square bg-white rounded-[2rem] mb-3 flex items-center justify-center border border-gray-100 relative group overflow-hidden shadow-lg shadow-black/5">
                             <ShoppingBag className="gradient-icon opacity-30" size={40} />
-                            <div className="absolute top-4 left-4 bg-[#ffd600] w-2 h-2 rounded-full"></div>
+                            <div className="absolute top-4 left-4 bg-[#ff751f] w-2 h-2 rounded-full"></div>
                             <div className="absolute top-4 right-4 bg-black/5 backdrop-blur-sm px-3 py-1 rounded-full">
                                 <span className="text-[8px] font-black uppercase tracking-widest text-black">{p.type}</span>
                             </div>

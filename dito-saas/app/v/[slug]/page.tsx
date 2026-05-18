@@ -69,7 +69,7 @@ export default function PublicSalesPage({ params }: { params: { slug: string } }
   const blocks = pageData.config || [];
 
   return (
-    <div className="min-h-screen bg-white text-black selection:bg-[#FFBA09] selection:text-black">
+    <div className="min-h-screen bg-white text-black selection:bg-[#ff751f] selection:text-black">
       {/* Dynamic Blocks */}
       <main className="max-w-xl mx-auto">
         {blocks.map((block: any, index: number) => (
@@ -125,8 +125,8 @@ export default function PublicSalesPage({ params }: { params: { slug: string } }
 
             {block.type === "testimonials" && (
               <div className="bg-black text-white p-10 rounded-[3rem] space-y-6 relative overflow-hidden shadow-2xl">
-                <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#FFBA09] rounded-full blur-[80px] opacity-20"></div>
-                <div className="flex gap-1 text-[#FFBA09]">
+                <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#ff751f] rounded-full blur-[80px] opacity-20"></div>
+                <div className="flex gap-1 text-[#ff751f]">
                     {[1,2,3,4,5].map(s => <Star key={s} size={16} fill="currentColor" />)}
                 </div>
                 <p className="text-xl font-medium italic leading-relaxed">
@@ -153,7 +153,7 @@ export default function PublicSalesPage({ params }: { params: { slug: string } }
                 </div>
 
                 <div className="space-y-6">
-                    <button className="w-full bg-[#FFBA09] text-black py-7 rounded-[2.5rem] font-black uppercase tracking-widest text-lg shadow-[0_20px_50px_rgba(255,186,9,0.3)] hover:scale-[1.03] active:scale-95 transition-all flex items-center justify-center gap-3">
+                    <button className="w-full bg-[#ff751f] text-black py-7 rounded-[2.5rem] font-black uppercase tracking-widest text-lg shadow-[0_20px_50px_rgba(255, 117, 31,0.3)] hover:scale-[1.03] active:scale-95 transition-all flex items-center justify-center gap-3">
                         <Zap size={24} fill="black" /> {block.content.buttonText}
                     </button>
                     

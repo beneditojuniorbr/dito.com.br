@@ -160,8 +160,8 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <defs>
                             <linearGradient id="grad-${type}" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#006eff;stop-opacity:1" />
-                <stop offset="100%" style="stop-color:#ffba09;stop-opacity:1" />
+                <stop offset="0%" style="stop-color:#ad0039;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#ff751f;stop-opacity:1" />
                             </linearGradient>
                         </defs>
                         <rect x="0" y="0" width="24" height="24" fill="#ffffff" />
@@ -177,7 +177,7 @@
         },
 
         rGetMentoriaBg(img) {
-            return `linear-gradient(white, white) padding-box, linear-gradient(45deg, #006eff, #ffba09) border-box`;
+            return `linear-gradient(white, white) padding-box, linear-gradient(45deg, #ad0039, #ff751f) border-box`;
         },
 
         // Helper para salvar no localStorage com segurança (evita QuotaExceeded e otimiza imagens)
@@ -1010,7 +1010,7 @@
                     particleCount: 150,
                     spread: 70,
                     origin: { y: 0.6 },
-                    colors: ['#006eff', '#ffba09', '#ffd600']
+                    colors: ['#ad0039', '#ff751f', '#ff751f']
                 });
             } else {
                 console.log("🎉 [Confetti] Ativo!");
@@ -1329,7 +1329,7 @@
                                             ${u.avatar ? `<img src="${u.avatar}" style="width: 100%; height: 100%; object-fit: cover;">` : `<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #ccc;"><i data-lucide="user" style="width: 20px;"></i></div>`}
                                         </div>
                                         ${isOnline ? `<div style="position: absolute; bottom: 2px; right: 2px; width: 12px; height: 12px; background: #22c55e; border-radius: 50%; border: 2.5px solid #fff;"></div>` : ''}
-                                        ${hasUnread ? '<div style="position: absolute; top: -2px; left: -2px; width: 14px; height: 14px; background: #006eff; border-radius: 50%; border: 2px solid #fff; z-index: 10;"></div>' : ''}
+                                        ${hasUnread ? '<div style="position: absolute; top: -2px; left: -2px; width: 14px; height: 14px; background: #ad0039; border-radius: 50%; border: 2px solid #fff; z-index: 10;"></div>' : ''}
                                     </div>
                                     <div style="overflow: hidden;">
                                         <p style="font-weight: 900; font-size: 15px; color: ${color}; display: flex; align-items: center; gap: 4px; margin-bottom: 2px;">
@@ -1382,13 +1382,13 @@
                     
                     <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px;">
                         <button onclick="app.processGift('${targetUsername}', 15)" style="width: 100%; height: 60px; border-radius: 20px; border: 1px solid #eee; background: #fff; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s;">
-                            <i data-lucide="circle-dollar-sign" style="width: 18px; color: #ffd600;"></i> 15 Cupons
+                            <i data-lucide="circle-dollar-sign" style="width: 18px; color: #ff751f;"></i> 15 Cupons
                         </button>
                         <button onclick="app.processGift('${targetUsername}', 30)" style="width: 100%; height: 60px; border-radius: 20px; border: 1px solid #eee; background: #fff; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s;">
-                            <i data-lucide="circle-dollar-sign" style="width: 18px; color: #ffd600;"></i> 30 Cupons
+                            <i data-lucide="circle-dollar-sign" style="width: 18px; color: #ff751f;"></i> 30 Cupons
                         </button>
                         <button onclick="app.processGift('${targetUsername}', 75)" style="width: 100%; height: 60px; border-radius: 20px; border: 1px solid #eee; background: #fff; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s;">
-                            <i data-lucide="circle-dollar-sign" style="width: 18px; color: #ffd600;"></i> 75 Cupons
+                            <i data-lucide="circle-dollar-sign" style="width: 18px; color: #ff751f;"></i> 75 Cupons
                         </button>
                     </div>
                     
@@ -1552,7 +1552,7 @@
             bubbleDiv.style.display = 'flex';
             bubbleDiv.style.justifyContent = isMe ? 'flex-end' : 'flex-start';
             bubbleDiv.innerHTML = `
-                <div style="max-width: 75%; padding: 12px 16px; border-radius: 20px; font-weight: 700; font-size: 14px; line-height: 1.4; position: relative; ${isMe ? 'background: #006eff; color: #fff; border-bottom-right-radius: 4px;' : 'background: #fff; border: 1px solid #eee; color: #000; border-bottom-left-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);'}">
+                <div style="max-width: 75%; padding: 12px 16px; border-radius: 20px; font-weight: 700; font-size: 14px; line-height: 1.4; position: relative; ${isMe ? 'background: #ad0039; color: #fff; border-bottom-right-radius: 4px;' : 'background: #fff; border: 1px solid #eee; color: #000; border-bottom-left-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);'}">
                     ${msg.content}
                     <div style="font-size: 9px; margin-top: 4px; text-align: right; opacity: 0.6; font-weight: 800;">${new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
                 </div>
@@ -1986,7 +1986,7 @@
                     overlay.style.cssText = `
                         position: fixed; bottom: 100px; right: 20px; width: 120px; height: 160px; 
                         background: #000; border-radius: 20px; overflow: hidden; 
-                        box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 1000; border: 2px solid #006eff;
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 1000; border: 2px solid #ad0039;
                         display: flex; flex-direction: column;
                     `;
                     document.body.appendChild(overlay);
@@ -2148,7 +2148,7 @@
                 // Vou mostrar o valor que ela ganharia SE fizesse hoje.
                 
                 return `
-                <div style="scroll-snap-align: start; min-width: 70px; display: flex; flex-direction: column; align-items: center; text-align: center; justify-content: space-between; padding: 12px 6px; border-radius: 12px; border: ${isToday ? '3px solid transparent' : '3px solid #f0f0f0'}; background: ${isToday ? 'linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #006eff 0%, #ffba09 100%) border-box' : '#fff'}; transition: 0.3s; box-shadow: ${isToday ? '0 4px 15px rgba(0, 110, 255, 0.1)' : '0 4px 10px rgba(0,0,0,0.02)'};">
+                <div style="scroll-snap-align: start; min-width: 70px; display: flex; flex-direction: column; align-items: center; text-align: center; justify-content: space-between; padding: 12px 6px; border-radius: 12px; border: ${isToday ? '3px solid transparent' : '3px solid #f0f0f0'}; background: ${isToday ? 'linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #ad0039 0%, #ff751f 100%) border-box' : '#fff'}; transition: 0.3s; box-shadow: ${isToday ? '0 4px 15px rgba(173, 0, 57, 0.1)' : '0 4px 10px rgba(0,0,0,0.02)'};">
                     <p style="font-weight: 950; font-size: 11px; margin-bottom: 4px; color: ${past && !item.checked ? '#ccc' : '#000'};">${item.dayName}</p>
                     
                     <div style="width: 24px; height: 24px; border-radius: 50%; background: ${item.checked ? '#fff' : (past && !item.checked ? 'transparent' : (isToday ? '#fbbf24' : '#f9f9f9'))}; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; border: ${past && !item.checked ? '1px dashed #eee' : 'none'};">
@@ -2168,7 +2168,7 @@
                     ` : (isToday ? `
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
                             <div style="display: flex; align-items: center; gap: 2px; color: #000; font-size: 10px; font-weight: 950; margin-bottom: 4px;">
-                                <i data-lucide="ticket" style="width: 10px; color: #006eff;"></i> +${potentialReward}
+                                <i data-lucide="ticket" style="width: 10px; color: #ad0039;"></i> +${potentialReward}
                             </div>
                             <button onclick="app.claimDailyCheckin(${i})" style="background: #fbbf24; color: #000; border: none; border-radius: 20px; padding: 6px 14px; font-size: 10px; font-weight: 950; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                                  Receber
@@ -2256,7 +2256,7 @@
                     </div>
                     <div>
                         <p style="font-weight: 950; font-size: 14px; color: #000; margin-bottom: 2px;">Fazer uma venda</p>
-                        <p style="font-size: 11px; font-weight: 950; background: linear-gradient(135deg, #006eff 0%, #ffba09 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px;">+27 Cupons</p>
+                        <p style="font-size: 11px; font-weight: 950; background: linear-gradient(135deg, #ad0039 0%, #ff751f 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px;">+27 Cupons</p>
                         <p style="font-size: 10px; font-weight: 800; color: #999; line-height: 1.3;">Realize 1 venda hoje para ganhar.</p>
                     </div>
                     <div style="margin-top: 10px;">
@@ -2301,8 +2301,8 @@
 
             const eventConfigs = {
                 'flash': { name: 'Missão Veloz', goal: 1, current: salesToday, reward: 15, unit: 'venda', icon: 'ticket', color: '#ef4444' },
-                'master': { name: 'Missão Especialista', goal: 5, current: salesToday, reward: 20, unit: 'vendas', icon: 'ticket', color: '#ffba09' },
-                'king': { name: 'Rei da Rede', goal: 1, current: processedRefs.length, reward: 30, unit: 'indicação', icon: 'ticket', color: '#ffd600' }
+                'master': { name: 'Missão Especialista', goal: 5, current: salesToday, reward: 20, unit: 'vendas', icon: 'ticket', color: '#ff751f' },
+                'king': { name: 'Rei da Rede', goal: 1, current: processedRefs.length, reward: 30, unit: 'indicação', icon: 'ticket', color: '#ff751f' }
             };
 
             types.forEach(type => {
@@ -2333,7 +2333,7 @@
                     </div>
                     <div>
                         <p style="font-weight: 950; font-size: 14px; color: #000; margin-bottom: 2px;">${evt.name}</p>
-                        <p style="font-size: 11px; font-weight: 950; background: linear-gradient(135deg, #006eff 0%, #ffba09 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px;">+${evt.reward} Cupons</p>
+                        <p style="font-size: 11px; font-weight: 950; background: linear-gradient(135deg, #ad0039 0%, #ff751f 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px;">+${evt.reward} Cupons</p>
                         <p style="font-size: 10px; font-weight: 700; color: #999;">Meta: ${evt.goal} ${evt.unit}</p>
                     </div>
                     <div style="margin-top: 5px;">
@@ -2464,7 +2464,7 @@
 
                 return `
                 <div style="scroll-snap-align: start; min-width: 170px; background: #fff; padding: 20px; border-radius: 24px; border: 3px solid #eee; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); position: relative;">
-                    <div style="position: absolute; top: 12px; right: 12px; background: rgba(0, 110, 255, 0.05); color: #006eff; font-size: 9px; font-weight: 950; padding: 4px 10px; border-radius: 50px;">+${activeStage.reward}</div>
+                    <div style="position: absolute; top: 12px; right: 12px; background: rgba(173, 0, 57, 0.05); color: #ad0039; font-size: 9px; font-weight: 950; padding: 4px 10px; border-radius: 50px;">+${activeStage.reward}</div>
                     <div style="width: 48px; height: 48px; background: #f8f8f8; border-radius: 14px; display: flex; align-items: center; justify-content: center;">
                         <i data-lucide="${cfg.icon}" style="width: 24px; color: #000;"></i>
                     </div>
@@ -2474,7 +2474,7 @@
                     </div>
                     <div style="margin-top: 5px;">
                         <div style="width: 100%; height: 6px; background: #f0f0f0; border-radius: 10px; overflow: hidden; margin-bottom: 12px;">
-                            <div style="width: ${Math.min((cfg.currentVal / activeStage.goal) * 100, 100)}%; height: 100%; background: linear-gradient(90deg, #006eff, #ffba09); transition: 0.5s;"></div>
+                            <div style="width: ${Math.min((cfg.currentVal / activeStage.goal) * 100, 100)}%; height: 100%; background: linear-gradient(90deg, #ad0039, #ff751f); transition: 0.5s;"></div>
                         </div>
                         ${isClaimed ? 
                             `<div style="background: #f0fdf4; color: #16a34a; padding: 10px; border-radius: 14px; font-size: 10px; font-weight: 950; text-align: center;">CONCLUÍDO</div>` :
@@ -3009,7 +3009,7 @@
                         ${avatarHtml}
                     </div>
                     <div style="flex: 1; line-height: 1.4;">
-                        <span onclick="app.viewPublicProfile('${msg.sender}')" style="cursor: pointer; color: ${isMe ? '#006eff' : channelColor}; font-weight: 950; font-size: 13px;">${msg.sender}</span>
+                        <span onclick="app.viewPublicProfile('${msg.sender}')" style="cursor: pointer; color: ${isMe ? '#ad0039' : channelColor}; font-weight: 950; font-size: 13px;">${msg.sender}</span>
                         <span style="font-weight: 600; color: #333; font-size: 13px; margin-left: 2px;">${cleanContent}</span>
                     </div>
                 </div>
@@ -4218,32 +4218,18 @@
                     console.log(`💰 [Financeiro] Creditando R$ ${product.price} para o vendedor: ${sellerName}`);
                     await this.creditSeller(sellerName, product.price, product.name, product);
                 }
-            }
-
-            this.safeLocalStorageSet(`dito_purchased_products_${buyerKey}`, JSON.stringify(this.purchasedProducts));
-            
-            // 3. SINCRONIA CLOUD (Garante que apareça no Celular e PC)
-            if (supabase && this.currentUser && !this.currentUser.isGuest) {
-                console.log("☁️ [Sincronia] Salvando compras na nuvem...");
-                await supabase
-                    .from('dito_users')
-                    .update({ purchases: JSON.stringify(this.purchasedProducts) })
-                    .eq('username', this.currentUser.username);
-            }
+            }            this.safeLocalStorageSet(`dito_purchased_products_${buyerKey}`, JSON.stringify(this.purchasedProducts));
             
             // Limpa o carrinho
             this.cart = [];
             localStorage.setItem(`dito_cart_${buyerKey}`, '[]');
             this.updateCartBadge();
-            
-            // SINCRONIZAÇÃO COM A NUVEM (Crucial para não perder o acesso no F5)
+
+            // 3. SINCRONIA CLOUD UNIFICADA (Garante acesso sem corromper missões/posts)
             if (supabase && this.currentUser && !this.currentUser.isGuest) {
-                console.log("☁️ [Cloud] Sincronizando acesso aos produtos comprados...");
-                supabase.from('dito_users').update({ 
-                    purchases: this.purchasedProducts 
-                }).eq('username', this.currentUser.username).then(() => {
-                    console.log("✅ [Cloud] Compras salvas com sucesso!");
-                });
+                console.log("☁️ [Cloud] Sincronizando acesso unificado aos produtos comprados...");
+                await this.syncUserToNetwork(this.currentUser);
+                console.log("✅ [Cloud] Compras e estado sincronizados com sucesso!");
             }
             
             setTimeout(() => {
@@ -4451,7 +4437,7 @@ selectPayment(method, btn) {
                     <div style="text-align: center; padding: 60px 20px; color: #ccc;">
                         <i data-lucide="shopping-bag" style="width: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
                         <p style="font-weight: 800; font-size: 14px;">Nenhuma compra visível.</p>
-                        ${trash.length > 0 ? `<button onclick="app.renderPurchasedTrash()" style="margin-top: 10px; background: none; border: none; color: #006eff; font-weight: 900; font-size: 11px; cursor: pointer; text-decoration: underline;">VER LIXEIRA (${trash.length})</button>` : ''}
+                        ${trash.length > 0 ? `<button onclick="app.renderPurchasedTrash()" style="margin-top: 10px; background: none; border: none; color: #ad0039; font-weight: 900; font-size: 11px; cursor: pointer; text-decoration: underline;">VER LIXEIRA (${trash.length})</button>` : ''}
                         <br>
                         <button onclick="app.navigate('mercado')" style="margin-top: 20px; background: #000; color: #fff; border: none; padding: 14px 32px; border-radius: 40px; font-weight: 900; font-size: 11px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;">Ir para o Mercado</button>
                     </div>
@@ -5189,12 +5175,12 @@ selectPayment(method, btn) {
             let badgeIcon = 'bell';
             let badgeBg = '#000';
             if (type === 'sale') { badgeIcon = 'shopping-bag'; badgeBg = '#22c55e'; }
-            if (type === 'fan') { badgeIcon = 'star'; badgeBg = '#006eff'; }
+            if (type === 'fan') { badgeIcon = 'star'; badgeBg = '#ad0039'; }
             if (type === 'error') { badgeIcon = 'alert-circle'; badgeBg = '#ef4444'; }
             if (type === 'success') { badgeIcon = 'check-circle'; badgeBg = '#22c55e'; }
 
             notif.innerHTML = `
-                <div style="width: 12px; height: 12px; border-radius: 50%; background-color: #ffd600; box-shadow: 0 0 8px rgba(255, 214, 0, 0.6); flex-shrink: 0;"></div>
+                <div style="width: 12px; height: 12px; border-radius: 50%; background-color: #ff751f; box-shadow: 0 0 8px rgba(255, 117, 31, 0.6); flex-shrink: 0;"></div>
                 <div class="system-notif-content">
                     <div class="system-notif-title">${title}</div>
                     <div class="system-notif-desc">${message}</div>
@@ -5512,8 +5498,8 @@ selectPayment(method, btn) {
                     
                     if (coinPod) {
                         coinPod.style.display = isMercado ? 'flex' : 'none';
-                        coinPod.style.background = isMercado ? '#fff' : 'rgba(255,214,0,0.1)';
-                        coinPod.style.border = isMercado ? 'none' : '1px solid rgba(255, 214, 0, 0.2)';
+                        coinPod.style.background = isMercado ? '#fff' : 'rgba(255, 117, 31,0.1)';
+                        coinPod.style.border = isMercado ? 'none' : '1px solid rgba(255, 117, 31, 0.2)';
                         coinPod.querySelectorAll('span').forEach(s => s.style.color = '#000');
                     }
                     
@@ -5617,7 +5603,7 @@ selectPayment(method, btn) {
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
                         <div>
                             <h3 style="font-size: 19px; font-weight: 950; letter-spacing: -1px; display: flex; align-items: center; gap: 8px;">
-                                ${s.name} <i data-lucide="${isAdmin ? 'shield-check' : 'users'}" style="width: 17px; color: ${isAdmin ? '#006eff' : '#000'};"></i>
+                                ${s.name} <i data-lucide="${isAdmin ? 'shield-check' : 'users'}" style="width: 17px; color: ${isAdmin ? '#ad0039' : '#000'};"></i>
                             </h3>
                             <p style="font-size: 10px; font-weight: 900; color: #ccc; text-transform: uppercase;">GESTOR: ${s.owner}</p>
                         </div>
@@ -5969,7 +5955,7 @@ async postToMural() {
                         <div style="width: 40px; height: 40px; background: #f9f9f9; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; color: #000;">${m.username[0].toUpperCase()}</div>
                         <div>
                             <p style="font-size: 13px; font-weight: 900; color: #000;">${m.username}</p>
-                            <p style="font-size: 9px; color: ${m.role === 'Gestor' ? '#006eff' : '#999'}; font-weight: 900; text-transform: uppercase;">${m.role}</p>
+                            <p style="font-size: 9px; color: ${m.role === 'Gestor' ? '#ad0039' : '#999'}; font-weight: 900; text-transform: uppercase;">${m.role}</p>
                         </div>
                     </div>
                     ${isAdmin && m.username !== this.currentUser.username ? `
@@ -6248,7 +6234,7 @@ async postToMural() {
                 const x = ((dayOfMonth - 1) / 29) * (width - 20) + 10; 
                 const y = height - ((s.value / maxValue) * (height - padding * 2) + padding);
                 
-                svg += `<circle cx="${x}" cy="${y}" r="4.5" fill="#FFD600">
+                svg += `<circle cx="${x}" cy="${y}" r="4.5" fill="#ff751f">
                             <title>R$ ${s.value.toFixed(2)} - Dia ${dayOfMonth}</title>
                          </circle>`;
             });
@@ -6821,7 +6807,7 @@ async postToMural() {
                 if (removeBtn) {
                     removeBtn.style.display = 'none';
                     removeBtn.style.transform = 'scale(1)';
-                    removeBtn.style.background = '#006eff';
+                    removeBtn.style.background = '#ad0039';
                 }
             }
             if (window.lucide) lucide.createIcons();
@@ -6983,7 +6969,7 @@ async postToMural() {
                             <img src="${p.url}" style="width: 100%; height: 100%; object-fit: cover;">
                             <!-- Overlay de Exclusão -->
                             <div class="post-overlay" onclick="app.deletePost(${index}, event)" style="position: absolute; inset: 0; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.2s; z-index: 10;">
-                                <div style="width: 32px; height: 32px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #006eff; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                                <div style="width: 32px; height: 32px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ad0039; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
                                     <i data-lucide="trash-2" style="width: 14px;"></i>
                                 </div>
                             </div>
@@ -7447,7 +7433,7 @@ async postToMural() {
                                 <span class="event-timer" style="font-size: 10px; font-weight: 950; color: #000; background: #f5f5f5; padding: 4px 10px; border-radius: 10px;">00:00:00</span>
                             </div>
                             <h4 style="font-size: 15px; font-weight: 950; line-height: 1.2; margin-bottom: 4px; color: #000;">${ev.title}</h4>
-                            <p style="font-size: 12px; font-weight: 950; background: linear-gradient(135deg, #006eff 0%, #ffba09 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; display: inline-block;">Prêmio: ${ev.reward}</p>
+                            <p style="font-size: 12px; font-weight: 950; background: linear-gradient(135deg, #ad0039 0%, #ff751f 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; display: inline-block;">Prêmio: ${ev.reward}</p>
                         </div>
                         <button onclick="app.participateEvent('${ev.id}')" style="width: 100%; height: 44px; background: #000; color: #fff; border: none; border-radius: 15px; font-size: 11px; font-weight: 950; cursor: pointer; margin-top: 16px; letter-spacing: 0.5px;">QUERO PARTICIPAR</button>
                     </div>
@@ -7570,8 +7556,8 @@ async postToMural() {
                     vitrineImg.style.borderBottom = 'none';
                     vitrineImg.style.padding = '12px';
                     vitrineImg.innerHTML = `
-                        <div style="aspect-ratio: 1; width: 100%; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #006eff, #7000ff); display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
-                            <span style="position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); background: #006eff; color: white; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 6px; border: 2px solid #fff; letter-spacing: 1px; z-index: 2; white-space: nowrap;">AO VIVO</span>
+                        <div style="aspect-ratio: 1; width: 100%; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #ad0039, #7000ff); display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+                            <span style="position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); background: #ad0039; color: white; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 6px; border: 2px solid #fff; letter-spacing: 1px; z-index: 2; white-space: nowrap;">AO VIVO</span>
                             <div style="width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: #fff; border: 2px solid #fff; display: flex; align-items: center; justify-content: center; background-size: cover; background-position: center; background-image: url('${img || ''}')">
                                 ${!img ? '<i data-lucide="users" style="width: 32px; color: #eee;"></i>' : ''}
                             </div>
@@ -7668,7 +7654,7 @@ async postToMural() {
         },
 
         launchVictoryConfetti() {
-            const colors = ['#FFD600', '#FFCC00', '#FFEA00']; 
+            const colors = ['#ff751f', '#FFCC00', '#FFEA00']; 
             for (let i = 0; i < 100; i++) {
                 const confetti = document.createElement('div');
                 confetti.className = 'confetti';
@@ -8012,7 +7998,7 @@ async postToMural() {
             });
             
             // Select effect: Background white + Gradient Border + Deep Luxury Shadow
-            btn.style.background = 'linear-gradient(#fff, #fff) padding-box, linear-gradient(90deg, #006eff 0%, #ffba09 100%) border-box';
+            btn.style.background = 'linear-gradient(#fff, #fff) padding-box, linear-gradient(90deg, #ad0039 0%, #ff751f 100%) border-box';
             btn.style.border = '2px solid transparent';
             btn.style.transform = 'scale(1.1)';
             
@@ -8143,7 +8129,7 @@ async postToMural() {
             const addBtn = document.createElement('div');
             addBtn.onclick = () => document.getElementById('prod-image-file').click();
             addBtn.style.cssText = `width: 60px; height: 60px; border-radius: 12px; background: #fbfbfb; border: 2px dashed #eee; flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s;`;
-            addBtn.onmouseover = () => addBtn.style.borderColor = '#006eff';
+            addBtn.onmouseover = () => addBtn.style.borderColor = '#ad0039';
             addBtn.onmouseout = () => addBtn.style.borderColor = '#eee';
             addBtn.innerHTML = `<i data-lucide="plus" style="width: 20px; color: #ccc;"></i>`;
             gallery.appendChild(addBtn);
@@ -8862,7 +8848,7 @@ async postToMural() {
 
                                             <!-- Botão Capa -->
                                             <div onclick="this.nextElementSibling.click()" style="flex: 1; height: 40px; background: #fff; border: 2.5px solid #000; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; gap: 8px; transition: 0.3s;">
-                                                <i data-lucide="image" style="width: 14px; color: ${l.thumbnail ? '#006eff' : '#000'};"></i>
+                                                <i data-lucide="image" style="width: 14px; color: ${l.thumbnail ? '#ad0039' : '#000'};"></i>
                                                 <span style="font-size: 9px; font-weight: 950; color: #000; text-transform: uppercase; letter-spacing: 0.5px;">${l.thumbnail ? 'Mudar Capa' : 'Definir Capa'}</span>
                                             </div>
                                             <input type="file" accept="image/*" onchange="app.handleLessonThumbnailUpload(this, '${m.id}', '${l.id}')" style="display: none;">
@@ -8882,7 +8868,7 @@ async postToMural() {
                                                     style="width: 100%; height: 40px; background: transparent; border: none; border-bottom: 2px solid #f5f5f5; padding: 0 10px 0 24px; font-size: 11px; font-weight: 800; outline: none; transition: 0.3s;" onfocus="this.style.borderBottomColor='#000'">
                                             </div>
                                             <div onclick="this.nextElementSibling.click()" style="width: 40px; height: 40px; background: #fff; border: 2.5px solid #eee; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s;" onmouseover="this.style.borderColor='#000'" onmouseout="this.style.borderColor='#eee'">
-                                                <i data-lucide="paperclip" style="width: 16px; color: ${l.attachmentName && l.attachmentName !== l.attachment ? '#006eff' : '#aaa'};"></i>
+                                                <i data-lucide="paperclip" style="width: 16px; color: ${l.attachmentName && l.attachmentName !== l.attachment ? '#ad0039' : '#aaa'};"></i>
                                             </div>
                                             <input type="file" onchange="app.handleLessonAttachmentUpload(this, '${m.id}', '${l.id}')" style="display: none;">
                                         </div>
@@ -9198,8 +9184,8 @@ async postToMural() {
             if (dot) {
                 if (hasUpdate) {
                     dot.style.display = 'block';
-                    dot.style.background = '#006eff'; 
-                    dot.style.boxShadow = '0 0 10px rgba(0, 110, 255, 0.3)';
+                    dot.style.background = '#ad0039'; 
+                    dot.style.boxShadow = '0 0 10px rgba(173, 0, 57, 0.3)';
                 } else {
                     dot.style.display = 'none';
                 }
@@ -9286,7 +9272,7 @@ async postToMural() {
                 container.innerHTML = `
                     <div style="padding: 80px 32px; text-align: center; background: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;">
                         <div style="width: 80px; height: 80px; background: #fdf2f8; border-radius: 30px; display: flex; align-items: center; justify-content: center; margin-bottom: 32px;">
-                            <i data-lucide="lock" style="width: 32px; height: 32px; color: #006eff;"></i>
+                            <i data-lucide="lock" style="width: 32px; height: 32px; color: #ad0039;"></i>
                         </div>
                         <h2 style="font-size: 26px; font-weight: 950; color: #000; margin-bottom: 12px; letter-spacing: -1px;">Área Exclusiva</h2>
                         <p style="color: #666; font-size: 14px; margin-bottom: 40px; font-weight: 600; line-height: 1.6; max-width: 280px;">Esta Mentoria é restrita a portadores de ingresso. Garanta o seu para liberar o acesso ao sinal ao vivo e o chat VIP.</p>
@@ -9369,7 +9355,7 @@ async postToMural() {
                     if (relatedImg) {
                         relatedImg.style.backgroundImage = 'none';
                         relatedImg.style.backgroundColor = '#f9f9f9';
-                        relatedImg.innerHTML = '<i data-lucide="plus" style="width: 24px; color: #006eff;"></i>';
+                        relatedImg.innerHTML = '<i data-lucide="plus" style="width: 24px; color: #ad0039;"></i>';
                     }
                     if (relatedName) {
                         relatedName.innerHTML = `<span style="font-size: 11px; color: #999; font-weight: 700;">Sua vitrine está vazia</span>`;
@@ -9926,7 +9912,7 @@ async postToMural() {
                 liveWrapper.style.display = activeLives.length > 0 ? 'block' : 'none';
                 liveContainer.innerHTML = activeLives.map(p => `
                     <div onclick="app.enterMentorshipRoom('${p.id}')" style="display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; flex-shrink: 0; width: 72px;">
-                        <div style="width: 72px; height: 72px; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #006eff, #7000ff); display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+                        <div style="width: 72px; height: 72px; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #ad0039, #7000ff); display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
                             <div style="width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: #fff; border: 2px solid #fff; display: flex; align-items: center; justify-content: center;">
                                 <img src="${this.rGetPImage(p.image, p.name, p.type)}" style="width: 100%; height: 100%; object-fit: cover;">
                             </div>
@@ -9958,7 +9944,7 @@ async postToMural() {
                                 </div>
                             </div>
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
-                                <span style="font-weight: 900; font-size: 14px; color: #006eff;">R$ ${parseFloat(p.price || 0).toFixed(2)}</span>
+                                <span style="font-weight: 900; font-size: 14px; color: #ad0039;">R$ ${parseFloat(p.price || 0).toFixed(2)}</span>
                                 <span style="font-size: 8px; font-weight: 800; color: #ccc;">${p.sales || 0} v.</span>
                             </div>
                         </div>
@@ -9974,8 +9960,8 @@ async postToMural() {
                 hContainer.innerHTML = arrival.map(p => {
                     const isMentoria = p.type === 'Mentoria';
                     const imgContainer = isMentoria ? `
-                        <div style="aspect-ratio: 1; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #006eff, #7000ff); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.08); overflow: visible; flex-shrink: 0;">
-                            <span style="position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); background: #006eff; color: white; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 6px; border: 2px solid #fff; letter-spacing: 1px; z-index: 2;">AO VIVO</span>
+                        <div style="aspect-ratio: 1; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #ad0039, #7000ff); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.08); overflow: visible; flex-shrink: 0;">
+                            <span style="position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); background: #ad0039; color: white; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 6px; border: 2px solid #fff; letter-spacing: 1px; z-index: 2;">AO VIVO</span>
                             <div style="width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: #fff; border: 2px solid #fff; display: flex; align-items: center; justify-content: center; background-size: cover; background-position: center;">
                                 <img src="${this.rGetPImage(p.image, p.name, p.type)}" style="width: 100%; height: 100%; object-fit: cover;">
                             </div>
@@ -9995,7 +9981,7 @@ async postToMural() {
                         ` : `
                         <div style="width: 100%; aspect-ratio: 1; background: #f9f9f9; overflow: hidden; position: relative; border-bottom: 2px solid #f2f2f2;">
                             ${p.hasLimit && (p.stockLimit - (p.sales || 0)) <= 10 ? `
-                                <div style="position: absolute; top: 8px; right: 8px; background: #006eff; color: #fff; font-size: 8px; font-weight: 950; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">ÚLTIMAS ${(p.stockLimit - (p.sales || 0))}</div>
+                                <div style="position: absolute; top: 8px; right: 8px; background: #ad0039; color: #fff; font-size: 8px; font-weight: 950; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">ÚLTIMAS ${(p.stockLimit - (p.sales || 0))}</div>
                             ` : ''}
                             <img src="${this.rGetPImage(p.image, p.name, p.type)}" style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
@@ -10010,7 +9996,7 @@ async postToMural() {
                                 <span style="font-size: 8px; font-weight: 900; color: #bbb;">(${this.getProductRating(p.id).count})</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
-                                <span style="font-weight: 900; font-size: 14px; color: #006eff;">R$ ${parseFloat(p.price || 0).toFixed(2)}</span>
+                                <span style="font-weight: 900; font-size: 14px; color: #ad0039;">R$ ${parseFloat(p.price || 0).toFixed(2)}</span>
                                 <span style="font-size: 8px; font-weight: 800; color: #ccc;">${isMentoria ? 'Transmitindo' : `${p.sales || 0} v.`}</span>
                             </div>
                         </div>
@@ -10024,8 +10010,8 @@ async postToMural() {
             feed.innerHTML = all.map(p => {
                 const isMentoria = p.type === 'Mentoria';
                 const imgContainer = isMentoria ? `
-                    <div style="aspect-ratio: 1; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #006eff, #7000ff); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.08); overflow: visible;">
-                        <span style="position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); background: #006eff; color: white; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 6px; border: 2px solid #fff; letter-spacing: 1px; z-index: 2;">AO VIVO</span>
+                    <div style="aspect-ratio: 1; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #ad0039, #7000ff); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.08); overflow: visible;">
+                        <span style="position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); background: #ad0039; color: white; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 6px; border: 2px solid #fff; letter-spacing: 1px; z-index: 2;">AO VIVO</span>
                         <div style="width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: #fff; border: 2px solid #fff; display: flex; align-items: center; justify-content: center;">
                             <img src="${this.rGetPImage(p.image, p.name, p.type)}" style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
@@ -10045,7 +10031,7 @@ async postToMural() {
                     ` : `
                         <div style="width: 100%; aspect-ratio: 1; background: #f9f9f9; overflow: hidden; position: relative; border-bottom: 2px solid #f2f2f2;">
                             ${p.hasLimit && (p.stockLimit - (p.sales || 0)) <= 15 ? `
-                                <div style="position: absolute; top: 12px; right: 12px; background: #006eff; color: #fff; font-size: 8px; font-weight: 950; padding: 4px 10px; border-radius: 6px; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">RESTAM ${(p.stockLimit - (p.sales || 0))}</div>
+                                <div style="position: absolute; top: 12px; right: 12px; background: #ad0039; color: #fff; font-size: 8px; font-weight: 950; padding: 4px 10px; border-radius: 6px; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">RESTAM ${(p.stockLimit - (p.sales || 0))}</div>
                             ` : ''}
                             <img src="${this.rGetPImage(p.image, p.name, p.type)}" style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
@@ -11620,9 +11606,9 @@ async postToMural() {
         // 1. Injeta virtualmente a notificação de Sociedade se houver pendências
         if (this.hasPendingSocietyRequests) {
             listHtml += `
-                <div onclick="app.navigate('sociedade'); app.toggleNotifDrawer(false);" style="padding: 16px; background: #fffdf0; border-radius: 20px; border: 1.5px solid #ffd600; display: flex; gap: 14px; position: relative; margin-bottom: 12px; cursor: pointer;">
-                    <div style="position: absolute; top: 12px; right: 12px; width: 8px; height: 8px; background: #006eff; border-radius: 50%;"></div>
-                    <div style="width: 44px; height: 44px; background: #ffd60020; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <div onclick="app.navigate('sociedade'); app.toggleNotifDrawer(false);" style="padding: 16px; background: #fffdf0; border-radius: 20px; border: 1.5px solid #ff751f; display: flex; gap: 14px; position: relative; margin-bottom: 12px; cursor: pointer;">
+                    <div style="position: absolute; top: 12px; right: 12px; width: 8px; height: 8px; background: #ad0039; border-radius: 50%;"></div>
+                    <div style="width: 44px; height: 44px; background: #ff751f20; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                         <i data-lucide="users" style="width: 20px; color: #b8860b;"></i>
                     </div>
                     <div style="flex: 1;">
@@ -11646,11 +11632,11 @@ async postToMural() {
                 let icon = 'bell';
                 let color = '#000';
                 if (n.type === 'sale') { icon = 'shopping-bag'; color = '#22c55e'; }
-                if (n.type === 'fan') { icon = 'star'; color = '#006eff'; }
+                if (n.type === 'fan') { icon = 'star'; color = '#ad0039'; }
                 
                 return `
                     <div style="padding: 16px; background: ${n.read ? '#fff' : '#fafafa'}; border-radius: 20px; border: 1px solid ${n.read ? '#eee' : '#f0f0f0'}; display: flex; gap: 14px; position: relative; transition: 0.3s;">
-                        ${!n.read ? `<div style="position: absolute; top: 12px; right: 12px; width: 6px; height: 6px; background: #006eff; border-radius: 50%;"></div>` : ''}
+                        ${!n.read ? `<div style="position: absolute; top: 12px; right: 12px; width: 6px; height: 6px; background: #ad0039; border-radius: 50%;"></div>` : ''}
                         <div style="width: 44px; height: 44px; background: ${color}10; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                             <i data-lucide="${icon}" style="width: 20px; color: ${color};"></i>
                         </div>
@@ -11829,13 +11815,73 @@ async postToMural() {
                             // Formato antigo (apenas array de produtos)
                             this.purchasedProducts = purchasesRaw;
                             this.safeLocalStorageSet(`dito_purchased_products_${key}`, JSON.stringify(this.purchasedProducts));
-                        }
-                        
-                        this.renderPurchasedProducts();
+                        }                        this.renderPurchasedProducts();
                     } catch(e) {
                         console.error("❌ Erro ao processar sincronia de compras/missões:", e);
                     }
                 }
+
+                // --- SINCRONIZAÇÃO AUTOMÁTICA DE COMPRAS DO BANCO (dito_purchases) ---
+                try {
+                    const { data: dbPurchases, error: dbPurchError } = await supabase
+                        .from('dito_purchases')
+                        .select('product_id')
+                        .eq('user_id', this.currentUser.username)
+                        .eq('status', 'approved');
+
+                    if (dbPurchases && dbPurchases.length > 0 && !dbPurchError) {
+                        if (!this.purchasedProducts) this.purchasedProducts = [];
+                        let missingProductIds = [];
+                        for (const dp of dbPurchases) {
+                            if (!this.purchasedProducts.some(pp => String(pp.id) === String(dp.product_id))) {
+                                missingProductIds.push(dp.product_id);
+                            }
+                        }
+
+                        if (missingProductIds.length > 0) {
+                            console.log("🔓 [Autosync] Detectados novos produtos comprados não liberados:", missingProductIds);
+                            const { data: productsData, error: prodError } = await supabase
+                                .from('dito_market_products')
+                                .select('*')
+                                .in('id', missingProductIds);
+
+                            if (productsData && productsData.length > 0 && !prodError) {
+                                let newPurchasesAdded = false;
+                                for (const pData of productsData) {
+                                    if (!this.purchasedProducts.some(pp => String(pp.id) === String(pData.id))) {
+                                        let parsedContent = null;
+                                        if (pData.content) {
+                                            try {
+                                                parsedContent = typeof pData.content === 'string' ? JSON.parse(pData.content) : pData.content;
+                                            } catch (e) {
+                                                console.error("Erro ao fazer parse do conteúdo do produto no autosync:", e);
+                                            }
+                                        }
+
+                                        this.purchasedProducts.push({
+                                            ...pData,
+                                            id: String(pData.id),
+                                            price: Number(pData.price),
+                                            content: parsedContent,
+                                            purchased_at: Date.now()
+                                        });
+                                        newPurchasesAdded = true;
+                                    }
+                                }
+
+                                if (newPurchasesAdded) {
+                                    this.safeLocalStorageSet(`dito_purchased_products_${key}`, JSON.stringify(this.purchasedProducts));
+                                    await this.syncUserToNetwork(this.currentUser);
+                                    this.renderPurchasedProducts();
+                                    console.log("✅ [Autosync] Acesso liberado com sucesso para os novos produtos!");
+                                }
+                            }
+                        }
+                    }
+                } catch (autoSyncErr) {
+                    console.error("Erro no autosync de compras:", autoSyncErr);
+                }
+                // --- FIM DA SINCRONIZAÇÃO AUTOMÁTICA DE COMPRAS ---
 
                 // 4. Fallback para colunas legadas (se existirem no banco)
                 if (data.missions_json) localStorage.setItem(`dito_missions_${key}`, data.missions_json);
@@ -11934,7 +11980,7 @@ async postToMural() {
                     </div>
                     <div style="flex: 1; overflow: hidden;">
                         <h4 style="font-size: 14px; font-weight: 950; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px;">${p.name}</h4>
-                        <p style="font-size: 10px; font-weight: 700; color: #ffba09; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: none;">/${p.slug || p.id}</p>
+                        <p style="font-size: 10px; font-weight: 700; color: #ff751f; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: none;">/${p.slug || p.id}</p>
                     </div>
                     <div style="display: flex; gap: 8px;">
                         <button onclick="app.copyToClipboard('${shareUrl}', 'Link de Venda copiado!', this)" title="Copiar link para clientes" style="width: 40px; height: 40px; border-radius: 12px; background: #000; color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;">

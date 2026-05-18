@@ -25,7 +25,7 @@ export default function LinksPage() {
           <p className="text-gray-400 font-medium mb-6">copie e compartilhe seus links para vender mais.</p>
           <button 
             onClick={() => router.push("/builder")}
-            className="inline-flex items-center gap-2 bg-[#FFBA09] text-black px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all"
+            className="inline-flex items-center gap-2 bg-[#ff751f] text-black px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all"
           >
             Criar Página de Vendas
           </button>

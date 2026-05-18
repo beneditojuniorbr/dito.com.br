@@ -156,7 +156,7 @@ export default function Dashboard() {
             <div className="w-full bg-gradient-to-br from-[#000] via-[#111] to-[#000] rounded-[2.5rem] p-8 relative overflow-hidden group border border-white/5 shadow-2xl">
                 {/* Glow decorativo */}
                 <div className="absolute -top-20 -right-20 w-60 h-60 bg-[#ff005c] rounded-full blur-[100px] opacity-20 animate-pulse"></div>
-                <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-[#0094ff] rounded-full blur-[100px] opacity-20 animate-pulse delay-700"></div>
+                <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-[#ff751f] rounded-full blur-[100px] opacity-20 animate-pulse delay-700"></div>
                 
                 <div className="relative z-10">
                     <div className="flex items-center gap-2 mb-4">
@@ -165,7 +165,7 @@ export default function Dashboard() {
                         </span>
                     </div>
                     <h2 className="text-3xl font-black text-white italic tracking-tighter leading-none mb-2">
-                        Acelere suas <br/> <span className="bg-gradient-to-r from-[#ff0045] to-[#0094ff] bg-clip-text text-transparent">Vendas hoje.</span>
+                        Acelere suas <br/> <span className="bg-gradient-to-r from-[#ad0039] to-[#ff751f] bg-clip-text text-transparent">Vendas hoje.</span>
                     </h2>
                     <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-6">
                         +1.4k infoprodutores online agora
@@ -238,7 +238,7 @@ export default function Dashboard() {
           
           <div className="flex gap-0 overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth">
             {/* EVENTO RELÂMPAGO */}
-            <div className="min-w-[81%] w-[81%] flex-shrink-0 bg-gradient-to-br from-[#ff0045] to-[#ef4444] p-6 text-white snap-center flex flex-col justify-center min-h-[100px]">
+            <div className="min-w-[81%] w-[81%] flex-shrink-0 bg-gradient-to-br from-[#ad0039] to-[#ef4444] p-6 text-white snap-center flex flex-col justify-center min-h-[100px]">
               <h4 className="text-base font-black leading-tight mb-3 uppercase tracking-tight">Missão Veloz: 1 Venda em 1h</h4>
               <div className="flex justify-between items-center">
                 <p className="text-xs font-bold opacity-90">Ganhe +150 Cupons</p>
@@ -247,20 +247,20 @@ export default function Dashboard() {
             </div>
 
             {/* EVENTO DO DIA */}
-            <div className="min-w-[81%] w-[81%] flex-shrink-0 bg-gradient-to-br from-[#0094ff] to-[#0ea5e9] p-6 text-white snap-center flex flex-col justify-center min-h-[100px]">
+            <div className="min-w-[81%] w-[81%] flex-shrink-0 bg-gradient-to-br from-[#ff751f] to-[#0ea5e9] p-6 text-white snap-center flex flex-col justify-center min-h-[100px]">
               <h4 className="text-base font-black leading-tight mb-3 uppercase tracking-tight">Missão Especialista: 5 Vendas Hoje</h4>
               <div className="flex justify-between items-center">
                 <p className="text-xs font-bold opacity-90">Ganhe +500 Cupons</p>
-                <button className="bg-white text-[#0094ff] px-5 py-2 rounded-full text-[10px] font-black uppercase shadow-lg">PARTICIPAR</button>
+                <button className="bg-white text-[#ff751f] px-5 py-2 rounded-full text-[10px] font-black uppercase shadow-lg">PARTICIPAR</button>
               </div>
             </div>
 
             {/* EVENTO DA SEMANA */}
-            <div className="min-w-[81%] w-[81%] flex-shrink-0 bg-gradient-to-br from-[#ffd600] to-[#ffaa00] p-6 text-white snap-center flex flex-col justify-center min-h-[100px]">
+            <div className="min-w-[81%] w-[81%] flex-shrink-0 bg-gradient-to-br from-[#ff751f] to-[#ffaa00] p-6 text-white snap-center flex flex-col justify-center min-h-[100px]">
               <h4 className="text-base font-black leading-tight mb-3 uppercase tracking-tight">Rei da Rede: 3 Indicações</h4>
               <div className="flex justify-between items-center">
                 <p className="text-xs font-bold opacity-90">Ganhe +750 Cupons</p>
-                <button className="bg-white text-[#ffd600] px-5 py-2 rounded-full text-[10px] font-black uppercase shadow-lg">PARTICIPAR</button>
+                <button className="bg-white text-[#ff751f] px-5 py-2 rounded-full text-[10px] font-black uppercase shadow-lg">PARTICIPAR</button>
               </div>
             </div>
           </div>

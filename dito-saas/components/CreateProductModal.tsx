@@ -114,12 +114,12 @@ export default function CreateProductModal({ isOpen, onClose }: CreateProductMod
             return (
               <div key={type.id} className="flex flex-col items-center gap-3 shrink-0 relative">
                 {type.isSoon && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#ff0045] to-[#0094ff] text-white text-[7px] font-black py-1 px-3 rounded-full whitespace-nowrap shadow-lg z-10 uppercase">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#ad0039] to-[#ff751f] text-white text-[7px] font-black py-1 px-3 rounded-full whitespace-nowrap shadow-lg z-10 uppercase">
                     Em breve
                   </div>
                 )}
                 {type.isNew && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#FFBA09] text-black text-[7px] font-black py-1 px-3 rounded-full whitespace-nowrap shadow-lg z-10 uppercase">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#ff751f] text-black text-[7px] font-black py-1 px-3 rounded-full whitespace-nowrap shadow-lg z-10 uppercase">
                     Novo
                   </div>
                 )}
@@ -134,7 +134,7 @@ export default function CreateProductModal({ isOpen, onClose }: CreateProductMod
                   }}
                   style={{
                     background: isSelected 
-                      ? "linear-gradient(#fff, #fff) padding-box, linear-gradient(90deg, #ff0045 0%, #0094ff 100%) border-box" 
+                      ? "linear-gradient(#fff, #fff) padding-box, linear-gradient(90deg, #ad0039 0%, #ff751f 100%) border-box" 
                       : "#f9fafb",
                     borderColor: isSelected ? "transparent" : "#f9fafb",
                     borderWidth: "2px",

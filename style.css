@@ -18,7 +18,7 @@
 }
 
 .gradient-icon {
-    background: linear-gradient(135deg, #006eff 0%, #ffba09 100%);
+    background: linear-gradient(135deg, #ad0039 0%, #ff751f 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     display: inline-block;
@@ -27,10 +27,10 @@
 .notif-dot {
     width: 6px;
     height: 6px;
-    background: #006eff;
+    background: #ad0039;
     border-radius: 50%;
     position: relative;
-    box-shadow: 0 0 5px rgba(0, 110, 255, 0.3);
+    box-shadow: 0 0 5px rgba(173, 0, 57, 0.3);
 }
 
 * {
@@ -502,8 +502,8 @@ input::placeholder, textarea::placeholder {
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background-color: #ffd600;
-    box-shadow: 0 0 8px rgba(255, 214, 0, 0.6);
+    background-color: #ff751f;
+    box-shadow: 0 0 8px rgba(255, 117, 31, 0.6);
     flex-shrink: 0;
 }
 
@@ -1179,7 +1179,7 @@ input::placeholder, textarea::placeholder {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(90deg, #006eff 0%, #0487ff 100%);
+  background: linear-gradient(90deg, #ad0039 0%, #0487ff 100%);
   opacity: 0;
   transition: opacity 0.4s ease;
   border-radius: 34px;
@@ -1216,7 +1216,7 @@ input:checked + .slider:before {
 }
 
 .product-type-btn.active {
-    background: linear-gradient(135deg, #006eff 0%, #0487ff 100%) !important;
+    background: linear-gradient(135deg, #ad0039 0%, #0487ff 100%) !important;
     color: #fff !important;
     border-color: transparent !important;
 }
@@ -1272,7 +1272,7 @@ input:checked + .slider:before {
     position: fixed;
     pointer-events: none;
     z-index: 10001;
-    color: #ffd600;
+    color: #ff751f;
     font-size: 24px;
     animation: coinFloat 1.5s ease-out forwards;
 }
@@ -1305,7 +1305,7 @@ input[type=range].coin-slider::-webkit-slider-runnable-track {
   width: 100%;
   height: 12px;
   cursor: pointer;
-  background: linear-gradient(to right, #006eff 0%, #0487ff var(--range-progress, 0%), #eee var(--range-progress, 0%), #eee 100%);
+  background: linear-gradient(to right, #ad0039 0%, #0487ff var(--range-progress, 0%), #eee var(--range-progress, 0%), #eee 100%);
   border-radius: 20px;
   border: none;
 }
@@ -1315,7 +1315,7 @@ input[type=range].coin-slider::-moz-range-track {
   width: 100%;
   height: 12px;
   cursor: pointer;
-  background: linear-gradient(to right, #006eff 0%, #0487ff var(--range-progress, 0%), #eee var(--range-progress, 0%), #eee 100%);
+  background: linear-gradient(to right, #ad0039 0%, #0487ff var(--range-progress, 0%), #eee var(--range-progress, 0%), #eee 100%);
   border-radius: 20px;
   border: none;
 }
@@ -1458,7 +1458,7 @@ input[type=range].coin-slider::-webkit-slider-thumb {
 .profile-header-layout { display: flex; flex-direction: column; align-items: center; gap: 24px; margin-bottom: 24px; }
 .profile-avatar-box { width: 86px; height: 86px; border-radius: 50%; background: #f5f5f5; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid #eee; position: relative; }
 .avatar-overlay { display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.4); flex-direction: column; align-items: center; justify-content: center; color: #fff; cursor: pointer; }
-.btn-remove-avatar { position: absolute; top: -5px; right: -5px; width: 28px; height: 28px; background: #006eff; color: #fff; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 12px; border: 3px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+.btn-remove-avatar { position: absolute; top: -5px; right: -5px; width: 28px; height: 28px; background: #ad0039; color: #fff; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 12px; border: 3px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
 .profile-stats-layout { display: flex; flex: 1; flex-direction: column; width: 100%; gap: 16px; }
 .stat-val { font-weight: 950; font-size: 18px; letter-spacing: -0.5px; color: #000; margin: 0; }
 .stat-label { font-size: 9px; font-weight: 900; color: #ccc; text-transform: uppercase; margin: 0; }
@@ -1512,10 +1512,10 @@ input[type=range].coin-slider::-webkit-slider-thumb {
     height: 24px;
     width: 24px;
     border-radius: 50%;
-    background: #006eff;
+    background: #ad0039;
     cursor: pointer;
     margin-top: -10px;
-    box-shadow: 0 4px 10px rgba(0, 110, 255, 0.3);
+    box-shadow: 0 4px 10px rgba(173, 0, 57, 0.3);
     border: 3px solid #fff;
 }
 
@@ -1523,9 +1523,9 @@ input[type=range].coin-slider::-webkit-slider-thumb {
     height: 18px;
     width: 18px;
     border-radius: 50%;
-    background: #006eff;
+    background: #ad0039;
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0, 110, 255, 0.3);
+    box-shadow: 0 4px 10px rgba(173, 0, 57, 0.3);
     border: 3px solid #fff;
 }
 

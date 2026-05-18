@@ -241,7 +241,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ id: string 
             {showPixModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center px-6 bg-black/80 backdrop-blur-sm animate-in fade-in transition-all">
                     <div className="bg-white w-full max-w-md rounded-[2.5rem] p-8 text-center shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-300">
-                        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#ff005c] to-[#0094ff]" />
+                        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#ff005c] to-[#ff751f]" />
                         
                         <h2 className="text-xl font-black mb-2">Escaneie o QR Code</h2>
                         <p className="text-xs font-bold text-gray-400 mb-8 px-8">O Radar Dito está aguardando seu pagamento para liberar seu acesso.</p>

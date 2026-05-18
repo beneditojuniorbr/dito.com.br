@@ -286,7 +286,7 @@ function BuilderContent() {
                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Investimento</p>
                         <p className="text-4xl font-black italic">R$ {block.content.price}</p>
                     </div>
-                    <button className="w-full bg-[#FFBA09] text-black py-5 rounded-[2rem] font-black uppercase tracking-widest text-sm shadow-2xl hover:scale-105 active:scale-95 transition-transform flex items-center justify-center gap-2">
+                    <button className="w-full bg-[#ff751f] text-black py-5 rounded-[2rem] font-black uppercase tracking-widest text-sm shadow-2xl hover:scale-105 active:scale-95 transition-transform flex items-center justify-center gap-2">
                       <Zap size={18} fill="black" /> {block.content.buttonText}
                     </button>
                   </div>

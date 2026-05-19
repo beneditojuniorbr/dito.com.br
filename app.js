@@ -632,7 +632,7 @@
                                     if (userData) {
                                         console.log("✅ [Auth] Sessão recuperada para:", userData.username);
                                         this.currentUser = userData;
-                                        localStorage.setItem('current_user_vanilla', JSON.stringify(userData));
+                                        this.saveSession(userData);
                                         localStorage.setItem('is_logged_in_vanilla', 'true');
                                         localStorage.setItem('dito_user_id', userData.id);
                                         this.loadUserScopedData();
@@ -654,7 +654,7 @@
                                         
                                         if (userData) {
                                             this.currentUser = userData;
-                                            localStorage.setItem('current_user_vanilla', JSON.stringify(userData));
+                                            this.saveSession(userData);
                                             localStorage.setItem('is_logged_in_vanilla', 'true');
                                             this.loadUserScopedData();
                                             this.navigate(lastView);
@@ -6378,7 +6378,7 @@ async postToMural() {
                 }
                 
                 // Salva na sessão atual
-                localStorage.setItem('current_user_vanilla', JSON.stringify(this.currentUser));
+                this.saveSession(this.currentUser);
                 
                 this.syncUserToNetwork(this.currentUser); // Sincroniza com a rede ao salvar perfil!
                 
@@ -6886,7 +6886,7 @@ async postToMural() {
                 this.currentUser.showRevenue = showRev;
 
                 // Salva Localmente
-                localStorage.setItem('current_user_vanilla', JSON.stringify(this.currentUser));
+                this.saveSession(this.currentUser);
                 
                 // Garante que o usuário global também tenha os dados atualizados
                 const usuarios = JSON.parse(localStorage.getItem('dito_usuarios_vanilla') || '[]');
@@ -7044,7 +7044,7 @@ async postToMural() {
                 // Sincroniza com o objeto do usuário e nuvem
                 if (this.currentUser) {
                     this.currentUser.posts = posts;
-                    localStorage.setItem('current_user_vanilla', JSON.stringify(this.currentUser));
+                    this.saveSession(this.currentUser);
                     
                     // Atualiza a lista global de usuários localmente para visibilidade imediata
                     const allUsers = JSON.parse(localStorage.getItem('dito_usuarios_vanilla') || '[]');
@@ -7083,7 +7083,7 @@ async postToMural() {
                     // Sincroniza com o objeto do usuário e nuvem
                     if (this.currentUser) {
                         this.currentUser.posts = posts;
-                        localStorage.setItem('current_user_vanilla', JSON.stringify(this.currentUser));
+                        this.saveSession(this.currentUser);
 
                         // Atualiza a lista global de usuários localmente para visibilidade imediata
                         const allUsers = JSON.parse(localStorage.getItem('dito_usuarios_vanilla') || '[]');
@@ -7179,7 +7179,7 @@ async postToMural() {
             if (confirm('Deseja realmente remover sua foto de perfil?')) {
                 if (this.currentUser) {
                     this.currentUser.avatar = "";
-                    localStorage.setItem('current_user_vanilla', JSON.stringify(this.currentUser));
+                    this.saveSession(this.currentUser);
                     
                     // Atualiza lista global local em todas as chaves possíveis
                     const userDBKeys = ['dito_users_db', 'dito_network_users', 'dito_usuarios_vanilla', 'dito_usuarios'];
@@ -8527,7 +8527,7 @@ async postToMural() {
                 this.currentUser.balance = parseFloat(newBalance);
                 const key = this.getUserKey();
                 localStorage.setItem(`user_balance_vanilla_${key}`, newBalance);
-                localStorage.setItem('current_user_vanilla', JSON.stringify(this.currentUser));
+                this.saveSession(this.currentUser);
 
                 this.showLoading(false);
                 this.showNotification('Pedido enviado! ✅ O valor cairá em sua conta em breve.', 'success');
@@ -8677,7 +8677,7 @@ async postToMural() {
             // Login Automático Pós-Cadastro
             this.currentUser = newUser;
             localStorage.setItem('is_logged_in_vanilla', 'true');
-            localStorage.setItem('current_user_vanilla', JSON.stringify(newUser));
+            this.saveSession(newUser);
             
             this.showNotification('Cadastro realizado com sucesso! Bem-vindo ao Dito 🚀');
             this.launchVictoryConfetti();
@@ -11820,7 +11820,7 @@ async postToMural() {
                 }
 
                 this.currentUser = { ...this.currentUser, ...data };
-                localStorage.setItem('current_user_vanilla', JSON.stringify(this.currentUser));
+                this.saveSession(this.currentUser);
 
                 // 3. Sincroniza Compras/Acessos e Missões (Unificado em 'purchases')
                 if (data.purchases) {
@@ -11986,7 +11986,7 @@ async postToMural() {
         const key = this.getUserKey();
         localStorage.setItem(`dito_coins_${key}`, "0");
         this.currentUser.coins = 0;
-        localStorage.setItem('current_user_vanilla', JSON.stringify(this.currentUser));
+        this.saveSession(this.currentUser);
         this.showNotification('Cupons zerados com sucesso!', 'success');
         if (this.currentView === 'missoes') this.renderMissions();
     };

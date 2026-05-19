@@ -3509,6 +3509,43 @@
                 
                 // Garantimos que o content seja um objeto
                 let metadata = Array.isArray(contentObj) ? { items: contentObj } : contentObj;
+
+                // Restaura placeholders de otimização de vídeo do banco de dados se necessário
+                if (product.type === 'Curso') {
+                    try {
+                        const { data } = await supabase
+                            .from('dito_market_products')
+                            .select('content')
+                            .eq('id', product.id)
+                            .maybeSingle();
+                        if (data && data.content) {
+                            const dbContent = typeof data.content === 'string' ? JSON.parse(data.content) : data.content;
+                            const dbItems = dbContent && (dbContent.items || dbContent.modules || []);
+                            let currentItems = metadata.items || [];
+                            
+                            if (Array.isArray(dbItems) && Array.isArray(currentItems)) {
+                                currentItems = currentItems.map(m => {
+                                    const dbMod = dbItems.find(em => em.id === m.id);
+                                    return {
+                                        ...m,
+                                        lessons: m.lessons ? m.lessons.map(l => {
+                                            const dbLesson = dbMod && dbMod.lessons ? dbMod.lessons.find(el => el.id === l.id) : null;
+                                            return {
+                                                ...l,
+                                                video: (l.video === '[VÍDEO_SALVO_NA_NUVEM]' && dbLesson) ? dbLesson.video : l.video,
+                                                thumbnail: (l.thumbnail === '[IMAGEM_SALVA_NA_NUVEM]' && dbLesson) ? dbLesson.thumbnail : l.thumbnail,
+                                                attachment: (l.attachment === '[ANEXO_SALVO_NA_NUVEM]' && dbLesson) ? dbLesson.attachment : l.attachment
+                                            };
+                                        }) : []
+                                    };
+                                });
+                                metadata.items = currentItems;
+                            }
+                        }
+                    } catch (err) {
+                        console.warn("⚠️ [Sync] Falha ao recuperar backups para restaurar placeholders:", err);
+                    }
+                }
                 
                 metadata.mentoria_link = product.mentoria_link;
                 metadata.mentoria_name = product.mentoria_name;
@@ -4690,9 +4727,21 @@ selectPayment(method, btn) {
                         .maybeSingle();
                     if (data && !error) {
                         product = data;
+                        // Cache locally for offline access
+                        this.safeLocalStorageSet(`dito_course_cache_${id}`, JSON.stringify(data));
                     }
                 } catch (e) {
                     console.error("Erro fetch completo curso:", e);
+                }
+            }
+
+            // Fallback to cache if database fetch failed/offline
+            if (!product || !product.content) {
+                const cached = localStorage.getItem(`dito_course_cache_${id}`);
+                if (cached) {
+                    try {
+                        product = JSON.parse(cached);
+                    } catch (e) {}
                 }
             }
 
@@ -4771,19 +4820,60 @@ selectPayment(method, btn) {
                 }
                 const videoSrc = (activeLesson && activeLesson.video) || "https://assets.mixkit.co/videos/preview/mixkit-star-field-in-deep-space-9736-large.mp4";
 
-                // Course (Video) - Toca o vídeo da aula correspondente
-                contentArea.innerHTML = `
-                    <div style="position: relative; width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                        <video id="course-main-video" style="width: 100%; height: 100%; object-fit: cover;" playsinline>
-                            <source src="${videoSrc}" type="video/mp4">
-                        </video>
-                        <div id="video-overlay-play" onclick="app.toggleMainVideo()" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); cursor: pointer; transition: 0.3s;">
-                            <i data-lucide="play" style="width: 48px; height: 48px; color: #fff;"></i>
+                const isYouTube = videoSrc.includes('youtube.com/') || videoSrc.includes('youtu.be/');
+                const isVimeo = videoSrc.includes('vimeo.com/');
+                const isDrive = videoSrc.includes('drive.google.com/');
+
+                if (isYouTube) {
+                    let ytId = '';
+                    if (videoSrc.includes('youtu.be/')) {
+                        ytId = videoSrc.split('/').pop().split('?')[0];
+                    } else {
+                        const reg = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+                        const match = videoSrc.match(reg);
+                        if (match) ytId = match[1];
+                    }
+                    contentArea.innerHTML = `
+                        <div style="position: relative; width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center;">
+                            <iframe src="https://www.youtube.com/embed/${ytId}" style="width: 100%; height: 100%; border: none;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                         </div>
-                    </div>
-                `;
-                controls.style.display = 'flex';
-                this.setupVideoControls();
+                    `;
+                    controls.style.display = 'none';
+                } else if (isVimeo) {
+                    const reg = /vimeo\.com\/(?:video\/)?([0-9]+)/;
+                    const match = videoSrc.match(reg);
+                    const vimeoId = match ? match[1] : '';
+                    contentArea.innerHTML = `
+                        <div style="position: relative; width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center;">
+                            <iframe src="https://player.vimeo.com/video/${vimeoId}" style="width: 100%; height: 100%; border: none;" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    `;
+                    controls.style.display = 'none';
+                } else if (isDrive) {
+                    let driveId = '';
+                    const match = videoSrc.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                    if (match) driveId = match[1];
+                    contentArea.innerHTML = `
+                        <div style="position: relative; width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center;">
+                            <iframe src="https://drive.google.com/file/d/${driveId}/preview" style="width: 100%; height: 100%; border: none;" allow="autoplay" allowfullscreen></iframe>
+                        </div>
+                    `;
+                    controls.style.display = 'none';
+                } else {
+                    // Course (Video) - Toca o vídeo da aula correspondente
+                    contentArea.innerHTML = `
+                        <div style="position: relative; width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                            <video id="course-main-video" style="width: 100%; height: 100%; object-fit: cover;" playsinline>
+                                <source src="${videoSrc}" type="video/mp4">
+                            </video>
+                            <div id="video-overlay-play" onclick="app.toggleMainVideo()" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); cursor: pointer; transition: 0.3s;">
+                                <i data-lucide="play" style="width: 48px; height: 48px; color: #fff;"></i>
+                            </div>
+                        </div>
+                    `;
+                    controls.style.display = 'flex';
+                    this.setupVideoControls();
+                }
             }
 
             // Renderização da Grade Curricular (Aulas Reais vs Fake)
@@ -4982,29 +5072,33 @@ selectPayment(method, btn) {
 
         toggleMainVideo() {
             const video = document.getElementById('course-main-video');
-            const btnPlay = document.getElementById('btn-play');
+            const btnPlayContainer = document.getElementById('btn-play-container');
             const overlay = document.getElementById('video-overlay-play');
             if (!video) return;
 
             if (video.paused) {
                 video.play();
-                if (btnPlay) btnPlay.setAttribute('data-lucide', 'pause');
+                if (btnPlayContainer) btnPlayContainer.innerHTML = `<i id="btn-play" data-lucide="pause" style="width: 20px;"></i>`;
                 if (overlay) overlay.style.display = 'none';
             } else {
                 video.pause();
-                if (btnPlay) btnPlay.setAttribute('data-lucide', 'play');
+                if (btnPlayContainer) btnPlayContainer.innerHTML = `<i id="btn-play" data-lucide="play" style="width: 20px;"></i>`;
                 if (overlay) overlay.style.display = 'flex';
             }
             if (window.lucide) lucide.createIcons();
         },
 
         setupVideoControls() {
-            const btnPlay = document.getElementById('btn-play');
+            const btnPlayContainer = document.getElementById('btn-play-container');
             const btnSpeed = document.getElementById('btn-speed');
             const video = document.getElementById('course-main-video');
+            const timeDisplay = document.getElementById('video-time-display');
+            const progressContainer = document.getElementById('video-progress-container');
+            const progressBar = document.getElementById('video-progress-bar');
+            const btnMaximize = document.getElementById('btn-maximize') || document.querySelector('[data-lucide="maximize"]');
 
-            if (btnPlay) {
-                btnPlay.onclick = () => this.toggleMainVideo();
+            if (btnPlayContainer) {
+                btnPlayContainer.onclick = () => this.toggleMainVideo();
             }
 
             if (btnSpeed) {
@@ -5016,6 +5110,70 @@ selectPayment(method, btn) {
                     video.playbackRate = next;
                     btnSpeed.innerText = next.toFixed(1) + 'x';
                 };
+            }
+
+            if (btnMaximize && video) {
+                btnMaximize.onclick = () => {
+                    if (video.requestFullscreen) {
+                        video.requestFullscreen();
+                    } else if (video.webkitRequestFullscreen) {
+                        video.webkitRequestFullscreen();
+                    } else if (video.msRequestFullscreen) {
+                        video.msRequestFullscreen();
+                    }
+                };
+            }
+
+            if (video) {
+                if (progressContainer) progressContainer.style.display = 'block';
+
+                const formatTime = (secs) => {
+                    if (isNaN(secs) || secs === Infinity) return "00:00";
+                    const m = Math.floor(secs / 60).toString().padStart(2, '0');
+                    const s = Math.floor(secs % 60).toString().padStart(2, '0');
+                    return `${m}:${s}`;
+                };
+
+                const updateTimeDisplay = () => {
+                    if (timeDisplay) {
+                        timeDisplay.innerText = `${formatTime(video.currentTime)} / ${formatTime(video.duration || 60)}`;
+                    }
+                };
+
+                const updateProgressBar = () => {
+                    if (progressBar) {
+                        const pct = (video.currentTime / (video.duration || 1)) * 100;
+                        progressBar.style.width = `${pct}%`;
+                    }
+                };
+
+                video.ontimeupdate = () => {
+                    updateTimeDisplay();
+                    updateProgressBar();
+                };
+                
+                video.onloadedmetadata = () => {
+                    updateTimeDisplay();
+                    updateProgressBar();
+                };
+
+                video.ondurationchange = () => {
+                    updateTimeDisplay();
+                    updateProgressBar();
+                };
+
+                updateTimeDisplay();
+                updateProgressBar();
+
+                if (progressContainer) {
+                    progressContainer.onclick = (e) => {
+                        const rect = progressContainer.getBoundingClientRect();
+                        const pos = (e.clientX - rect.left) / rect.width;
+                        video.currentTime = pos * (video.duration || 0);
+                        updateTimeDisplay();
+                        updateProgressBar();
+                    };
+                }
             }
         },
 
@@ -8070,81 +8228,108 @@ async postToMural() {
 
         handleProductImage(input) {
             if (!this.selectedProductImages) this.selectedProductImages = [];
-            const gallery = document.getElementById('product-images-gallery-preview');
-            
             const files = Array.from(input.files);
-            const maxSize = 500 * 1024; // 500kb
+            const maxSize = 1024 * 1024; // 1MB
 
-            files.forEach((file, index) => {
-                if (file.size > maxSize) {
-                    this.showNotification(`A foto é muito pesada (${(file.size/1024).toFixed(0)}kb). Limite: 500kb.`, "error");
-                    return;
-                }
+            if (files.length === 0) return;
 
+            // Crop the first image
+            const firstFile = files[0];
+            if (firstFile.size > maxSize) {
+                this.showNotification(`A primeira foto é muito pesada (${(firstFile.size/1024).toFixed(0)}kb). Limite: 1MB.`, "error");
+            } else {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    const dataUrl = e.target.result;
-                    this.selectedProductImages.push(dataUrl);
-                    this.renderProductImageGallery(); // Nova função para redesenhar a galeria
-                    
-                    // Se for a primeira imagem total, atualiza as prévias principais
-                    if (this.selectedProductImages.length === 1) {
-                        this.selectedProductImage = dataUrl;
+                    this._cropCallback = async (croppedUrl) => {
+                        const compressed = await this.compressImage(croppedUrl, 800, 0.7);
+                        this.selectedProductImages.push(compressed);
+                        this.selectedProductImage = compressed;
+                        
                         const mainPreview = document.getElementById('prod-image-preview');
-                        if (mainPreview) mainPreview.innerHTML = `<img src="${dataUrl}" style="width: 100%; height: 100%; object-fit: cover;">`;
-                    }
+                        if (mainPreview) mainPreview.innerHTML = `<img src="${compressed}" style="width: 100%; height: 100%; object-fit: cover;">`;
 
-                    this.updateProductPreview(); // Garante que o preview mude com a foto
-                    this.updateProductProgress();
+                        // Process the remaining files (if any) by compressing them directly
+                        for (let i = 1; i < files.length; i++) {
+                            const f = files[i];
+                            if (f.size <= maxSize) {
+                                await new Promise((res) => {
+                                    const r = new FileReader();
+                                    r.onload = async (ev) => {
+                                        const comp = await this.compressImage(ev.target.result, 800, 0.7);
+                                        this.selectedProductImages.push(comp);
+                                        res();
+                                    };
+                                    r.readAsDataURL(f);
+                                });
+                            }
+                        }
+
+                        this.renderProductImageGallery();
+                        this.updateProductPreview();
+                        this.updateProductProgress();
+                    };
+                    this._showImageCropper(e.target.result);
                 };
-                reader.readAsDataURL(file);
-            });
-            input.value = ''; // Limpa para permitir selecionar o mesmo arquivo novamente
+                reader.readAsDataURL(firstFile);
+            }
+            input.value = '';
         },
 
         handleMentoriaPresentationImage(input) {
             const file = input.files[0];
             if (!file) return;
 
-            const maxSize = 500 * 1024; // 500kb
-                if (file.size > maxSize) {
-                    this.showNotification("Imagem muito pesada. Limite: 500kb.", "error");
-                    return;
-                }
+            const maxSize = 1024 * 1024; // 1MB
+            if (file.size > maxSize) {
+                this.showNotification("Imagem muito pesada. Limite: 1MB.", "error");
+                input.value = '';
+                return;
+            }
 
             const reader = new FileReader();
             reader.onload = (e) => {
-                this.mentoriaPresentationImage = e.target.result;
-                const inner = document.getElementById('mentoria-img-inner-preview');
-                if (inner) {
-                    inner.style.backgroundImage = `url(${e.target.result})`;
-                    inner.style.display = 'block';
-                }
-                this.updateProductPreview();
+                this._cropCallback = async (croppedUrl) => {
+                    const compressed = await this.compressImage(croppedUrl, 800, 0.7);
+                    this.mentoriaPresentationImage = compressed;
+                    const inner = document.getElementById('mentoria-img-inner-preview');
+                    if (inner) {
+                        inner.style.backgroundImage = `url(${compressed})`;
+                        inner.style.display = 'block';
+                    }
+                    this.updateProductPreview();
+                };
+                this._showImageCropper(e.target.result);
             };
             reader.readAsDataURL(file);
+            input.value = '';
         },
 
         handleLiveFixImage(input) {
             const file = input.files[0];
             if (!file) return;
 
-            const maxSize = 500 * 1024; // 500kb para live fix
+            const maxSize = 1024 * 1024; // 1MB
             if (file.size > maxSize) {
-                this.showNotification("Imagem muito pesada. Limite: 500kb.", "error");
+                this.showNotification("Imagem muito pesada. Limite: 1MB.", "error");
+                input.value = '';
                 return;
             }
 
             const reader = new FileReader();
             reader.onload = (e) => {
-                this.tempLiveFixImage = e.target.result;
-                const inner = document.getElementById('live-fix-inner-preview');
-                if (inner) {
-                    inner.style.backgroundImage = `url(${e.target.result})`;
-                    inner.style.display = 'block';
-                }
+                this._cropCallback = async (croppedUrl) => {
+                    const compressed = await this.compressImage(croppedUrl, 800, 0.7);
+                    this.tempLiveFixImage = compressed;
+                    const inner = document.getElementById('live-fix-inner-preview');
+                    if (inner) {
+                        inner.style.backgroundImage = `url(${compressed})`;
+                        inner.style.display = 'block';
+                    }
+                };
+                this._showImageCropper(e.target.result);
             };
             reader.readAsDataURL(file);
+            input.value = '';
         },
 
 
@@ -8773,19 +8958,30 @@ async postToMural() {
         handleLessonThumbnailUpload(input, moduleId, lessonId) {
             const file = input.files[0];
             if (file) {
+                const maxSize = 1024 * 1024; // 1MB
+                if (file.size > maxSize) {
+                    this.showNotification("A imagem é muito pesada. Limite: 1MB.", "error");
+                    input.value = '';
+                    return;
+                }
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    const module = this.courseStructure.find(m => m.id === moduleId);
-                    if (module) {
-                        const lesson = module.lessons.find(l => l.id === lessonId);
-                        if (lesson) {
-                            lesson.thumbnail = e.target.result;
-                            this.renderCourseStructure();
+                    this._cropCallback = async (croppedUrl) => {
+                        const compressed = await this.compressImage(croppedUrl, 400, 0.7);
+                        const module = this.courseStructure.find(m => m.id === moduleId);
+                        if (module) {
+                            const lesson = module.lessons.find(l => l.id === lessonId);
+                            if (lesson) {
+                                lesson.thumbnail = compressed;
+                                this.renderCourseStructure();
+                            }
                         }
-                    }
+                    };
+                    this._showImageCropper(e.target.result);
                 };
                 reader.readAsDataURL(file);
             }
+            input.value = '';
         },
 
         handleLessonAttachmentUpload(input, moduleId, lessonId) {
@@ -8822,6 +9018,10 @@ async postToMural() {
                         this.showNotification('🚫 Vídeo muito longo! O limite máximo é de 60 segundos por aula.', 'error');
                         input.value = ''; // Limpa o input
                         return;
+                    }
+
+                    if (file.size > 5 * 1024 * 1024) {
+                        this.showNotification('⚠️ Vídeo com mais de 5MB. Para melhor desempenho e evitar falhas na nuvem, recomendamos colar o link do vídeo.', 'warning');
                     }
 
                     const reader = new FileReader();
@@ -8885,7 +9085,7 @@ async postToMural() {
                                     <!-- LADO ESQUERDO: Preview -->
                                     <div style="width: 140px; height: 80px; background: #f9f9f9; border: 2px solid #eee; border-radius: 16px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; transition: 0.3s;">
                                         ${l.thumbnail ? `<img src="${l.thumbnail}" style="width: 100%; height: 100%; object-fit: cover;">` : `<i data-lucide="video" style="width: 24px; color: #eee;"></i>`}
-                                        ${l.fileName ? `<div style="position: absolute; bottom: 6px; right: 6px; background: #22c55e; color: #fff; font-size: 7px; font-weight: 950; padding: 3px 7px; border-radius: 6px; box-shadow: 0 4px 10px rgba(34, 197, 94, 0.2);">VÍDEO OK</div>` : ''}
+                                        ${(l.fileName || l.video) ? `<div style="position: absolute; bottom: 6px; right: 6px; background: #22c55e; color: #fff; font-size: 7px; font-weight: 950; padding: 3px 7px; border-radius: 6px; box-shadow: 0 4px 10px rgba(34, 197, 94, 0.2);">VÍDEO OK</div>` : ''}
                                     </div>
 
                                     <!-- LADO DIREITO: Controles -->
@@ -8893,8 +9093,8 @@ async postToMural() {
                                         <div style="display: flex; gap: 10px;">
                                             <!-- Botão Vídeo -->
                                             <div onclick="this.nextElementSibling.click()" style="flex: 1; height: 40px; background: #fff; border: 2.5px solid #000; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; gap: 8px; transition: 0.3s;">
-                                                <i data-lucide="upload-cloud" style="width: 14px; color: ${l.fileName ? '#22c55e' : '#000'};"></i>
-                                                <span style="font-size: 9px; font-weight: 950; color: #000; text-transform: uppercase; letter-spacing: 0.5px;">${l.fileName ? 'Mudar Vídeo' : 'Subir Vídeo (Máx 60s)'}</span>
+                                                <i data-lucide="upload-cloud" style="width: 14px; color: ${(l.fileName || l.video) ? '#22c55e' : '#000'};"></i>
+                                                <span style="font-size: 9px; font-weight: 950; color: #000; text-transform: uppercase; letter-spacing: 0.5px;">${(l.fileName || l.video) ? 'Mudar Vídeo' : 'Subir Vídeo (Máx 60s)'}</span>
                                             </div>
                                             <input type="file" accept="video/*" onchange="app.handleLessonUpload(this, '${m.id}', '${l.id}')" style="display: none;">
 
@@ -8904,6 +9104,14 @@ async postToMural() {
                                                 <span style="font-size: 9px; font-weight: 950; color: #000; text-transform: uppercase; letter-spacing: 0.5px;">${l.thumbnail ? 'Mudar Capa' : 'Definir Capa'}</span>
                                             </div>
                                             <input type="file" accept="image/*" onchange="app.handleLessonThumbnailUpload(this, '${m.id}', '${l.id}')" style="display: none;">
+                                        </div>
+
+                                        <!-- Campo de Link do Vídeo (Alternativa) -->
+                                        <div style="position: relative;">
+                                            <i data-lucide="video" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 14px; color: #ccc;"></i>
+                                            <input type="text" value="${l.video && l.video.startsWith('http') ? l.video : ''}" oninput="app.updateLessonVideoLink('${m.id}', '${l.id}', this.value)"
+                                                placeholder="Ou cole o Link do Vídeo (YouTube, Drive, Vimeo, MP4)..." 
+                                                style="width: 100%; height: 40px; background: transparent; border: none; border-bottom: 2px solid #f5f5f5; padding: 0 10px 0 32px; font-size: 11px; font-weight: 800; outline: none; transition: 0.3s;" onfocus="this.style.borderBottomColor='#000'">
                                         </div>
 
                                         <!-- Descrição Fixa -->
@@ -8944,10 +9152,24 @@ async postToMural() {
             if (window.lucide) lucide.createIcons();
         },
 
-    // ==========================================
-    // 🔐 AUTHENTICATION & SESSIONS
-    // ==========================================
-    async login(isGuest = false) { 
+        updateLessonVideoLink(moduleId, lessonId, url) {
+            const module = this.courseStructure.find(m => m.id === moduleId);
+            if (module) {
+                const lesson = module.lessons.find(l => l.id === lessonId);
+                if (lesson) {
+                    lesson.videoLink = url;
+                    lesson.video = url;
+                    if (url) {
+                        lesson.fileName = 'Link do Vídeo';
+                    } else {
+                        lesson.fileName = '';
+                    }
+                    this.renderCourseStructure();
+                }
+            }
+        },
+
+        async login(isGuest = false) { 
             this.showLoading(true, 'Autenticando...');
             
             try {
@@ -11023,20 +11245,23 @@ async postToMural() {
     app.uploadBuilderImage = function(pos, idx, input) {
         const file = input.files[0];
         if (!file) return;
-        if (file.size > 500 * 1024) {
-            this.showNotification("Imagem muito pesada! Limite de 500kb.", "error");
+        const maxSize = 1024 * 1024; // 1MB
+        if (file.size > maxSize) {
+            this.showNotification("Imagem muito pesada! Limite de 1MB.", "error");
             input.value = '';
             return;
         }
         const reader = new FileReader();
         reader.onload = (e) => {
-            this._cropCallback = (croppedUrl) => {
-                this.updateBlock(pos, idx, 'url', croppedUrl);
+            this._cropCallback = async (croppedUrl) => {
+                const compressed = await this.compressImage(croppedUrl, 800, 0.7);
+                this.updateBlock(pos, idx, 'url', compressed);
                 this.renderBuilderBlocks();
             };
             this._showImageCropper(e.target.result);
         };
         reader.readAsDataURL(file);
+        input.value = '';
     };
 
     app._showImageCropper = function(imageUrl) {

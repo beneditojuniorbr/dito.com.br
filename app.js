@@ -4584,7 +4584,7 @@ selectPayment(method, btn) {
                                 </div>
                             </div>
                             <div style="display: flex; gap: 8px;">
-                                <button onclick="app.moveToTrash('${p.id}')" title="Mover para Lixeira" style="width: 40px; height: 40px; background: #fff1f2; color: #e11d48; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                                <button onclick="app.moveToTrash('${p.id}')" title="Mover para Lixeira" style="width: 40px; height: 40px; background: #f3f4f6; color: #000; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
                                     <i data-lucide="trash-2" style="width: 18px;"></i>
                                 </button>
                                 <button onclick="app.openCourse('${p.id}')" style="width: 42px; height: 42px; background: #000; color: #fff; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
@@ -4659,7 +4659,7 @@ selectPayment(method, btn) {
                             <button onclick="app.restoreFromTrash('${p.id}')" title="Restaurar" style="width: 42px; height: 42px; background: #22c55e10; color: #22c55e; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
                                 <i data-lucide="rotate-ccw" style="width: 18px;"></i>
                             </button>
-                            <button onclick="app.permanentlyDeletePurchased('${p.id}')" title="Excluir Permanentemente" style="width: 42px; height: 42px; background: #ef444410; color: #ef4444; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                            <button onclick="app.permanentlyDeletePurchased('${p.id}')" title="Excluir Permanentemente" style="width: 42px; height: 42px; background: #f3f4f6; color: #000; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
                                 <i data-lucide="trash-2" style="width: 18px;"></i>
                             </button>
                         </div>

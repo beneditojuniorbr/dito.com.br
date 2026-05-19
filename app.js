@@ -371,59 +371,70 @@
                     const checkoutId = currentCheckoutId;
                     console.log("Processando Checkout:", checkoutId);
 
-                    
                     const tryLoadProduct = async (attempts = 0) => {
-                        if (attempts > 12) {
-                            if (typeof app.hideSplash === 'function') app.hideSplash();
-                            return; 
-                        }
-
-                        // Tenta local primeiro (ID ou Slug)
-                        let allProducts = JSON.parse(localStorage.getItem('dito_products_vanilla') || '[]');
-                        let targetProd = allProducts.find(p => String(p.id) === String(checkoutId) || p.slug === checkoutId);
-                        
-                        // Busca na tabela unificada (dito_market_products)
-                        if (!targetProd && typeof supabase !== 'undefined' && supabase) {
-                            const { data } = await supabase.from('dito_market_products').select('*').or(`id.eq."${checkoutId}",slug.eq."${checkoutId}"`).maybeSingle();
-                            if (data) {
-                                // Converte conteúdo se necessário
-                                const contentData = data.content ? (typeof data.content === 'string' ? JSON.parse(data.content) : data.content) : null;
-                                targetProd = { ...data, price: Number(data.price), content: contentData };
-                            }
-                        }
-
-                                                if (targetProd) {
-                            const buyerKey = this.getUserKey();
-                            
-                            // Se não tiver logado, salva o produto pendente no carrinho e redireciona imediatamente para o cadastro!
-                            if (localStorage.getItem('is_logged_in_vanilla') !== 'true') {
-                                this.cart = [targetProd];
-                                localStorage.setItem('dito_cart_guest', JSON.stringify(this.cart));
-                                localStorage.setItem(`dito_cart_${buyerKey}`, JSON.stringify(this.cart));
-                                localStorage.setItem('dito_pending_checkout_after_register', 'true');
-                                
-                                this.navigate('cadastro');
+                        try {
+                            if (attempts > 12) {
                                 if (typeof app.hideSplash === 'function') app.hideSplash();
-                                this.showNotification("Cadastre sua conta para concluir a compra! ✨", "info");
+                                return; 
+                            }
+
+                            // Tenta local primeiro (ID ou Slug)
+                            let allProducts = JSON.parse(localStorage.getItem('dito_products_vanilla') || '[]');
+                            let targetProd = allProducts.find(p => String(p.id) === String(checkoutId) || p.slug === checkoutId);
+                            
+                            // Busca na tabela unificada (dito_market_products)
+                            if (!targetProd && typeof supabase !== 'undefined' && supabase) {
+                                try {
+                                    const { data, error } = await supabase
+                                        .from('dito_market_products')
+                                        .select('*')
+                                        .or(`id.eq.${checkoutId},slug.eq.${checkoutId}`)
+                                        .maybeSingle();
+                                    if (data && !error) {
+                                        // Converte conteúdo se necessário
+                                        const contentData = data.content ? (typeof data.content === 'string' ? JSON.parse(data.content) : data.content) : null;
+                                        targetProd = { ...data, price: Number(data.price), content: contentData };
+                                    }
+                                } catch (err) {
+                                    console.error("Erro na busca de produto:", err);
+                                }
+                            }
+
+                            if (targetProd) {
+                                const buyerKey = this.getUserKey();
                                 
+                                // Se não tiver logado, salva o produto pendente no carrinho e redireciona imediatamente para o cadastro!
+                                if (localStorage.getItem('is_logged_in_vanilla') !== 'true') {
+                                    this.cart = [targetProd];
+                                    localStorage.setItem('dito_cart_guest', JSON.stringify(this.cart));
+                                    localStorage.setItem(`dito_cart_${buyerKey}`, JSON.stringify(this.cart));
+                                    localStorage.setItem('dito_pending_checkout_after_register', 'true');
+                                    
+                                    this.navigate('cadastro');
+                                    if (typeof app.hideSplash === 'function') app.hideSplash();
+                                    this.showNotification("Cadastre sua conta para concluir a compra! ✨", "info");
+                                    
+                                    if (window.location.protocol !== 'file:') {
+                                        window.history.replaceState({}, document.title, '/'); 
+                                    }
+                                    return;
+                                }
+
+                                this.cart = [targetProd];
+                                localStorage.setItem(`dito_cart_${buyerKey}`, JSON.stringify(this.cart));
+                                
+                                this.navigate('checkout-direto');
+                                if (typeof app.hideSplash === 'function') app.hideSplash();
                                 if (window.location.protocol !== 'file:') {
                                     window.history.replaceState({}, document.title, '/'); 
                                 }
-                                return;
+                            } else {
+                                // Tenta de novo em 200ms (mais rápido)
+                                setTimeout(() => tryLoadProduct(attempts + 1), 200);
                             }
-
-                            this.cart = [targetProd];
-                            localStorage.setItem(`dito_cart_${buyerKey}`, JSON.stringify(this.cart));
-                            
-                            this.navigate('checkout-direto');
+                        } catch (err) {
+                            console.error("Erro crítico em tryLoadProduct:", err);
                             if (typeof app.hideSplash === 'function') app.hideSplash();
-                            if (window.location.protocol !== 'file:') {
-                                window.history.replaceState({}, document.title, '/'); 
-                            }
-
-                        } else {
-                            // Tenta de novo em 200ms (mais rápido)
-                            setTimeout(() => tryLoadProduct(attempts + 1), 200);
                         }
                     };
 
@@ -437,34 +448,51 @@
                         console.log("Slug detectado:", slug);
                         
                         const tryLoadSlug = async (attempts = 0) => {
-                            if (attempts > 5) return;
-
-                            let allProducts = JSON.parse(localStorage.getItem('dito_products_vanilla') || '[]');
-                            let targetProd = allProducts.find(p => p.slug === slug || p.id === slug);
-                            
-                            if (!targetProd && typeof supabase !== 'undefined') {
-                                const { data } = await supabase.from('dito_market_products').select('*').eq('slug', slug).maybeSingle();
-                                if (data) targetProd = data;
-                            }
-
-                            if (targetProd) {
-                                const buyerKey = this.getUserKey();
-                                if (localStorage.getItem('is_logged_in_vanilla') !== 'true') {
-                                    localStorage.setItem('is_logged_in_vanilla', 'true');
-                                    localStorage.setItem('is_guest_vanilla', 'true');
-                                    this.currentUser = { username: "Convidado", name: "Visitante", isGuest: true };
+                            try {
+                                if (attempts > 5) {
+                                    if (typeof app.hideSplash === 'function') app.hideSplash();
+                                    return;
                                 }
 
-                                this.cart = [targetProd];
-                                localStorage.setItem(`dito_cart_${buyerKey}`, JSON.stringify(this.cart));
+                                let allProducts = JSON.parse(localStorage.getItem('dito_products_vanilla') || '[]');
+                                let targetProd = allProducts.find(p => p.slug === slug || p.id === slug);
                                 
-                                this.navigate('mercado');
-                                if (window.location.protocol !== 'file:') {
-                                    window.history.replaceState({}, document.title, '/');
+                                if (!targetProd && typeof supabase !== 'undefined') {
+                                    try {
+                                        const { data, error } = await supabase
+                                            .from('dito_market_products')
+                                            .select('*')
+                                            .eq('slug', slug)
+                                            .maybeSingle();
+                                        if (data && !error) targetProd = data;
+                                    } catch (err) {
+                                        console.error("Erro na busca de slug:", err);
+                                    }
                                 }
-                                setTimeout(() => this.setMarketView('checkout'), 50);
-                            } else {
-                                setTimeout(() => tryLoadSlug(attempts + 1), 200);
+
+                                if (targetProd) {
+                                    const buyerKey = this.getUserKey();
+                                    if (localStorage.getItem('is_logged_in_vanilla') !== 'true') {
+                                        localStorage.setItem('is_logged_in_vanilla', 'true');
+                                        localStorage.setItem('is_guest_vanilla', 'true');
+                                        this.currentUser = { username: "Convidado", name: "Visitante", isGuest: true };
+                                    }
+
+                                    this.cart = [targetProd];
+                                    localStorage.setItem(`dito_cart_${buyerKey}`, JSON.stringify(this.cart));
+                                    
+                                    this.navigate('mercado');
+                                    if (typeof app.hideSplash === 'function') app.hideSplash();
+                                    if (window.location.protocol !== 'file:') {
+                                        window.history.replaceState({}, document.title, '/');
+                                    }
+                                    setTimeout(() => this.setMarketView('checkout'), 50);
+                                } else {
+                                    setTimeout(() => tryLoadSlug(attempts + 1), 200);
+                                }
+                            } catch (err) {
+                                console.error("Erro crítico em tryLoadSlug:", err);
+                                if (typeof app.hideSplash === 'function') app.hideSplash();
                             }
                         };
 
@@ -5564,6 +5592,16 @@ selectPayment(method, btn) {
                     this.optimizeStorageOnNavigation();
                     
                     appContainer.innerHTML = template.innerHTML;
+                    
+                    // Ajusta src de imagens para rotas aninhadas (Deeplinks) se não for rodando via file://
+                    if (window.location.protocol !== 'file:') {
+                        appContainer.querySelectorAll('img').forEach(img => {
+                            const srcAttr = img.getAttribute('src');
+                            if (srcAttr && /^[D|avatar]/i.test(srcAttr) && !srcAttr.startsWith('/')) {
+                                img.src = '/' + srcAttr;
+                            }
+                        });
+                    }
                 } else {
                     console.error("Erro crítico: Template do Dashboard não encontrado!");
                     return;

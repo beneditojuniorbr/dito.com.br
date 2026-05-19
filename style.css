@@ -869,10 +869,8 @@ input::placeholder, textarea::placeholder {
 #global-header {
     position: fixed;
     top: 0;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 0;
     width: 100%;
-    max-width: 500px;
     height: 70px;
     background: #fff;
     display: none;
@@ -881,6 +879,7 @@ input::placeholder, textarea::placeholder {
     padding: 0 24px;
     z-index: 1001;
     transition: all 0.3s ease;
+    border-bottom: 1px solid var(--border);
 }
 
 /* Tablet layout removed to favor full-screen on all mobile/tablet devices */

@@ -401,13 +401,16 @@
                             }
 
                             if (targetProd) {
+                                // Evita QuotaExceededError excluindo o conteúdo pesado (aulas/vídeos) do carrinho
+                                if (targetProd.content) delete targetProd.content;
+                                
                                 const buyerKey = this.getUserKey();
                                 
                                 // Se não tiver logado, salva o produto pendente no carrinho e redireciona imediatamente para o cadastro!
                                 if (localStorage.getItem('is_logged_in_vanilla') !== 'true') {
                                     this.cart = [targetProd];
-                                    localStorage.setItem('dito_cart_guest', JSON.stringify(this.cart));
-                                    localStorage.setItem(`dito_cart_${buyerKey}`, JSON.stringify(this.cart));
+                                    this.safeLocalStorageSet('dito_cart_guest', JSON.stringify(this.cart));
+                                    this.safeLocalStorageSet(`dito_cart_${buyerKey}`, JSON.stringify(this.cart));
                                     localStorage.setItem('dito_pending_checkout_after_register', 'true');
                                     
                                     this.navigate('cadastro');
@@ -421,7 +424,7 @@
                                 }
 
                                 this.cart = [targetProd];
-                                localStorage.setItem(`dito_cart_${buyerKey}`, JSON.stringify(this.cart));
+                                this.safeLocalStorageSet(`dito_cart_${buyerKey}`, JSON.stringify(this.cart));
                                 
                                 this.navigate('checkout-direto');
                                 if (typeof app.hideSplash === 'function') app.hideSplash();
@@ -471,6 +474,9 @@
                                 }
 
                                 if (targetProd) {
+                                    // Evita QuotaExceededError excluindo o conteúdo pesado (aulas/vídeos) do carrinho
+                                    if (targetProd.content) delete targetProd.content;
+                                    
                                     const buyerKey = this.getUserKey();
                                     if (localStorage.getItem('is_logged_in_vanilla') !== 'true') {
                                         localStorage.setItem('is_logged_in_vanilla', 'true');
@@ -479,7 +485,7 @@
                                     }
 
                                     this.cart = [targetProd];
-                                    localStorage.setItem(`dito_cart_${buyerKey}`, JSON.stringify(this.cart));
+                                    this.safeLocalStorageSet(`dito_cart_${buyerKey}`, JSON.stringify(this.cart));
                                     
                                     this.navigate('mercado');
                                     if (typeof app.hideSplash === 'function') app.hideSplash();
